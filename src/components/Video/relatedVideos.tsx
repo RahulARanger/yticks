@@ -9,12 +9,11 @@ import Paper from "@mui/material/Paper";
 import Divider from "@mui/material/Divider";
 import Box from "@mui/material/Box";
 import { Component, ReactNode } from "react";
-import ListSubheader from '@mui/material/ListSubheader';
+import ListSubheader from "@mui/material/ListSubheader";
 import Skeleton from "@mui/material/Skeleton";
 import Typography from "@mui/material/Typography";
 import ListArea from "../listArea";
 
-
-export default class RelatedVideoArea extends ListArea{
-	title: string = "Related Videos"
+export default class RelatedVideoArea extends ListArea {
+	title: string = "Related Videos";
 }

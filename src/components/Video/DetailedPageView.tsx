@@ -5,6 +5,7 @@ import {
 	SyntheticEvent,
 	useState,
 	useRef,
+	createRef,
 } from "react";
 import VideoEmbedded, {
 	VideoPlayerSharedProps,
@@ -33,26 +34,33 @@ export interface FromMainPageWhichAreState {
 	videoID: string;
 }
 
-async function askThem(videoID: string): Promise<ExpectedVideoDetails> {
-	return fetch(`/api/data/videoById?videoID=${videoID}`).then(
-		async (response): Promise<responseType> => {
-			let resp: responseType;
-			if (!response.ok) {
-				try {
-					resp = await response.json();
-				} catch (error) {
-					throw new Error(
-						"Failed to request our server, please let me know if this happens, I will try to bring back the server as soon as possible."
-					);
-				}
-				if (resp.failed) throw new Error(resp.details);
+async function askThem(
+	videoID: string,
+	maxWidth: number,
+	maxHeight: number,
+	setOpen: (open: boolean) => void
+): Promise<ExpectedVideoDetails> {
+	setOpen(true); // open notification
+
+	return fetch(
+		`/api/data/videoById?videoID=${videoID}&maxWidth=${maxWidth}&maxHeight=${maxHeight}`
+	).then(async (response): Promise<responseType> => {
+		let resp: responseType;
+		if (!response.ok) {
+			try {
+				resp = await response.json();
+			} catch (error) {
 				throw new Error(
-					"Unknow Error, please note the steps and let me know"
+					"Failed to request our server, please let me know if this happens, I will try to bring back the server as soon as possible."
 				);
 			}
-			return response.json();
+			if (resp.failed) throw new Error(resp.details);
+			throw new Error(
+				"Unknow Error, please note the steps and let me know"
+			);
 		}
-	);
+		return response.json();
+	});
 }
 
 interface metaDetails
@@ -69,59 +77,72 @@ function AskDetailsForVideo(meta: metaDetails) {
 	const [isOpen, setOpen] = useState(true);
 	const savedVideoID = useRef("");
 
+	let [width, height] = [1200, 400];
+
 	const fetchThings = savedVideoID.current !== meta.videoID;
 
-	const { data, error, isLoading } = useSWRImmutable(meta.videoID, askThem);
+	const { data, error, isLoading } = useSWRImmutable(meta.videoID, (url) =>
+		askThem(url, width, height, setOpen)
+	);
 	const videoList: VideoListDetails | undefined =
 		data?.details && typeof data?.details !== "string"
 			? data?.details
 			: undefined;
 
+	let title: string = "";
+
+	if (videoList) title = videoList.items[0].snippet.title;
 	if (videoList && fetchThings) {
-		setOpen(true);
 		meta.redirectTo(isLoading, error, videoList);
 		savedVideoID.current = meta.videoID;
+	}
+
+	function handleClose(_: SyntheticEvent | Event, reason?: string) {
+		if (reason === "clickaway") return;
+		setOpen(false);
 	}
 
 	function focusSearchBar() {
 		meta.suggest.current?.focus();
 	}
 
-	function closeToast(_: SyntheticEvent | Event, reason?: string) {
-		if (reason === "clickaway") return;
-		setOpen(false);
-	}
-
-	const content = isLoading
-		? `Searching for the Video: ${meta.videoID}`
-		: !videoList
-		? error?.message ?? "Failed to search for the requested video"
-		: `Completed the search, Video Name: ${videoList?.items[0]?.snippet?.title}`;
-
-	const insideComps = isLoading ? (
-		<LinearProgress color="secondary" />
-	) : error ? (
-		<Button onClick={focusSearchBar}>Try again</Button>
+	const mode = isLoading ? "info" : title ? "success" : "error";
+	const hideDuration = isLoading ? null : title ? 6e3 : null;
+	const message = isLoading ? (
+		<>
+			Searching for the Video: ${meta.videoID}
+			<LinearProgress />
+		</>
+	) : title ? (
+		`Fetched the details of the video: ${title}`
 	) : (
-		<Button onClick={closeToast}>Close</Button>
+		`Failed to fetch the required details, Please refer to this error: ${
+			error?.message ?? error
+		}`
 	);
 
-	const mode = isLoading ? "info" : !videoList ? "error" : "success";
+	const insideComps = isLoading ? null : title ? (
+		<Button onClick={handleClose}>Close</Button>
+	) : (
+		<Button onClick={focusSearchBar}>Try again</Button>
+	);
 
 	return (
 		<>
 			<Snackbar
-				autoHideDuration={videoList ? 6e3 : undefined}
+				anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
 				open={isOpen}
-				onClose={closeToast}
+				onClose={handleClose}
+				autoHideDuration={hideDuration}
 			>
 				<Alert
+					onClose={handleClose}
 					severity={mode}
+					action={insideComps}
 					color={mode}
 					elevation={1}
-					action={insideComps}
 				>
-					{content}
+					{message}
 				</Alert>
 			</Snackbar>
 		</>
@@ -138,6 +159,7 @@ export default class DetailedPageView extends Component<
 	DetailedPageViewRelatedProps,
 	VideoSummaryState
 > {
+	embeddedVideoFrame: RefObject<HTMLDivElement> = createRef();
 	state: VideoSummaryState = {
 		title: "...",
 		channelID: "",
@@ -145,11 +167,13 @@ export default class DetailedPageView extends Component<
 		viewCount: 0,
 		commentCount: 0,
 		likeCount: 0,
+		frame: "",
+		description: "",
 	};
 
 	searchedDetails(
-		status: boolean,
-		error: string,
+		_: boolean, // status
+		__: string, // error
 		data: VideoListDetails | undefined
 	): void {
 		if (!data) {
@@ -162,6 +186,8 @@ export default class DetailedPageView extends Component<
 			channelName: video.snippet.channelTitle,
 			viewCount: video.statistics.viewCount,
 			likeCount: video.statistics.likeCount,
+			frame: video.player.embedHtml,
+			description: video.snippet.description,
 		});
 	}
 
@@ -180,10 +206,12 @@ export default class DetailedPageView extends Component<
 					spacing={2}
 					flexWrap={"wrap"}
 					className={VideoStyle.detailedView}
+					justifyContent={"stretch"}
+					alignItems={"stretch"}
 				>
 					<Stack
 						direction="column"
-						sx={{ flexGrow: 1.69 }}
+						sx={{ flexGrow: 0.69 }}
 						justifyContent={"stretch"}
 						alignItems={"stretch"}
 						spacing={1}
@@ -195,6 +223,8 @@ export default class DetailedPageView extends Component<
 							likeCount={this.state.likeCount}
 							viewCount={this.state.viewCount}
 							commentCount={this.state.commentCount}
+							frame={this.state.frame}
+							description={this.state.description}
 						/>
 						<CommentArea />
 					</Stack>

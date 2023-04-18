@@ -226,10 +226,14 @@ export interface VideoDetails {
 	localizations: localizations;
 }
 
-async function ask(videoID: string): Promise<Response> {
+async function ask(
+	videoID: string,
+	maxWidth: number,
+	maxHeight: number
+): Promise<Response> {
 	if (!process.env.API_KEY) throw new Error("Missing API Key");
 	return fetch(
-		`https://www.googleapis.com/youtube/v3/videos?key=${process.env.API_KEY}&id=${videoID}&part=contentDetails,liveStreamingDetails,localizations,player,recordingDetails,snippet,statistics,status,topicDetails`
+		`https://www.googleapis.com/youtube/v3/videos?key=${process.env.API_KEY}&id=${videoID}&maxWidth=${maxWidth}&maxHeight=${maxHeight}&part=contentDetails,liveStreamingDetails,localizations,player,recordingDetails,snippet,statistics,status,topicDetails`
 	);
 }
 
@@ -264,13 +268,17 @@ export default async function handler(
 	request: NextApiRequest,
 	response: NextApiResponse<ExpectedVideoDetails>
 ) {
-	const { videoID } = request.query;
+	const { videoID, maxWidth, maxHeight } = request.query;
 
 	if (!videoID) {
 		return letThemKnow(response, "Please provide the ID for the video.");
 	}
 	try {
-		const resp = await ask(String(videoID));
+		const resp = await ask(
+			String(videoID),
+			Number(maxWidth),
+			Number(maxHeight)
+		);
 		const videoDetails: VideoListDetails = await resp.json();
 
 		if (!videoDetails?.pageInfo?.totalResults)

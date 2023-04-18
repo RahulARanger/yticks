@@ -9,29 +9,25 @@ import Paper from "@mui/material/Paper";
 import Divider from "@mui/material/Divider";
 import Box from "@mui/material/Box";
 import { Component, ReactNode } from "react";
-import ListSubheader from '@mui/material/ListSubheader';
+import ListSubheader from "@mui/material/ListSubheader";
 import Skeleton from "@mui/material/Skeleton";
 import Typography from "@mui/material/Typography";
 
+export default abstract class ListArea extends Component {
+	title: string = "...";
+	minWidth: string = "250px";
+	maxWidth: string = "500px";
 
-export default abstract class ListArea extends Component{
-    title: string = "...";
-	minWidth: string = "250px"
-    
 	relatedVideoArea() {
 		return (
-			<Paper elevation={3} sx={{flexGrow: 1, height: "100%"}}>
+			<Paper elevation={3} sx={{ flexGrow: 1, height: "100%" }}>
 				<List
 					sx={{
-						border: "1px solid black", height: "100%"
+						border: "1px solid black",
+						height: "100%",
 					}}
-                    subheader={
-                        <ListSubheader>
-                            {this.title}
-                        </ListSubheader>
-                    }
-				>  
-                </List>
+					subheader={<ListSubheader>{this.title}</ListSubheader>}
+				></List>
 			</Paper>
 		);
 	}
@@ -42,8 +38,10 @@ export default abstract class ListArea extends Component{
 				<Box
 					sx={{
 						backdropFilter: "blur(20px)",
-						flexGrow: 1, flexDirection: "column",
-						minWidth: this.minWidth
+						flexGrow: 1,
+						flexDirection: "column",
+						minWidth: this.minWidth,
+						maxWidth: this.maxWidth,
 					}}
 				>
 					{this.relatedVideoArea()}

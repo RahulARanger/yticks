@@ -32,7 +32,6 @@ export default class Header extends Component<HeaderProps, {}> {
 							? headerStyles.topAppBar
 							: headerStyles.centerAppBar
 					}
-					color="transparent"
 					elevation={showAtTop ? 3 : 0}
 				>
 					<Toolbar
