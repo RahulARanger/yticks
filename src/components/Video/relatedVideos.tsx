@@ -14,6 +14,9 @@ import Skeleton from "@mui/material/Skeleton";
 import Typography from "@mui/material/Typography";
 import ListArea from "../listArea";
 
-export default class RelatedVideoArea extends ListArea {
+export default class RelatedVideoArea extends ListArea<{}> {
 	title: string = "Related Videos";
+	header() {
+		return <></>;
+	}
 }

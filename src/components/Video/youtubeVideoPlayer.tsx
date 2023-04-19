@@ -1,13 +1,18 @@
-import { Component, ReactNode } from "react";
+import { Component, ReactNode, Fragment } from "react";
 import Box from "@mui/material/Box";
 import Skeleton from "@mui/material/Skeleton";
 import Typography from "@mui/material/Typography";
 import Link from "@mui/material/Link";
 import Accordion from "@mui/material/Accordion";
+import Stack from "@mui/material/Stack";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import EChartsReact, { EChartsOption } from "echarts-for-react";
+import ChildFriendlyIcon from "@mui/icons-material/ChildFriendly";
+import Tooltip from "@mui/material/Tooltip";
+import Chip from "@mui/material/Chip";
+import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 
 export interface VideoPlayerSharedProps {
 	title: string;
@@ -18,9 +23,13 @@ export interface VideoPlayerSharedProps {
 	commentCount: number;
 	frame: string;
 	description: string;
+	tags: Array<string>;
+	childFriendly: boolean;
 }
 
 export default class VideoEmbedded extends Component<VideoPlayerSharedProps> {
+	formatter = Intl.NumberFormat("en", { notation: "compact" });
+
 	getChannelURL(): string {
 		return `https://www.youtube.com/channel/${this.props.channelID}`;
 	}
@@ -65,36 +74,109 @@ export default class VideoEmbedded extends Component<VideoPlayerSharedProps> {
 		);
 	}
 
+	renderChips(): ReactNode {
+		return this.props.tags.map(function (tag) {
+			return (
+				<Fragment key={tag}>
+					<Chip
+						label={tag}
+						size="small"
+						sx={{ margin: "3px" }}
+					></Chip>
+				</Fragment>
+			);
+		});
+	}
+
+	renderBadges(): ReactNode {
+		return (
+			<Stack mt="10px">
+				<Tooltip
+					title={
+						this.props.childFriendly
+							? "Made For Kids"
+							: "Not Made for Kids"
+					}
+					color={this.props.childFriendly ? "green" : "red"}
+				>
+					<ChildFriendlyIcon />
+				</Tooltip>
+			</Stack>
+		);
+	}
+
+	statsBadge(): ReactNode {
+		const format = new Intl.NumberFormat();
+		return (
+			<Stack
+				flexGrow={1}
+				justifyContent={"flex-end"}
+				alignItems={"center"}
+				direction={"row"}
+				columnGap={"12px"}
+			>
+				<Tooltip
+					title={`Like Count: ${format.format(this.props.likeCount)}`}
+				>
+					<Chip
+						icon={<ThumbUpAltIcon />}
+						label={this.formatter.format(this.props.likeCount)}
+					/>
+				</Tooltip>
+
+				<Tooltip
+					title={`View Count: ${format.format(this.props.viewCount)}`}
+				>
+					<Chip
+						icon={<VisibilityIcon />}
+						label={this.formatter.format(this.props.viewCount)}
+					/>
+				</Tooltip>
+			</Stack>
+		);
+	}
+
 	renderVideoSummary() {
 		return (
 			<>
-				<Box flexDirection={"column"} flexWrap={"nowrap"}>
-					<Typography gutterBottom variant="h5">
+				<Box
+					flexDirection={"column"}
+					flexWrap={"nowrap"}
+					sx={{ maxWidth: "710px" }}
+				>
+					<Typography gutterBottom variant="h5" mt="10px">
 						{this.props.title}
 					</Typography>
-					<Accordion>
+					<Accordion sx={{ my: "12px" }}>
 						<AccordionSummary
 							expandIcon={<ExpandMoreIcon />}
 							aria-controls="panel1a-content"
 							id="panel1a-header"
 						>
 							<Typography>Description</Typography>
+							{this.statsBadge()}
 						</AccordionSummary>
 						<AccordionDetails>
-							<Typography variant="body1">
-								{this.props.description}
-							</Typography>
+							{this.props.tags.length ? (
+								<Typography variant="body1">
+									<Typography variant="h6">Tags:</Typography>
+									<hr />
+									{this.renderChips()}
+									<hr />
+								</Typography>
+							) : (
+								<></>
+							)}
+							{this.props.description
+								.split("\n")
+								.map((i, key) => {
+									return <div key={key}>{i}</div>;
+								})}
 						</AccordionDetails>
 					</Accordion>
 				</Box>
 			</>
 		);
-	}
-
-	thinkOfOptions(): EChartsOption {
-		return {
-			option: false,
-		};
 	}
 
 	render(): ReactNode {

@@ -77,7 +77,7 @@ function AskDetailsForVideo(meta: metaDetails) {
 	const [isOpen, setOpen] = useState(true);
 	const savedVideoID = useRef("");
 
-	let [width, height] = [1200, 400];
+	let [width, height] = [730, 400];
 
 	const fetchThings = savedVideoID.current !== meta.videoID;
 
@@ -169,6 +169,8 @@ export default class DetailedPageView extends Component<
 		likeCount: 0,
 		frame: "",
 		description: "",
+		tags: [],
+		childFriendly: true,
 	};
 
 	searchedDetails(
@@ -184,10 +186,13 @@ export default class DetailedPageView extends Component<
 			title: video.snippet.title,
 			channelID: video.snippet.channelId,
 			channelName: video.snippet.channelTitle,
-			viewCount: video.statistics.viewCount,
-			likeCount: video.statistics.likeCount,
+			viewCount: Number(video.statistics.viewCount),
+			likeCount: Number(video.statistics.likeCount),
 			frame: video.player.embedHtml,
 			description: video.snippet.description,
+			tags: video.snippet.tags || [],
+			childFriendly: video.status.madeForKids,
+			commentCount: Number(video.statistics.commentCount),
 		});
 	}
 
@@ -211,7 +216,7 @@ export default class DetailedPageView extends Component<
 				>
 					<Stack
 						direction="column"
-						sx={{ flexGrow: 0.69 }}
+						sx={{ flexGrow: 0.69, maxWidth: "730px" }}
 						justifyContent={"stretch"}
 						alignItems={"stretch"}
 						spacing={1}
@@ -225,8 +230,10 @@ export default class DetailedPageView extends Component<
 							commentCount={this.state.commentCount}
 							frame={this.state.frame}
 							description={this.state.description}
+							tags={this.state.tags}
+							childFriendly={this.state.childFriendly}
 						/>
-						<CommentArea />
+						<CommentArea commentCount={this.state.commentCount} />
 					</Stack>
 					<RelatedVideoArea />
 				</Stack>
