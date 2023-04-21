@@ -94,7 +94,11 @@ export class SearchBarForYoutubeVideo extends SearchBar {
 	handleRedirect(): undefined {
 		if (!this.state.passed) return;
 		const url: string = this.props.pocket.current?.value ?? "";
-		const found = url.match(this.regMatcher)?.at(-2) ?? false;
+		const matches = url.match(this.regMatcher);
+
+		let found = matches?.at(-2) ?? false;
+		found = found === "shorts" ? matches?.at(-1)?.slice(1) ?? false : found;
+
 		if (!found) {
 			this.state.passed = false;
 			return;

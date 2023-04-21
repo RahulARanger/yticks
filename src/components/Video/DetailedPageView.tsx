@@ -23,6 +23,8 @@ import {
 	ExpectedVideoDetails,
 	VideoListDetails,
 } from "@/pages/api/data/videoById";
+import { askButRead } from "@/pages/helper/generalRequest";
+import { ExpectedRelatedVideoDetails } from "@/pages/api/data/relatedVideos";
 
 export type responseType = VideoListDetails | any;
 
@@ -32,35 +34,6 @@ export interface FromMainPageWhichAreProps {
 
 export interface FromMainPageWhichAreState {
 	videoID: string;
-}
-
-async function askThem(
-	videoID: string,
-	maxWidth: number,
-	maxHeight: number,
-	setOpen: (open: boolean) => void
-): Promise<ExpectedVideoDetails> {
-	setOpen(true); // open notification
-
-	return fetch(
-		`/api/data/videoById?videoID=${videoID}&maxWidth=${maxWidth}&maxHeight=${maxHeight}`
-	).then(async (response): Promise<responseType> => {
-		let resp: responseType;
-		if (!response.ok) {
-			try {
-				resp = await response.json();
-			} catch (error) {
-				throw new Error(
-					"Failed to request our server, please let me know if this happens, I will try to bring back the server as soon as possible."
-				);
-			}
-			if (resp.failed) throw new Error(resp.details);
-			throw new Error(
-				"Unknown Error, please note the steps and let me know"
-			);
-		}
-		return response.json();
-	});
 }
 
 interface metaDetails
@@ -77,23 +50,45 @@ function AskDetailsForVideo(meta: metaDetails) {
 	const [isOpen, setOpen] = useState(true);
 	const savedVideoID = useRef("");
 
-	let [width, height] = [730, 400];
+	let [width, height] = ["730", "400"];
 
 	const fetchThings = savedVideoID.current !== meta.videoID;
 
-	const { data, error, isLoading } = useSWRImmutable(meta.videoID, (url) =>
-		askThem(url, width, height, setOpen)
+	const {
+		data: video,
+		error: fetchVideoError,
+		isLoading: fetchingVideo,
+	} = useSWRImmutable("/api/data/videoById", (url) =>
+		askButRead<ExpectedVideoDetails>(url, {
+			maxWidth: width,
+			maxHeight: height,
+			videoID: meta.videoID,
+		})
 	);
+
+	const {
+		data: relatedVideos,
+		error: fetchRelatedVideoError,
+		isLoading: fetchingRelatedVideos,
+	} = useSWRImmutable("/api/data/relatedVideos", (url) =>
+		askButRead<ExpectedRelatedVideoDetails>(url, {
+			videoID: meta.videoID,
+		})
+	);
+
+	const isLoading = fetchingVideo || fetchingRelatedVideos;
+	const error = fetchVideoError || fetchRelatedVideoError;
+
 	const videoList: VideoListDetails | undefined =
-		data?.details && typeof data?.details !== "string"
-			? data?.details
+		video?.details && typeof video?.details !== "string"
+			? video?.details
 			: undefined;
 
 	let title: string = "";
 
 	if (videoList) title = videoList.items[0].snippet.title;
 	if (videoList && fetchThings) {
-		meta.redirectTo(isLoading, error, videoList);
+		meta.redirectTo(fetchingVideo, fetchVideoError, videoList);
 		savedVideoID.current = meta.videoID;
 	}
 
@@ -106,19 +101,18 @@ function AskDetailsForVideo(meta: metaDetails) {
 		meta.suggest.current?.focus();
 	}
 
-	const mode = isLoading ? "info" : title ? "success" : "error";
-	const hideDuration = isLoading ? null : title ? 6e3 : null;
+	const mode = isLoading ? "info" : error ? "error" : "success";
+	const hideDuration = isLoading ? null : error ? null : 6e3;
 	const message = isLoading ? (
 		<>
 			Searching for the Video: ${meta.videoID}
 			<LinearProgress />
 		</>
-	) : title ? (
+	) : !error ? (
 		`Fetched the details of the video: ${title}`
 	) : (
-		`Failed to fetch the required details, Please refer to this error: ${
-			error?.message ?? error
-		}`
+		error?.message ??
+		`Failed to fetch the required details, Please refer to this error: ${error}`
 	);
 
 	const insideComps = isLoading ? null : title ? (

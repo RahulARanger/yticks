@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import ask, { letThemKnow } from "./generalRequest";
+import ask, { letThemKnow, sendError } from "../../helper/generalRequest";
 
 export interface RelatedVideo {
 	id: {
@@ -68,9 +68,12 @@ export default async function handler(
 
 		response.status(200).json({ failed: false, details: related_things });
 	} catch (error) {
-		const e =
-			String(error) ??
-			`Failed to retrieve the details for the video ${videoID}`;
-		letThemKnow(response, e);
+		letThemKnow(
+			response,
+			sendError(
+				error,
+				`Failed to retrieve the related videos for ${videoID}`
+			)
+		);
 	}
 }

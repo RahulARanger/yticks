@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import ask, { letThemKnow, sendError } from "./generalRequest";
+import ask, { letThemKnow, sendError } from "../../helper/generalRequest";
 
 export interface contentDetails {
 	duration: string;
