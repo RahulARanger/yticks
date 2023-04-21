@@ -1,4 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
+import ask, { letThemKnow, sendError } from "./generalRequest";
 
 export interface contentDetails {
 	duration: string;
@@ -226,17 +227,6 @@ export interface VideoDetails {
 	localizations: localizations;
 }
 
-async function ask(
-	videoID: string,
-	maxWidth: number,
-	maxHeight: number
-): Promise<Response> {
-	if (!process.env.API_KEY) throw new Error("Missing API Key");
-	return fetch(
-		`https://www.googleapis.com/youtube/v3/videos?key=${process.env.API_KEY}&id=${videoID}&maxWidth=${maxWidth}&maxHeight=${maxHeight}&part=contentDetails,liveStreamingDetails,localizations,player,recordingDetails,snippet,statistics,status,topicDetails`
-	);
-}
-
 export interface VideoListDetails {
 	kind: "youtube#videoListResponse";
 	etag: string;
@@ -254,16 +244,6 @@ export interface ExpectedVideoDetails {
 	details: VideoListDetails | string;
 }
 
-function letThemKnow(
-	response: NextApiResponse<ExpectedVideoDetails>,
-	error: string
-) {
-	response.status(500).json({
-		failed: true,
-		details: error,
-	});
-}
-
 export default async function handler(
 	request: NextApiRequest,
 	response: NextApiResponse<ExpectedVideoDetails>
@@ -274,11 +254,13 @@ export default async function handler(
 		return letThemKnow(response, "Please provide the ID for the video.");
 	}
 	try {
-		const resp = await ask(
-			String(videoID),
-			Number(maxWidth),
-			Number(maxHeight)
-		);
+		const resp = await ask("https://www.googleapis.com/youtube/v3/videos", {
+			id: String(videoID),
+			part: "contentDetails,liveStreamingDetails,localizations,player,recordingDetails,snippet,statistics,status,topicDetails",
+			maxWidth: String(maxWidth),
+			maxHeight: String(maxHeight),
+		});
+
 		const videoDetails: VideoListDetails = await resp.json();
 
 		if (!videoDetails?.pageInfo?.totalResults)
@@ -286,9 +268,12 @@ export default async function handler(
 
 		response.status(200).json({ failed: false, details: videoDetails });
 	} catch (error) {
-		const e =
-			String(error) ??
-			`Failed to retrieve the details for the video ${videoID}`;
-		letThemKnow(response, e);
+		letThemKnow(
+			response,
+			sendError(
+				error,
+				`Failed to retrieve the details for the video ${videoID}`
+			)
+		);
 	}
 }

@@ -5,6 +5,8 @@ import { SearchBarForYoutubeVideo } from "@/components/searchBox";
 import Typography from "@mui/material/Typography";
 import headerStyles from "@/styles/header.module.css";
 import { SharedProps } from "@/components/searchBox";
+import GitHubIcon from "@mui/icons-material/GitHub";
+import IconButton from "@mui/material/IconButton";
 
 interface HeaderProps extends SharedProps {
 	textSearched: string;
@@ -50,6 +52,12 @@ export default class Header extends Component<HeaderProps, {}> {
 							className={headerStyles.textField}
 							pocket={this.props.pocket}
 						/>
+						<IconButton
+							target="_blank"
+							href="https://github.com/RahulARanger/yticks"
+						>
+							<GitHubIcon />
+						</IconButton>
 					</Toolbar>
 				</AppBar>
 			</>

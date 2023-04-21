@@ -56,7 +56,7 @@ async function askThem(
 			}
 			if (resp.failed) throw new Error(resp.details);
 			throw new Error(
-				"Unknow Error, please note the steps and let me know"
+				"Unknown Error, please note the steps and let me know"
 			);
 		}
 		return response.json();
