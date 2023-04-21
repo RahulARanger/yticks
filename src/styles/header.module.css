@@ -1,13 +1,13 @@
 .centerAppBar,
 .topAppBar {
-	backdrop-filter: "blur(20px)";
-	background-color: transparent;
-	transition: all 0.5s ease-in-out;
+	backdrop-filter: blur(20px);
+	background-color: transparent !important;
+	transition: all 0.5s ease-in-out !important;
 }
 
 .centerAppBar {
-	position: relative;
-	top: 45%;
+	position: relative !important;
+	top: 45% !important;
 }
 
 .toolbar {
@@ -22,5 +22,5 @@
 }
 
 .topAppBar {
-	position: sticky;
+	position: sticky !important;
 }
