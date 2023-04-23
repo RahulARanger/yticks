@@ -13,7 +13,7 @@ import Chip from "@mui/material/Chip";
 import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import videoPlayerStyles from "@/styles/videoPlayer.module.css";
-import { askVideo } from "../helper/ask";
+import { AskVideo } from "../helper/ask";
 import Alert from "@mui/material/Alert";
 import { ExpectedVideoDetails } from "@/pages/api/data/videoById";
 import { Snackbar } from "@mui/material";
@@ -31,7 +31,7 @@ interface VideoPlayerProps extends VideoPlayerSharedProps {
 type miniProps = { details: VideoDetails; formatter: Intl.NumberFormat };
 
 export function EmbeddedVideo(props: VideoPlayerSharedProps) {
-	const { data, isLoading, error } = askVideo<ExpectedVideoDetails>(
+	const { data, isLoading, error } = AskVideo<ExpectedVideoDetails>(
 		props.videoID
 	);
 	if (isLoading)
@@ -122,16 +122,20 @@ export function PureVideoSummary(props: miniProps) {
 						/>
 					</AccordionSummary>
 					<AccordionDetails>
-						{
-							snippet?.tags?.length ? (
-								<>
-									<Typography variant="body1">Tags:</Typography>
-									<Typography variant='body2'>{snippet.tags.map((tag, index) => <YoutubeHashTag tag={tag} key={index} />)}</Typography>
-									<hr />
-									<br />
-								</>) :
-								<></>
-						}
+						{snippet?.tags?.length ? (
+							<>
+								<Typography variant="body1">Tags:</Typography>
+								<Typography variant="body2">
+									{snippet.tags.map((tag, index) => (
+										<YoutubeHashTag tag={tag} key={index} />
+									))}
+								</Typography>
+								<hr />
+								<br />
+							</>
+						) : (
+							<></>
+						)}
 						{snippet.description.split("\n").map((line, index) => {
 							return (
 								<Typography variant="body2" key={index}>
@@ -139,7 +143,6 @@ export function PureVideoSummary(props: miniProps) {
 								</Typography>
 							);
 						})}
-
 					</AccordionDetails>
 				</Accordion>
 			</Box>
@@ -148,7 +151,7 @@ export function PureVideoSummary(props: miniProps) {
 }
 
 export function VideoSummary(props: VideoPlayerProps) {
-	const { data, isLoading, error } = askVideo<ExpectedVideoDetails>(
+	const { data, isLoading, error } = AskVideo<ExpectedVideoDetails>(
 		props.videoID
 	);
 	if (isLoading)

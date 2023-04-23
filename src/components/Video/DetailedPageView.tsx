@@ -16,18 +16,20 @@ export interface FromMainPageWhichAreState {
 
 export interface DetailedPageViewRelatedProps
 	extends FromMainPageWhichAreProps,
-	FromMainPageWhichAreState { }
+		FromMainPageWhichAreState {}
 
 interface VideoSummaryState
 	extends VideoPlayerSharedProps,
-	CommentSharedProps { }
+		CommentSharedProps {}
 
 export default class DetailedPageView extends Component<
 	DetailedPageViewRelatedProps,
 	VideoSummaryState
 > {
 	embeddedVideoFrame: RefObject<HTMLDivElement> = createRef();
-	formatter: Intl.NumberFormat = Intl.NumberFormat("en", { notation: "compact" });
+	formatter: Intl.NumberFormat = Intl.NumberFormat("en", {
+		notation: "compact",
+	});
 	state: VideoSummaryState = {
 		videoID: "",
 	};
@@ -49,7 +51,9 @@ export default class DetailedPageView extends Component<
 						videoID={this.props.videoID}
 						formatter={this.formatter}
 					/>
-					<CommentArea videoID={this.props.videoID} formatter={this.formatter}
+					<CommentArea
+						videoID={this.props.videoID}
+						formatter={this.formatter}
 					/>
 				</Stack>
 			</>

@@ -5,27 +5,25 @@ import { hashTag } from "./helper/urls";
 interface DescProps {
 	text: string;
 	variant?:
-	| "button"
-	| "caption"
-	| "h1"
-	| "h2"
-	| "h3"
-	| "h4"
-	| "h5"
-	| "h6"
-	| "inherit"
-	| "subtitle1"
-	| "subtitle2"
-	| "body1"
-	| "body2"
-	| "overline"
-	| undefined;
+		| "button"
+		| "caption"
+		| "h1"
+		| "h2"
+		| "h3"
+		| "h4"
+		| "h5"
+		| "h6"
+		| "inherit"
+		| "subtitle1"
+		| "subtitle2"
+		| "body1"
+		| "body2"
+		| "overline"
+		| undefined;
 }
 
 export function YoutubeHashTag(props: { tag: string }) {
-	return <Link href={hashTag(props.tag)}>
-		{props.tag}&nbsp;
-	</Link>
+	return <Link href={hashTag(props.tag)}>{props.tag}&nbsp;</Link>;
 }
 
 export default function ParseDesc(props: DescProps) {
@@ -33,9 +31,7 @@ export default function ParseDesc(props: DescProps) {
 	const words = props.text.split(" ");
 	const components = words.map(function (word, index) {
 		if (word.startsWith("#")) {
-			return (
-				<YoutubeHashTag tag={word} key={index} />
-			);
+			return <YoutubeHashTag tag={word} key={index} />;
 		}
 
 		if (word.startsWith("http") || word.startsWith("www")) {
@@ -48,6 +44,11 @@ export default function ParseDesc(props: DescProps) {
 		return <span key={index}>{word + " "}</span>;
 	});
 	return (
-		<Typography variant={props.variant ?? "body2"}>{components}</Typography>
+		<Typography
+			variant={props.variant ?? "body2"}
+			sx={{ wordWrap: "word-break" }}
+		>
+			{components}
+		</Typography>
 	);
 }
