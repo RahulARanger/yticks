@@ -87,9 +87,13 @@ export function CommentListItems(props: CommentProps) {
 
 	if (data?.details) {
 		if (data.details?.items?.length)
-			return data.details.items.map((comment) => (
-				<CommentItem comment={comment} key={comment.id} />
-			));
+			return (
+				<>
+					{data.details.items.map((comment) => (
+						<CommentItem comment={comment} key={comment.id} />
+					))}
+				</>
+			);
 		else return <span key={0}>No Comments Found</span>;
 	}
 
