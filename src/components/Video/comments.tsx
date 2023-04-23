@@ -56,7 +56,7 @@ function NameComponent(props: { authorName: string }) {
 	return <Typography variant="subtitle2">{props.authorName}</Typography>;
 }
 
-function CommentAvatorComponent(props: { pfp: string }) {
+function CommentAvatarComponent(props: { pfp: string }) {
 	return <Avatar src={props.pfp} />;
 }
 
@@ -64,7 +64,7 @@ export function CommentItem(props: { comment: CommentThread }) {
 	const topLevelComment = props.comment.snippet.topLevelComment;
 	return (
 		<ListItem key={props.comment.id}>
-			<CommentAvatorComponent
+			<CommentAvatarComponent
 				pfp={topLevelComment.snippet.authorProfileImageUrl}
 			/>
 			<ListItemText

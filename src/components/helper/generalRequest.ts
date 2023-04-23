@@ -42,7 +42,7 @@ export async function askButRead<ExpectedResponse>(
 				);
 			}
 
-			if (resp?.failed) throw new Error(resp?.details);
+			if (resp?.failed) throw new Error(resp?.failed);
 			throw new Error(
 				`Unknown Error, please note the steps and let me know || ${response.statusText} - ${url}	`
 			);

@@ -6,8 +6,9 @@ import ask, {
 	sendError,
 } from "../../../components/helper/generalRequest";
 
-
-export type ExpectedCommentThread = ExpectedDetails<ListCommentThreadResponse | false>
+export type ExpectedCommentThread = ExpectedDetails<
+	ListCommentThreadResponse | false
+>;
 
 export default async function handler(
 	request: NextApiRequest,
@@ -29,8 +30,11 @@ export default async function handler(
 
 		const commentThread: ListCommentThreadResponse = await resp.json();
 
-		if (!commentThread?.pageInfo?.totalResults)
+		if (!commentThread?.pageInfo?.totalResults) {
+			if (commentThread.error?.message)
+				return letThemKnow(response, commentThread.error.message);
 			return letThemKnow(response, "No Results found");
+		}
 
 		response.status(200).json({ failed: false, details: commentThread });
 	} catch (error) {
