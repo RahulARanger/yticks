@@ -26,11 +26,3 @@ export function askCommentThreads<Type>(videoID: string): SWRResponse<Type> {
         }), (url: string) => askButRead<Type>(url)
     )
 }
-
-
-export function isError(data: ExpectedDetails<any> | undefined, error: string | undefined) {
-    return data?.failed || error
-}
-
-export function purifiedThings(data: ExpectedDetails<any> | undefined, error: string | undefined) {
-}

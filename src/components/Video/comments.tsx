@@ -14,8 +14,6 @@ import { Typography } from "@mui/material";
 import { display } from "@mui/system";
 
 export interface CommentSharedProps {
-	commentCount: number;
-	commentThreads: ListCommentThreadResponse | false
 }
 
 export default class CommentArea extends ListArea<CommentSharedProps> {

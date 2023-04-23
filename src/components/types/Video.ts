@@ -1,5 +1,3 @@
-export type askVideoType = { videoID: string }
-
 interface thumbNail {
     [key: string]: {
         url: string;
