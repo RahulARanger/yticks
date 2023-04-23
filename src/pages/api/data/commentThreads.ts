@@ -1,69 +1,17 @@
+import { ListCommentThreadResponse } from "@/components/types/Comments";
+import { ExpectedDetails } from "@/components/types/response";
 import type { NextApiRequest, NextApiResponse } from "next";
 import ask, {
 	letThemKnow,
 	sendError,
 } from "../../../components/helper/generalRequest";
 
-export interface Comment {
-	kind: "youtube#comment";
-	etag: string;
-	id: string;
-	snippet: {
-		authorDisplayName: string;
-		authorProfileImageUrl: string;
-		authorChannelUrl: string;
-		authorChannelId: {
-			value: string;
-		};
-		channelId?: string;
-		videoId: string;
-		textDisplay: string;
-		textOriginal: string;
-		parentId?: string;
-		canRate: boolean;
-		viewerRating: string;
-		likeCount: number;
-		moderationStatus?: string;
-		publishedAt: string;
-		updatedAt: string;
-	};
-}
 
-export interface CommentThread {
-	kind: "youtube#commentThread";
-	etag: string;
-	id: string;
-	snippet: {
-		channelId?: string;
-		videoId: string;
-		topLevelComment: Comment;
-		canReply: boolean;
-		totalReplyCount: number;
-		isPublic: boolean;
-	};
-	replies?: {
-		comments: Array<Comment>;
-	};
-}
-
-export interface ListCommentThreadResponse {
-	kind: "youtube#commentThreadListResponse";
-	etag: string;
-	nextPageToken: string;
-	pageInfo: {
-		totalResults: number;
-		resultsPerPage: number;
-	};
-	items: Array<CommentThread>;
-}
-export interface ExpectedCommentThreadDetails {
-	failed: boolean;
-	details: ListCommentThreadResponse | string;
-}
+export type ExpectedCommentThread = ExpectedDetails<ListCommentThreadResponse | false>
 
 export default async function handler(
 	request: NextApiRequest,
-	response: NextApiResponse<ExpectedCommentThreadDetails>
+	response: NextApiResponse<ExpectedCommentThread>
 ) {
 	const { videoID } = request.query;
 

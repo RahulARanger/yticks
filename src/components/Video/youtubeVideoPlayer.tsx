@@ -14,7 +14,7 @@ import Chip from "@mui/material/Chip";
 import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import videoPlayerStyles from "@/styles/videoPlayer.module.css";
-import { askVideo } from "../helper/ask";
+import { askVideo, isError } from "../helper/ask";
 import Alert from "@mui/material/Alert";
 import { ExpectedVideoDetails } from "@/pages/api/data/videoById";
 import { askVideoType } from "../types/Video";
@@ -43,7 +43,7 @@ export function EmbeddedVideo(props: askVideoType) {
 		style={{ margin: 0 }}
 		variant="rounded"
 	/>
-	if (data?.failed || error || typeof data?.details === "string" || !data?.details) return <Alert color="error" severity="error" title="error">{error?.toString() || "Failed to display the requested video"}</Alert>
+	if (!data || typeof data?.details === "string" || isError(data, error)) return <Alert color="error" severity="error" title="error">{error?.toString() || "Failed to display the requested video"}</Alert>
 
 	return <div
 		dangerouslySetInnerHTML={{
@@ -56,6 +56,7 @@ export function EmbeddedVideo(props: askVideoType) {
 export function VideoSummary(props: askVideoType) {
 	const { data, isLoading, error } = askVideo<ExpectedVideoDetails>(props.videoID)
 	if (isLoading) return <Skeleton height="69px" animation="wave" variant="rectangular" />
+	if (!data || typeof data?.details === "string")
 }
 
 export default class VideoEmbedded extends Component<VideoPlayerSharedProps> {

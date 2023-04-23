@@ -1,6 +1,7 @@
 import { urlWithArgs } from "./generalRequest"
 import useSWRImmutable from "swr/immutable";
 import { askButRead } from "./generalRequest";
+import { ExpectedDetails } from "../types/response";
 
 const isMock = process.env.IS_DEV ? "mock" : "data"
 
@@ -24,4 +25,12 @@ export function askCommentThreads<Type>(videoID: string): SWRResponse<Type> {
             videoID: videoID
         }), (url: string) => askButRead<Type>(url)
     )
+}
+
+
+export function isError(data: ExpectedDetails<any> | undefined, error: string | undefined) {
+    return data?.failed || error
+}
+
+export function purifiedThings(data: ExpectedDetails<any> | undefined, error: string | undefined) {
 }

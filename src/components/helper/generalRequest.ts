@@ -1,5 +1,6 @@
 import type { NextApiResponse } from "next";
 import { env } from "process";
+import { ExpectedDetails } from "../types/response";
 
 type askArgs = { [key: string]: string };
 
@@ -51,12 +52,12 @@ export async function askButRead<ExpectedResponse>(
 }
 
 export function letThemKnow(
-	response: NextApiResponse<{ failed: boolean; details: string }>,
+	response: NextApiResponse<ExpectedDetails<false>>,
 	error: string
 ) {
 	response.status(500).json({
-		failed: true,
-		details: error,
+		failed: error,
+		details: false,
 	});
 }
 
