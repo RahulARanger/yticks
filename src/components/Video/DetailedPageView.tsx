@@ -49,7 +49,7 @@ export default class DetailedPageView extends Component<
 						videoID={this.props.videoID}
 						formatter={this.formatter}
 					/>
-					<CommentArea
+					<CommentArea videoID={this.props.videoID} formatter={this.formatter}
 					/>
 				</Stack>
 			</>

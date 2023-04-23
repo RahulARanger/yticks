@@ -8,7 +8,6 @@ import Stack from "@mui/material/Stack";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import ChildFriendlyIcon from "@mui/icons-material/ChildFriendly";
 import Tooltip from "@mui/material/Tooltip";
 import Chip from "@mui/material/Chip";
 import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt";
@@ -19,7 +18,7 @@ import Alert from "@mui/material/Alert";
 import { ExpectedVideoDetails } from "@/pages/api/data/videoById";
 import { Snackbar } from "@mui/material";
 import { VideoDetails } from "../types/Video";
-import ParseDesc from "../parseDesc";
+import ParseDesc, { YoutubeHashTag } from "../parseDesc";
 
 export interface VideoPlayerSharedProps {
 	videoID: string;
@@ -123,6 +122,16 @@ export function PureVideoSummary(props: miniProps) {
 						/>
 					</AccordionSummary>
 					<AccordionDetails>
+						{
+							snippet?.tags?.length ? (
+								<>
+									<Typography variant="body1">Tags:</Typography>
+									<Typography variant='body2'>{snippet.tags.map((tag, index) => <YoutubeHashTag tag={tag} key={index} />)}</Typography>
+									<hr />
+									<br />
+								</>) :
+								<></>
+						}
 						{snippet.description.split("\n").map((line, index) => {
 							return (
 								<Typography variant="body2" key={index}>
@@ -130,6 +139,7 @@ export function PureVideoSummary(props: miniProps) {
 								</Typography>
 							);
 						})}
+
 					</AccordionDetails>
 				</Accordion>
 			</Box>
@@ -168,31 +178,6 @@ export function VideoSummary(props: VideoPlayerProps) {
 }
 
 export default class VideoEmbedded extends Component<VideoPlayerProps> {
-	renderChannelDetails() {
-		if (!this.props.channelID) return <Skeleton height={50} />;
-		return (
-			<>
-				<Link fontSize={"2"} href={this.getChannelURL()}>
-					{this.props.channelName}
-				</Link>
-			</>
-		);
-	}
-
-	renderChips(): ReactNode {
-		return this.props.tags.map(function (tag) {
-			return (
-				<Fragment key={tag}>
-					<Chip
-						label={tag}
-						size="small"
-						sx={{ margin: "3px" }}
-					></Chip>
-				</Fragment>
-			);
-		});
-	}
-
 	render(): ReactNode {
 		return (
 			<>

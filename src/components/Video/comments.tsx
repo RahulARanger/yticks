@@ -9,35 +9,92 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import CommentIcon from "@mui/icons-material/Comment";
 import { ReactNode, Fragment } from "react";
-import { CommentThread, ListCommentThreadResponse } from "@/pages/api/data/commentThreads";
-import { Typography } from "@mui/material";
-import { display } from "@mui/system";
+import Typography from "@mui/material/Typography";
+import { askCommentThreads, askVideo } from "../helper/ask";
+import { ExpectedVideoDetails } from "@/pages/api/data/videoById";
+import { CommentThread } from "../types/Comments";
+import { ExpectedCommentThread } from "@/pages/api/data/commentThreads";
+import Alert from "@mui/material/Alert";
+import { Avatar } from "@mui/material";
+import Image from "next/image";
 
 export interface CommentSharedProps {
+	videoID: string
 }
 
-export default class CommentArea extends ListArea<CommentSharedProps> {
+interface CommentProps extends CommentSharedProps {
+	formatter: Intl.NumberFormat
+}
+
+export function CommentCount(props: CommentProps) {
+	const { data, error } = askVideo<ExpectedVideoDetails>(props.videoID);
+
+
+	if (data?.details) {
+		const format = Intl.NumberFormat();
+		const commentCount = Number(data.details.items[0].statistics.commentCount) ?? 0;
+
+		return <Tooltip
+			title={`Comment Count: ${format.format(
+				commentCount
+			)}`}
+		>
+			<Chip
+				label={props.formatter.format(commentCount)}
+				icon={<CommentIcon />}
+				size="small"
+				sx={{ p: "2px" }}
+			/>
+		</Tooltip>
+	}
+	return <Tooltip title={data?.failed || error}><span>--</span></Tooltip>
+}
+
+function NameComponent(props: { authorName: string }) {
+	return <Typography variant="subtitle2">{props.authorName}</Typography>
+}
+
+function CommentAvatorComponent(props: { pfp: string }) {
+	return <Avatar src={props.pfp} />
+}
+
+export function CommentItem(props: { comment: CommentThread }) {
+	const topLevelComment = props.comment.snippet.topLevelComment;
+	return (
+		<ListItem key={props.comment.id}>
+			<CommentAvatorComponent pfp={topLevelComment.snippet.authorProfileImageUrl} />
+			<ListItemText sx={{ ml: "10px" }} primary={<NameComponent authorName={topLevelComment.snippet.authorDisplayName} />} secondary={topLevelComment.snippet.textOriginal}></ListItemText>
+		</ListItem>
+	)
+}
+
+
+export function CommentListItems(props: CommentProps) {
+	const { data, error, isLoading } = askCommentThreads<ExpectedCommentThread>(props.videoID);
+
+	if (data?.details) {
+		if (data.details?.items?.length) return data.details.items.map((comment) => <CommentItem comment={comment} key={comment.id} />)
+		else return <span key={0}>No Comments Found</span>
+	}
+
+	return <Stack justifyContent={"center"} alignItems="center" sx={{ height: "100%" }} key={0}>
+		{isLoading ? <span>Loading...</span> : <Alert title="Error" severity="error" color="error">{data?.failed || error}</Alert>}
+	</Stack>
+}
+
+
+export default class CommentArea extends ListArea<CommentProps> {
 	title: string = "Comments";
 	maxWidth: string = "500px"
 
 	header() {
-		const format = new Intl.NumberFormat();
 		return (
 			<Stack
 				flexDirection={"row"}
 				justifyContent={"center"}
 				alignContent="center"
 			>
-				<Tooltip
-					title={`Comment Count: ${format.format(
-						this.props.commentCount
-					)}`}
-				>
-					<Chip
-						label={this.props.commentCount}
-						icon={<CommentIcon />}
-					/>
-				</Tooltip>
+				<CommentCount formatter={this.props.formatter} videoID={this.props.videoID} />
 			</Stack>
 		);
 	}
@@ -78,9 +135,6 @@ export default class CommentArea extends ListArea<CommentSharedProps> {
 	}
 
 	renderListItems(): ReactNode {
-		if (!this.props.commentThreads) return <>Loading</>
-		return this.props.commentThreads.items.map((commentThread) => {
-			return this.commentItem(commentThread);
-		})
+		return <CommentListItems formatter={this.props.formatter} videoID={this.props.videoID} />
 	}
 }
