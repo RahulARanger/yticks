@@ -13,7 +13,7 @@ import Script from "next/script";
 
 interface DetailedVideoViewState
 	extends VideoSettings,
-	FromMainPageWhichAreState {
+		FromMainPageWhichAreState {
 	openSettings: boolean;
 }
 
@@ -44,9 +44,9 @@ export default class DetailedVideoView extends Component<
 	render(): ReactNode {
 		return (
 			<>
+				<Script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js" />
 				<Head>
 					<title>{"Search a Video"}</title>
-					<Script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js" />
 				</Head>
 				<Header
 					textSearched={this.state.videoID}
