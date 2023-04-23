@@ -1,0 +1,6 @@
+.frame iframe {
+	height: 400px !important;
+	width: 95vw !important;
+	max-width: 710px;
+	min-width: 250px;
+}

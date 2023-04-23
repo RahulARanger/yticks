@@ -2,7 +2,17 @@ const constants = require("next/constants")
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true
+  reactStrictMode: true,
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: 'i.ytimg.com',
+        port: '',
+        pathname: '/vi/**'
+      }
+    ]
+  }
 }
 
 module.exports = (phase, { defaultConfig }) => {
@@ -14,5 +24,5 @@ module.exports = (phase, { defaultConfig }) => {
     extras = withNextBundleAnalyzer(nextConfig);
   }
 
-  return { ...nextConfig, ...defaultConfig, ...extras };
+  return { ...defaultConfig, ...extras, ...nextConfig };
 }

@@ -37,3 +37,6 @@ next-env.d.ts
 package-lock.json
 package-lock.json
 *.env
+
+# mock data apis
+src/pages/api/mock/*.ts

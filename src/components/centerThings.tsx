@@ -1,18 +1,16 @@
 import Box from "@mui/material/Box";
-import { Component, ReactNode} from "react";
+import { Component, ReactNode } from "react";
 import Stack from "@mui/material/Stack";
-
-
 
 interface PropsForCenterThings {
 	width?: string;
-    children?: ReactNode
+	children?: ReactNode;
 }
 
-export class CenterThings extends Component<PropsForCenterThings> {
+export default class CenterThings extends Component<PropsForCenterThings> {
 	render(): ReactNode {
-        const {children} = this.props;
-        
+		const { children } = this.props;
+
 		return (
 			<Stack
 				direction="row"
@@ -28,7 +26,7 @@ export class CenterThings extends Component<PropsForCenterThings> {
 						height: "25vh",
 					}}
 				>
-                    {children}
+					{children}
 				</Box>
 			</Stack>
 		);

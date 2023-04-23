@@ -1,12 +1,15 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import ask, { letThemKnow, sendError } from "../../helper/generalRequest";
+import ask, {
+	letThemKnow,
+	sendError,
+} from "../../../components/helper/generalRequest";
 
 export interface RelatedVideo {
 	id: {
 		kind: string;
 		videoId: string;
-		channelId: string;
-		playlistId: string;
+		channelId?: string;
+		playlistId?: string;
 	};
 	snippet: {
 		publishedAt: string;
@@ -34,7 +37,7 @@ export interface RelatedVideoDetails {
 	items: Array<RelatedVideo>;
 	nextPageToken: string;
 	prevPageToken?: string;
-	regionCode: string;
+	regionCode?: string;
 	pageInfo: {
 		totalResults: number;
 		resultsPerPage: number;
@@ -63,8 +66,8 @@ export default async function handler(
 		});
 		const related_things: RelatedVideoDetails = await resp.json();
 
-		if (!related_things.items.length)
-			return letThemKnow(response, "No Results found");
+		if (!related_things.items?.length)
+			return letThemKnow(response, "No Related Videos found");
 
 		response.status(200).json({ failed: false, details: related_things });
 	} catch (error) {

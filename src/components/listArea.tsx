@@ -20,6 +20,8 @@ export default abstract class ListArea<PROPs> extends Component<PROPs> {
 
 	abstract header(): ReactNode;
 
+	abstract renderListItems(): ReactNode;
+
 	relatedVideoArea() {
 		return (
 			<Paper elevation={3} sx={{ flexGrow: 1, height: "100%" }}>
@@ -40,7 +42,9 @@ export default abstract class ListArea<PROPs> extends Component<PROPs> {
 							</Stack>
 						</ListSubheader>
 					}
-				></List>
+				>
+					{this.renderListItems()}
+				</List>
 			</Paper>
 		);
 	}

@@ -1,38 +1,36 @@
 import type { NextApiResponse } from "next";
+import { env } from "process";
 
 type askArgs = { [key: string]: string };
+
+export function urlWithArgs(url: string, args: askArgs): string {
+	const patchedURL = new URLSearchParams();
+
+	for (let key of Object.keys(args)) {
+		patchedURL.set(key, args[key]);
+	}
+	return url + "?" + decodeURIComponent(patchedURL.toString());
+}
+
 export default async function ask(
 	url: string,
 	args: askArgs
 ): Promise<Response> {
 	if (!process.env.API_KEY) throw new Error("Missing API Key");
-
-	const patchedURL = new URLSearchParams();
-	patchedURL.set("key", process.env.API_KEY);
-
-	for (let key of Object.keys(args)) {
-		patchedURL.set(key, args[key]);
-	}
-	return fetch(url + "?" + decodeURIComponent(patchedURL.toString()));
+	return fetch(urlWithArgs(url, { key: process.env.API_KEY, ...args }));
 }
 
 export async function requestFromUser(
 	url: string,
 	args: askArgs
 ): Promise<Response> {
-	const patchedURL = new URLSearchParams();
-
-	for (let key of Object.keys(args)) {
-		patchedURL.set(key, args[key]);
-	}
-	return fetch(url + "?" + decodeURIComponent(patchedURL.toString()));
+	return fetch(urlWithArgs(url, args));
 }
 
 export async function askButRead<ExpectedResponse>(
-	url: string,
-	args: askArgs
+	url: string
 ): Promise<ExpectedResponse> {
-	return requestFromUser(url, args).then(async function (response) {
+	return fetch(url).then(async function (response) {
 		let resp;
 		if (!response.ok) {
 			try {

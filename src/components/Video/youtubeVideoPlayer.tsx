@@ -13,6 +13,11 @@ import Tooltip from "@mui/material/Tooltip";
 import Chip from "@mui/material/Chip";
 import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import videoPlayerStyles from "@/styles/videoPlayer.module.css";
+import { askVideo } from "../helper/ask";
+import Alert from "@mui/material/Alert";
+import { ExpectedVideoDetails } from "@/pages/api/data/videoById";
+import { askVideoType } from "../types/Video";
 
 export interface VideoPlayerSharedProps {
 	title: string;
@@ -25,6 +30,32 @@ export interface VideoPlayerSharedProps {
 	description: string;
 	tags: Array<string>;
 	childFriendly: boolean;
+	videoID: string;
+}
+
+
+
+export function EmbeddedVideo(props: askVideoType) {
+	const { data, isLoading, error } = askVideo<ExpectedVideoDetails>(props.videoID)
+	if (isLoading) return <Skeleton
+		height="100%"
+		animation="wave"
+		style={{ margin: 0 }}
+		variant="rounded"
+	/>
+	if (data?.failed || error || typeof data?.details === "string" || !data?.details) return <Alert color="error" severity="error" title="error">{error?.toString() || "Failed to display the requested video"}</Alert>
+
+	return <div
+		dangerouslySetInnerHTML={{
+			__html: data.details.items[0].player.embedHtml,
+		}}
+		className={videoPlayerStyles.frame}
+	></div>
+}
+
+export function VideoSummary(props: askVideoType) {
+	const { data, isLoading, error } = askVideo<ExpectedVideoDetails>(props.videoID)
+	if (isLoading) return <Skeleton height="69px" animation="wave" variant="rectangular" />
 }
 
 export default class VideoEmbedded extends Component<VideoPlayerSharedProps> {
@@ -34,33 +65,18 @@ export default class VideoEmbedded extends Component<VideoPlayerSharedProps> {
 		return `https://www.youtube.com/channel/${this.props.channelID}`;
 	}
 
-	renderEmbeddedVideo() {
-		return (
-			<>
-				<Box
-					sx={{
-						minWidth: "300px",
-						height: "400px",
-						flexGrow: 1,
-					}}
-				>
-					{this.props.frame ? (
-						<div
-							dangerouslySetInnerHTML={{
-								__html: this.props.frame,
-							}}
-						></div>
-					) : (
-						<Skeleton
-							height="100%"
-							animation="wave"
-							style={{ margin: 0 }}
-							variant="rounded"
-						/>
-					)}
-				</Box>
-			</>
-		);
+	_renderEmbeddedVideo() {
+		return <Stack
+			sx={{
+				minWidth: "300px",
+				height: "400px",
+				flexGrow: 1,
+				backdropFilter: "blur(20px)",
+			}} alignItems="center" justifyContent="center"
+		>
+			<EmbeddedVideo videoID={this.props.videoID} />
+		</Stack >
+
 	}
 
 	renderChannelDetails() {
@@ -158,12 +174,12 @@ export default class VideoEmbedded extends Component<VideoPlayerSharedProps> {
 						</AccordionSummary>
 						<AccordionDetails>
 							{this.props.tags.length ? (
-								<Typography variant="body1">
+								<>
 									<Typography variant="h6">Tags:</Typography>
 									<hr />
 									{this.renderChips()}
 									<hr />
-								</Typography>
+								</>
 							) : (
 								<></>
 							)}
@@ -179,11 +195,15 @@ export default class VideoEmbedded extends Component<VideoPlayerSharedProps> {
 		);
 	}
 
+	_renderVideoSummary() {
+		return <Skeleton></Skeleton>
+	}
+
 	render(): ReactNode {
 		return (
 			<>
 				<Box>
-					{[this.renderEmbeddedVideo(), this.renderVideoSummary()]}
+					{[this._renderEmbeddedVideo(), this.renderVideoSummary()]}
 				</Box>
 			</>
 		);

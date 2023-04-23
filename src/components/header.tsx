@@ -7,10 +7,12 @@ import headerStyles from "@/styles/header.module.css";
 import { SharedProps } from "@/components/searchBox";
 import GitHubIcon from "@mui/icons-material/GitHub";
 import IconButton from "@mui/material/IconButton";
+import SettingsIcon from "@mui/icons-material/Settings";
 
 interface HeaderProps extends SharedProps {
 	textSearched: string;
 	title: string;
+	onSettingsRequest: () => void;
 }
 
 export default class Header extends Component<HeaderProps, {}> {
@@ -57,6 +59,12 @@ export default class Header extends Component<HeaderProps, {}> {
 							href="https://github.com/RahulARanger/yticks"
 						>
 							<GitHubIcon />
+						</IconButton>
+						<IconButton
+							color="primary"
+							onClick={this.props.onSettingsRequest}
+						>
+							<SettingsIcon />
 						</IconButton>
 					</Toolbar>
 				</AppBar>
