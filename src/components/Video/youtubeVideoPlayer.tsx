@@ -20,15 +20,25 @@ import { Snackbar } from "@mui/material";
 import { VideoDetails } from "../types/Video";
 import ParseDesc, { YoutubeHashTag } from "../parseDesc";
 import { getChannelURL } from "../helper/urls";
-import Timeline from '@mui/lab/Timeline';
-import TimelineItem from '@mui/lab/TimelineItem';
-import TimelineSeparator from '@mui/lab/TimelineSeparator';
-import TimelineConnector from '@mui/lab/TimelineConnector';
-import TimelineContent from '@mui/lab/TimelineContent';
-import TimelineOppositeContent from '@mui/lab/TimelineOppositeContent';
-import TimelineDot from '@mui/lab/TimelineDot';
-import { TimelineOppositeContentProps } from "@mui/lab";
-import { timeAGO } from "../types/hydrate";
+import Timeline from "@mui/lab/Timeline";
+import TimelineItem from "@mui/lab/TimelineItem";
+import TimelineSeparator from "@mui/lab/TimelineSeparator";
+import TimelineConnector from "@mui/lab/TimelineConnector";
+import TimelineContent, {
+	TimelineContentProps,
+} from "@mui/lab/TimelineContent";
+import TimelineOppositeContent, {
+	TimelineOppositeContentProps,
+} from "@mui/lab/TimelineOppositeContent";
+import TimelineDot from "@mui/lab/TimelineDot";
+import dayjs from "dayjs";
+import PublishIcon from "@mui/icons-material/Publish";
+import relativeTime from "dayjs/plugin/relativeTime";
+import ScheduleIcon from "@mui/icons-material/Schedule";
+import CallEndIcon from "@mui/icons-material/CallEnd";
+import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+
+dayjs.extend(relativeTime);
 
 export interface VideoPlayerSharedProps {
 	videoID: string;
@@ -41,9 +51,7 @@ interface VideoPlayerProps extends VideoPlayerSharedProps {
 type miniProps = { details: VideoDetails; formatter: Intl.NumberFormat };
 
 export function EmbeddedVideo(props: VideoPlayerSharedProps) {
-	const { data, isLoading, error } = AskVideo(
-		props.videoID
-	);
+	const { data, isLoading, error } = AskVideo(props.videoID);
 	if (isLoading)
 		return (
 			<Skeleton
@@ -103,33 +111,79 @@ function StatsBadge(props: miniProps) {
 	);
 }
 
-
-export function DateTimeLineItemLeftOne(props: TimelineOppositeContentProps & { itemdate: string | undefined }) {
-	if (!props.itemdate) return <></>
-	const parsedDate = new Date(props.itemdate);
-	return <TimelineOppositeContent {...props}>
-		<Typography>{parsedDate.toLocaleString()}</Typography>
-		<Typography variant="caption" className={timeAGO}>Some days ago</Typography>
-	</TimelineOppositeContent>
+export function TimelineItemWithTime(
+	props: TimelineOppositeContentProps & {
+		date: string | undefined;
+		icon: ReactNode;
+		text: string;
+	}
+) {
+	if (!props.date) return <></>;
+	const parsedDate = new Date(props.date);
+	return (
+		<TimelineItem>
+			<TimelineOppositeContent {...props}>
+				<Typography>{parsedDate.toLocaleString()}</Typography>
+				<Typography variant="caption">
+					{dayjs(parsedDate).fromNow()}
+				</Typography>
+			</TimelineOppositeContent>
+			<TimelineSeparator>
+				<TimelineConnector />
+				<TimelineDot color="primary" variant="outlined">
+					{props.icon}
+				</TimelineDot>
+				<TimelineConnector />
+			</TimelineSeparator>
+			<TimelineContentOnRight text={props.text} />
+		</TimelineItem>
+	);
 }
 
-
+export function TimelineContentOnRight(
+	props: TimelineContentProps & { text: string }
+) {
+	return (
+		<TimelineContent sx={{ my: "auto" }} {...props}>
+			<Typography variant="subtitle1">{props.text}</Typography>
+		</TimelineContent>
+	);
+}
 
 function VideoTimeline(props: { details: VideoDetails }) {
-	const publishedDate = props.details.snippet.publishedAt
+	const publishedDate = props.details.snippet.publishedAt;
 	const scheduled = props.details?.liveStreamingDetails?.scheduledStartTime;
-	const actualStartTime = props.details?.liveStreamingDetails?.actualStartTime;
+	const actualStartTime =
+		props.details?.liveStreamingDetails?.actualStartTime;
 	const actualEndTime = props.details?.liveStreamingDetails?.actualEndTime;
 
 	return (
 		<>
 			<Timeline>
-				<DateTimeLineItemLeftOne itemdate={props.details.snippet.publishedAt}></DateTimeLineItemLeftOne>
+				<TimelineItemWithTime
+					date={scheduled}
+					icon={<ScheduleIcon />}
+					text={"Scheduled Live Stream"}
+				/>
+				<TimelineItemWithTime
+					date={actualStartTime}
+					icon={<PlayArrowIcon />}
+					text={"Live Steam Started"}
+				/>
+				<TimelineItemWithTime
+					date={publishedDate}
+					icon={<PublishIcon />}
+					text={"Published Date"}
+				/>
+				<TimelineItemWithTime
+					date={actualEndTime}
+					icon={<CallEndIcon />}
+					text={"Live Steam Ended"}
+				/>
 			</Timeline>
 		</>
-	)
+	);
 }
-
 
 export function PureVideoSummary(props: miniProps) {
 	const snippet = props.details.snippet;
@@ -144,7 +198,9 @@ export function PureVideoSummary(props: miniProps) {
 				<Typography gutterBottom variant="h5" mt="10px">
 					{snippet.title}
 				</Typography>
-				<Link variant="caption" href={getChannelURL(snippet.channelId)}>{snippet.channelTitle}</Link>
+				<Link variant="caption" href={getChannelURL(snippet.channelId)}>
+					{snippet.channelTitle}
+				</Link>
 				<Accordion
 					sx={{ my: "12px" }}
 					className={videoPlayerStyles.description}
@@ -166,7 +222,9 @@ export function PureVideoSummary(props: miniProps) {
 								<Typography variant="body1">Tags:</Typography>
 								<Typography variant="body2">
 									{snippet.tags.map((tag, index) => (
-										<Fragment key={index}><YoutubeHashTag tag={tag} /> &nbsp;</Fragment>
+										<Fragment key={index}>
+											<YoutubeHashTag tag={tag} /> &nbsp;
+										</Fragment>
 									))}
 								</Typography>
 								<hr />
@@ -191,9 +249,7 @@ export function PureVideoSummary(props: miniProps) {
 }
 
 export function VideoSummary(props: VideoPlayerProps) {
-	const { data, isLoading, error } = AskVideo(
-		props.videoID
-	);
+	const { data, isLoading, error } = AskVideo(props.videoID);
 	if (isLoading)
 		return (
 			<Skeleton height="69px" animation="wave" variant="rectangular" />
@@ -219,7 +275,6 @@ export function VideoSummary(props: VideoPlayerProps) {
 		</Snackbar>
 	);
 }
-
 
 export default class VideoEmbedded extends Component<VideoPlayerProps> {
 	render(): ReactNode {

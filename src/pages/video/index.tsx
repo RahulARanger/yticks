@@ -54,6 +54,7 @@ export default class DetailedVideoView extends Component<
 		return (
 			<>
 				<Script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js" />
+				<Script src="https://cdn.jsdelivr.net/npm/dayjs@1/plugin/relativeTime.js" />
 				<Head>
 					<TitleFromVideo videoID={this.state.videoID} />
 				</Head>
