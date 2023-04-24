@@ -28,7 +28,7 @@ interface CommentProps extends CommentSharedProps {
 }
 
 export function CommentCount(props: CommentProps) {
-	const { data, error } = AskVideo<ExpectedVideoDetails>(props.videoID);
+	const { data, error } = AskVideo(props.videoID);
 
 	if (data?.details) {
 		const format = Intl.NumberFormat();
@@ -83,7 +83,7 @@ export function CommentItem(props: { comment: CommentThread }) {
 }
 
 export function CommentListItems(props: CommentProps) {
-	const { data, error, isLoading } = AskCommentThreads<ExpectedCommentThread>(
+	const { data, error, isLoading } = AskCommentThreads(
 		props.videoID
 	);
 

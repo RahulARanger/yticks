@@ -19,6 +19,16 @@ import { ExpectedVideoDetails } from "@/pages/api/data/videoById";
 import { Snackbar } from "@mui/material";
 import { VideoDetails } from "../types/Video";
 import ParseDesc, { YoutubeHashTag } from "../parseDesc";
+import { getChannelURL } from "../helper/urls";
+import Timeline from '@mui/lab/Timeline';
+import TimelineItem from '@mui/lab/TimelineItem';
+import TimelineSeparator from '@mui/lab/TimelineSeparator';
+import TimelineConnector from '@mui/lab/TimelineConnector';
+import TimelineContent from '@mui/lab/TimelineContent';
+import TimelineOppositeContent from '@mui/lab/TimelineOppositeContent';
+import TimelineDot from '@mui/lab/TimelineDot';
+import { TimelineOppositeContentProps } from "@mui/lab";
+import { timeAGO } from "../types/hydrate";
 
 export interface VideoPlayerSharedProps {
 	videoID: string;
@@ -31,7 +41,7 @@ interface VideoPlayerProps extends VideoPlayerSharedProps {
 type miniProps = { details: VideoDetails; formatter: Intl.NumberFormat };
 
 export function EmbeddedVideo(props: VideoPlayerSharedProps) {
-	const { data, isLoading, error } = AskVideo<ExpectedVideoDetails>(
+	const { data, isLoading, error } = AskVideo(
 		props.videoID
 	);
 	if (isLoading)
@@ -93,6 +103,34 @@ function StatsBadge(props: miniProps) {
 	);
 }
 
+
+export function DateTimeLineItemLeftOne(props: TimelineOppositeContentProps & { itemdate: string | undefined }) {
+	if (!props.itemdate) return <></>
+	const parsedDate = new Date(props.itemdate);
+	return <TimelineOppositeContent {...props}>
+		<Typography>{parsedDate.toLocaleString()}</Typography>
+		<Typography variant="caption" className={timeAGO}>Some days ago</Typography>
+	</TimelineOppositeContent>
+}
+
+
+
+function VideoTimeline(props: { details: VideoDetails }) {
+	const publishedDate = props.details.snippet.publishedAt
+	const scheduled = props.details?.liveStreamingDetails?.scheduledStartTime;
+	const actualStartTime = props.details?.liveStreamingDetails?.actualStartTime;
+	const actualEndTime = props.details?.liveStreamingDetails?.actualEndTime;
+
+	return (
+		<>
+			<Timeline>
+				<DateTimeLineItemLeftOne itemdate={props.details.snippet.publishedAt}></DateTimeLineItemLeftOne>
+			</Timeline>
+		</>
+	)
+}
+
+
 export function PureVideoSummary(props: miniProps) {
 	const snippet = props.details.snippet;
 
@@ -106,6 +144,7 @@ export function PureVideoSummary(props: miniProps) {
 				<Typography gutterBottom variant="h5" mt="10px">
 					{snippet.title}
 				</Typography>
+				<Link variant="caption" href={getChannelURL(snippet.channelId)}>{snippet.channelTitle}</Link>
 				<Accordion
 					sx={{ my: "12px" }}
 					className={videoPlayerStyles.description}
@@ -127,7 +166,7 @@ export function PureVideoSummary(props: miniProps) {
 								<Typography variant="body1">Tags:</Typography>
 								<Typography variant="body2">
 									{snippet.tags.map((tag, index) => (
-										<YoutubeHashTag tag={tag} key={index} />
+										<Fragment key={index}><YoutubeHashTag tag={tag} /> &nbsp;</Fragment>
 									))}
 								</Typography>
 								<hr />
@@ -145,13 +184,14 @@ export function PureVideoSummary(props: miniProps) {
 						})}
 					</AccordionDetails>
 				</Accordion>
+				<VideoTimeline details={props.details}></VideoTimeline>
 			</Box>
 		</>
 	);
 }
 
 export function VideoSummary(props: VideoPlayerProps) {
-	const { data, isLoading, error } = AskVideo<ExpectedVideoDetails>(
+	const { data, isLoading, error } = AskVideo(
 		props.videoID
 	);
 	if (isLoading)
@@ -180,6 +220,7 @@ export function VideoSummary(props: VideoPlayerProps) {
 	);
 }
 
+
 export default class VideoEmbedded extends Component<VideoPlayerProps> {
 	render(): ReactNode {
 		return (
@@ -204,5 +245,9 @@ export default class VideoEmbedded extends Component<VideoPlayerProps> {
 				</Box>
 			</>
 		);
+	}
+
+	componentDidMount(): void {
+		console.log("Hi there");
 	}
 }

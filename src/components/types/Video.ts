@@ -205,7 +205,7 @@ export interface VideoDetails {
         ];
         editorSuggestions: Array<string>;
     };
-    liveStreamingDetails: {
+    liveStreamingDetails?: {
         actualStartTime: string;
         actualEndTime: string;
         scheduledStartTime: string;

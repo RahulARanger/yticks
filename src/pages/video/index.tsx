@@ -10,10 +10,17 @@ import Settings, {
 	VideoSettings,
 } from "@/components/Video/settings";
 import Script from "next/script";
+import { AskVideo } from "@/components/helper/ask";
+
+export function TitleFromVideo(props: { videoID: string }) {
+	const { data, isLoading } = AskVideo(props.videoID);
+	if (data?.details) return <title>{data.details.items[0].snippet.title}</title>
+	return <title>{isLoading ? "Loading" : "Failed"}</title>
+}
 
 interface DetailedVideoViewState
 	extends VideoSettings,
-		FromMainPageWhichAreState {
+	FromMainPageWhichAreState {
 	openSettings: boolean;
 }
 
@@ -41,12 +48,14 @@ export default class DetailedVideoView extends Component<
 		this.setState({ ...settings });
 	}
 
+
+
 	render(): ReactNode {
 		return (
 			<>
 				<Script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js" />
 				<Head>
-					<title>{"Search a Video"}</title>
+					<TitleFromVideo videoID={this.state.videoID} />
 				</Head>
 				<Header
 					textSearched={this.state.videoID}

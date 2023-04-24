@@ -5,21 +5,21 @@ import { hashTag } from "./helper/urls";
 interface DescProps {
 	text: string;
 	variant?:
-		| "button"
-		| "caption"
-		| "h1"
-		| "h2"
-		| "h3"
-		| "h4"
-		| "h5"
-		| "h6"
-		| "inherit"
-		| "subtitle1"
-		| "subtitle2"
-		| "body1"
-		| "body2"
-		| "overline"
-		| undefined;
+	| "button"
+	| "caption"
+	| "h1"
+	| "h2"
+	| "h3"
+	| "h4"
+	| "h5"
+	| "h6"
+	| "inherit"
+	| "subtitle1"
+	| "subtitle2"
+	| "body1"
+	| "body2"
+	| "overline"
+	| undefined;
 }
 
 export function YoutubeHashTag(props: { tag: string }) {
@@ -46,6 +46,7 @@ export default function ParseDesc(props: DescProps) {
 	return (
 		<Typography
 			variant={props.variant ?? "body2"}
+			component={"span"}
 			sx={{ wordWrap: "word-break" }}
 		>
 			{components}
