@@ -14,13 +14,14 @@ import { AskVideo } from "@/components/helper/ask";
 
 export function TitleFromVideo(props: { videoID: string }) {
 	const { data, isLoading } = AskVideo(props.videoID);
-	if (data?.details) return <title>{data.details.items[0].snippet.title}</title>
-	return <title>{isLoading ? "Loading" : "Failed"}</title>
+	if (data?.details)
+		return <title>{data.details.items[0].snippet.title}</title>;
+	return <title>{isLoading ? "Loading" : "Failed"}</title>;
 }
 
 interface DetailedVideoViewState
 	extends VideoSettings,
-	FromMainPageWhichAreState {
+		FromMainPageWhichAreState {
 	openSettings: boolean;
 }
 
@@ -48,13 +49,9 @@ export default class DetailedVideoView extends Component<
 		this.setState({ ...settings });
 	}
 
-
-
 	render(): ReactNode {
 		return (
 			<>
-				<Script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js" />
-				<Script src="https://cdn.jsdelivr.net/npm/dayjs@1/plugin/relativeTime.js" />
 				<Head>
 					<TitleFromVideo videoID={this.state.videoID} />
 				</Head>

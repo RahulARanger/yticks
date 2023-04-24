@@ -301,8 +301,4 @@ export default class VideoEmbedded extends Component<VideoPlayerProps> {
 			</>
 		);
 	}
-
-	componentDidMount(): void {
-		console.log("Hi there");
-	}
 }
