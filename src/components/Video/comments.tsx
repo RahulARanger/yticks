@@ -17,6 +17,7 @@ import { ExpectedCommentThread } from "@/pages/api/data/commentThreads";
 import Alert from "@mui/material/Alert";
 import Avatar from "@mui/material/Avatar";
 import Image from "next/image";
+import CommentStyles from "@/styles/comments.module.css";
 
 export interface CommentSharedProps {
 	videoID: string;
@@ -56,16 +57,17 @@ function NameComponent(props: { authorName: string }) {
 	return <Typography variant="subtitle2">{props.authorName}</Typography>;
 }
 
-function CommentAvatarComponent(props: { pfp: string }) {
-	return <Avatar src={props.pfp} />;
+function CommentAvatarComponent(props: { pfp: string, className: string }) {
+	return <Avatar src={props.pfp} className={props.className} />;
 }
 
 export function CommentItem(props: { comment: CommentThread }) {
 	const topLevelComment = props.comment.snippet.topLevelComment;
 	return (
-		<ListItem key={props.comment.id}>
+		<ListItem key={props.comment.id} className={CommentStyles.commentItem}>
 			<CommentAvatarComponent
 				pfp={topLevelComment.snippet.authorProfileImageUrl}
+				className={CommentStyles.commentAvatar}
 			/>
 			<ListItemText
 				sx={{ ml: "10px" }}
