@@ -11,9 +11,7 @@ import CommentIcon from "@mui/icons-material/Comment";
 import { ReactNode, Fragment } from "react";
 import Typography from "@mui/material/Typography";
 import { AskCommentThreads, AskVideo } from "../helper/ask";
-import { ExpectedVideoDetails } from "@/pages/api/data/videoById";
 import { CommentThread } from "../types/Comments";
-import { ExpectedCommentThread } from "@/pages/api/data/commentThreads";
 import Alert from "@mui/material/Alert";
 import Avatar from "@mui/material/Avatar";
 import Image from "next/image";
@@ -87,17 +85,23 @@ export function CommentListItems(props: CommentProps) {
 		props.videoID
 	);
 
-	if (data?.details) {
-		if (data.details?.items?.length)
+	if (data?.length && data.at(-1)?.details) {
+		const expectedThreads = data.flatMap((commentThread) => commentThread.details ? commentThread.details.items : []);
+		if (expectedThreads.length)
 			return (
 				<>
-					{data.details.items.map((comment) => (
-						<CommentItem comment={comment} key={comment.id} />
-					))}
+					{
+						expectedThreads.map((commentThread: CommentThread) => {
+							return <CommentItem comment={commentThread} key={commentThread.id} />
+						})
+					}
 				</>
 			);
+
 		else return <span key={0}>No Comments Found</span>;
+
 	}
+
 
 	return (
 		<Stack
@@ -110,7 +114,7 @@ export function CommentListItems(props: CommentProps) {
 				<span>Loading...</span>
 			) : (
 				<Alert title="Error" severity="error" color="error">
-					{data?.failed ||
+					{data?.at(-1)?.failed ||
 						String(error) ||
 						"Failed to fetch the required comments"}
 				</Alert>

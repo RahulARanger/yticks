@@ -1,7 +1,7 @@
 import { urlWithArgs } from "./generalRequest";
 import useSWRImmutable from "swr/immutable";
+import useSWRInfinite from "swr/infinite"
 import { askButRead } from "./generalRequest";
-import { ExpectedDetails } from "../types/response";
 import { ExpectedVideoDetails } from "@/pages/api/data/videoById";
 import { ExpectedCommentThread } from "@/pages/api/data/commentThreads";
 
@@ -28,11 +28,27 @@ export function AskVideo(
 	);
 }
 
-export function AskCommentThreads(videoID: string): SWRResponse<ExpectedCommentThread> {
-	return useSWRImmutable(
-		urlWithArgs(`/api/${isMock}/commentThreads`, {
-			videoID: videoID,
-		}),
+
+function loadComments(videoID: string, pageIndex: number, prevCommentThread?: ExpectedCommentThread) {
+	console.log(pageIndex)
+	console.log(prevCommentThread)
+	return urlWithArgs(`/api/${isMock}/commentThreads`, {
+		videoID: videoID,
+	})
+}
+
+interface SWRInfResponse<Details> {
+	data: Array<Details> | undefined
+	error?: string;
+	isLoading: boolean;
+	size: number;
+	setSize: (page: number) => void;
+
+}
+
+export function AskCommentThreads(videoID: string): SWRInfResponse<ExpectedCommentThread> {
+	return useSWRInfinite(
+		(...args) => loadComments(videoID, ...args),
 		(url: string) => askButRead<ExpectedCommentThread>(url)
 	);
 }

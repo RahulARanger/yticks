@@ -1,11 +1,11 @@
 .commentItem {
-    display: flex;
-    flex-flow: row nowrap;
-    align-items: flex-start;
-    justify-content: stretch;
-    border: 1px solid black;
+	display: flex;
+	flex-flow: row nowrap !important;
+	align-items: flex-start !important;
+	justify-content: stretch !important;
+	border: 1px solid black;
 }
 
 .commentAvatar {
-    margin-top: 1.5%;
+	margin-top: 1.5%;
 }
