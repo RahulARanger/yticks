@@ -187,6 +187,7 @@ function VideoTimeline(props: { details: VideoDetails }) {
 
 export function PureVideoSummary(props: miniProps) {
 	const snippet = props.details.snippet;
+	document.title = snippet.title;
 
 	return (
 		<>

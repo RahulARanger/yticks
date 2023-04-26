@@ -9,15 +9,6 @@ import Settings, {
 	SettingsProps,
 	VideoSettings,
 } from "@/components/Video/settings";
-import Script from "next/script";
-import { AskVideo } from "@/components/helper/ask";
-
-export function TitleFromVideo(props: { videoID: string }) {
-	const { data, isLoading } = AskVideo(props.videoID);
-	if (data?.details)
-		return <title>{data.details.items[0].snippet.title}</title>;
-	return <title>{isLoading ? "Loading" : "Failed"}</title>;
-}
 
 interface DetailedVideoViewState
 	extends VideoSettings,
@@ -53,7 +44,7 @@ export default class DetailedVideoView extends Component<
 		return (
 			<>
 				<Head>
-					<TitleFromVideo videoID={this.state.videoID} />
+					<title>Video by ID</title>
 				</Head>
 				<Header
 					textSearched={this.state.videoID}
