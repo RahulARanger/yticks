@@ -2,7 +2,6 @@ import Stack from "@mui/material/Stack";
 import ListArea from "../listArea";
 import Chip from "@mui/material/Chip";
 import Tooltip from "@mui/material/Tooltip";
-import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
@@ -189,11 +188,14 @@ export default class CommentArea extends ListArea<CommentProps> {
 	}
 
 	renderListItems(): ReactNode {
-		return (
-			<CommentListItems
-				formatter={this.props.formatter}
-				videoID={this.props.videoID}
-			/>
-		);
+		return super.renderListItems(<CommentListItems
+			formatter={this.props.formatter}
+			videoID={this.props.videoID}
+		/>)
+	}
+
+	render(): ReactNode {
+		return <>
+			{this.renderListItems()}</>
 	}
 }

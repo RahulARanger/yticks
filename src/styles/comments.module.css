@@ -2,8 +2,21 @@
 	display: flex;
 	flex-flow: row nowrap !important;
 	align-items: flex-start !important;
-	justify-content: stretch !important;
-	border: 1px solid black;
+	justify-content: space-between !important;
+	padding: 10px;
+	transition: all 0.3s ease-in-out;
+	border: 1px solid #282828;
+}
+
+.commentItem:hover {
+	background-color: #333;
+	color: #fff;
+	cursor: pointer;
+	border: 1px solid #181818;
+}
+
+.commentAvatar {
+	margin-top: 1.5%;
 }
 
 .commentAvatar {

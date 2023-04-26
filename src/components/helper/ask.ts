@@ -49,6 +49,11 @@ interface SWRInfResponse<Details> {
 export function AskCommentThreads(videoID: string): SWRInfResponse<ExpectedCommentThread> {
 	return useSWRInfinite(
 		(...args) => loadComments(videoID, ...args),
-		(url: string) => askButRead<ExpectedCommentThread>(url)
+		(url: string) => askButRead<ExpectedCommentThread>(url),
+		{
+			revalidateIfStale: false,
+			revalidateOnFocus: false,
+			revalidateOnReconnect: false
+		}
 	);
 }

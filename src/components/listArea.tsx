@@ -12,6 +12,7 @@ import { Component, ReactNode } from "react";
 import ListSubheader from "@mui/material/ListSubheader";
 import Skeleton from "@mui/material/Skeleton";
 import Typography from "@mui/material/Typography";
+import { getTypographyUtilityClass } from "@mui/material";
 
 export default abstract class ListArea<PROPs> extends Component<PROPs> {
 	title: string = "...";
@@ -19,16 +20,20 @@ export default abstract class ListArea<PROPs> extends Component<PROPs> {
 	maxWidth: string = "500px";
 
 	abstract header(): ReactNode;
+	abstract render(): ReactNode;
 
-	abstract renderListItems(): ReactNode;
+	renderListItems(items: ReactNode): ReactNode {
+		return this.renderList(items)
+	};
 
-	relatedVideoArea() {
+	renderList(listItems: ReactNode): ReactNode {
 		return (
-			<Paper elevation={3} sx={{ flexGrow: 1, height: "100%" }}>
+			<Paper elevation={3} sx={{ flexGrow: 1, height: "90vh", minHeight: "300px" }}>
 				<List
 					sx={{
 						border: "1px solid black",
 						height: "100%",
+						overflowY: "scroll"
 					}}
 					subheader={
 						<ListSubheader>
@@ -43,27 +48,9 @@ export default abstract class ListArea<PROPs> extends Component<PROPs> {
 						</ListSubheader>
 					}
 				>
-					{this.renderListItems()}
+					{listItems}
 				</List>
 			</Paper>
-		);
-	}
-
-	render(): ReactNode {
-		return (
-			<>
-				<Box
-					sx={{
-						backdropFilter: "blur(20px)",
-						flexGrow: 1,
-						flexDirection: "column",
-						minWidth: this.minWidth,
-						maxWidth: this.maxWidth,
-					}}
-				>
-					{this.relatedVideoArea()}
-				</Box>
-			</>
 		);
 	}
 }
