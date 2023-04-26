@@ -4,8 +4,10 @@ import Chip from "@mui/material/Chip";
 import Tooltip from "@mui/material/Tooltip";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemAvatar from "@mui/material/ListItemAvatar";
 import ListItemText from "@mui/material/ListItemText";
+import IconButton from "@mui/material/IconButton";
+import Button from "@mui/material/Button";
 import CommentIcon from "@mui/icons-material/Comment";
 import { ReactNode, Fragment } from "react";
 import Typography from "@mui/material/Typography";
@@ -14,7 +16,13 @@ import { CommentThread } from "../types/Comments";
 import Alert from "@mui/material/Alert";
 import Avatar from "@mui/material/Avatar";
 import Image from "next/image";
+import EditIcon from "@mui/icons-material/Edit";
+import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import CommentStyles from "@/styles/comments.module.css";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+
+dayjs.extend(relativeTime);
 
 export interface CommentSharedProps {
 	videoID: string;
@@ -50,16 +58,110 @@ export function CommentCount(props: CommentProps) {
 	);
 }
 
-function NameComponent(props: { authorName: string }) {
-	return <Typography variant="subtitle2">{props.authorName}</Typography>;
+export function LikeComponent(props: { userLiked?: boolean; count: string }) {
+	const icon = (
+		<ThumbUpIcon
+			color={props.userLiked ? "action" : "disabled"}
+			fontSize="small"
+		/>
+	);
+	return (
+		<>
+			<Stack
+				direction="row"
+				alignItems="center"
+				justifyContent="space-between"
+				flexWrap={"nowrap"}
+			>
+				<IconButton color="primary" disabled>
+					{icon}
+				</IconButton>
+				<Typography variant={"subtitle2"} sx={{ mb: "-2px" }}>
+					{props.count}
+				</Typography>
+			</Stack>
+		</>
+	);
 }
 
-function CommentAvatarComponent(props: { pfp: string, className: string }) {
-	return <Avatar src={props.pfp} className={props.className} />;
+function NameComponent(props: { authorName: string; date: string }) {
+	return (
+		<>
+			<Stack
+				justifyContent={"space-between"}
+				flexDirection={"row"}
+				flexWrap={"nowrap"}
+			>
+				<Typography variant="subtitle2">{props.authorName}</Typography>
+				<Typography variant="caption">
+					{dayjs(props.date).fromNow()}
+				</Typography>
+			</Stack>
+		</>
+	);
 }
 
-export function CommentItem(props: { comment: CommentThread }) {
+function CommentItemFooter(props: {
+	details: CommentThread;
+	formatter: Intl.NumberFormat;
+}) {
+	const details = props.details;
+	const topLevelComment = details.snippet.topLevelComment;
+	const isEdited =
+		topLevelComment.snippet.publishedAt !==
+		topLevelComment.snippet.updatedAt;
+
+	const edit = isEdited ? (
+		<Typography variant={"caption"} fontSize={"small"}>
+			{dayjs(topLevelComment.snippet.updatedAt).fromNow()}
+			<EditIcon fontSize={"inherit"} sx={{ ml: "3px", mb: "-1px" }} />
+		</Typography>
+	) : (
+		<></>
+	);
+
+	const showMore = details.replies?.comments?.length ? (
+		<Button size="small">{`Replies ${props.formatter.format(
+			details.snippet.totalReplyCount
+		)}`}</Button>
+	) : (
+		<></>
+	);
+	return (
+		<>
+			<Stack
+				flexDirection={"row"}
+				justifyContent={"space-between"}
+				alignItems="center"
+			>
+				<LikeComponent
+					count={props.formatter.format(
+						Number(topLevelComment.snippet.likeCount)
+					)}
+				/>
+				{showMore}
+				{edit}
+			</Stack>
+		</>
+	);
+}
+
+function CommentAvatarComponent(props: { pfp: string; className: string }) {
+	return (
+		<ListItemAvatar>
+			<Avatar className={props.className}>
+				<Image src={props.pfp} fill alt="User Pfp" quality={"100"} />
+			</Avatar>
+		</ListItemAvatar>
+	);
+}
+
+export function CommentItem(props: {
+	comment: CommentThread;
+	formatter: Intl.NumberFormat;
+}) {
 	const topLevelComment = props.comment.snippet.topLevelComment;
+
 	return (
 		<ListItem key={props.comment.id} className={CommentStyles.commentItem}>
 			<CommentAvatarComponent
@@ -71,36 +173,48 @@ export function CommentItem(props: { comment: CommentThread }) {
 				primary={
 					<NameComponent
 						authorName={topLevelComment.snippet.authorDisplayName}
+						date={topLevelComment.snippet.publishedAt}
 					/>
 				}
-				secondary={topLevelComment.snippet.textOriginal}
-			></ListItemText>
+				secondary={
+					<>
+						<Typography>
+							{topLevelComment.snippet.textOriginal}
+						</Typography>
+						<CommentItemFooter
+							details={props.comment}
+							formatter={props.formatter}
+						/>
+					</>
+				}
+			/>
 		</ListItem>
 	);
 }
 
 export function CommentListItems(props: CommentProps) {
-	const { data, error, isLoading } = AskCommentThreads(
-		props.videoID
-	);
+	const { data, error, isLoading } = AskCommentThreads(props.videoID);
 
 	if (data?.length && data.at(-1)?.details) {
-		const expectedThreads = data.flatMap((commentThread) => commentThread.details ? commentThread.details.items : []);
+		const expectedThreads = data.flatMap((commentThread) =>
+			commentThread.details ? commentThread.details.items : []
+		);
 		if (expectedThreads.length)
 			return (
 				<>
-					{
-						expectedThreads.map((commentThread: CommentThread) => {
-							return <CommentItem comment={commentThread} key={commentThread.id} />
-						})
-					}
+					{expectedThreads.map((commentThread: CommentThread) => {
+						return (
+							<CommentItem
+								comment={commentThread}
+								key={commentThread.id}
+								formatter={props.formatter}
+							/>
+						);
+					})}
 				</>
 			);
-
 		else return <span key={0}>No Comments Found</span>;
-
 	}
-
 
 	return (
 		<Stack
@@ -120,6 +234,20 @@ export function CommentListItems(props: CommentProps) {
 			)}
 		</Stack>
 	);
+}
+
+function CommentFooter(props: { videoID: string }) {
+	const { data, error, isLoading } = AskCommentThreads(props.videoID);
+
+	return (
+		<ListItemButton sx={{ textAlign: "center" }}>
+			<Typography color="orangered" align="center" m="0 auto">
+				Show More
+			</Typography>
+		</ListItemButton>
+	);
+
+	return <></>;
 }
 
 export default class CommentArea extends ListArea<CommentProps> {
@@ -188,14 +316,19 @@ export default class CommentArea extends ListArea<CommentProps> {
 	}
 
 	renderListItems(): ReactNode {
-		return super.renderListItems(<CommentListItems
-			formatter={this.props.formatter}
-			videoID={this.props.videoID}
-		/>)
+		return super.renderListItems(
+			<CommentListItems
+				formatter={this.props.formatter}
+				videoID={this.props.videoID}
+			/>
+		);
+	}
+
+	footer(): ReactNode {
+		return <CommentFooter videoID={this.props.videoID} />;
 	}
 
 	render(): ReactNode {
-		return <>
-			{this.renderListItems()}</>
+		return <>{this.renderListItems()}</>;
 	}
 }

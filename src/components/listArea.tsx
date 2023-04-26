@@ -22,6 +22,10 @@ export default abstract class ListArea<PROPs> extends Component<PROPs> {
 	abstract header(): ReactNode;
 	abstract render(): ReactNode;
 
+	footer(): ReactNode {
+		return <></>
+	}
+
 	renderListItems(items: ReactNode): ReactNode {
 		return this.renderList(items)
 	};
@@ -49,6 +53,7 @@ export default abstract class ListArea<PROPs> extends Component<PROPs> {
 					}
 				>
 					{listItems}
+					{this.footer()}
 				</List>
 			</Paper>
 		);

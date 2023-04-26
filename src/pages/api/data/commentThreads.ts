@@ -25,6 +25,7 @@ export default async function handler(
 			{
 				videoId: String(videoID),
 				part: "id,snippet,replies",
+				order: "relevance",
 			}
 		);
 

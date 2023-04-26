@@ -31,12 +31,12 @@ import TimelineOppositeContent, {
 	TimelineOppositeContentProps,
 } from "@mui/lab/TimelineOppositeContent";
 import TimelineDot from "@mui/lab/TimelineDot";
-import dayjs from "dayjs";
 import PublishIcon from "@mui/icons-material/Publish";
-import relativeTime from "dayjs/plugin/relativeTime";
 import ScheduleIcon from "@mui/icons-material/Schedule";
 import CallEndIcon from "@mui/icons-material/CallEnd";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
 
 dayjs.extend(relativeTime);
 
