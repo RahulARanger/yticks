@@ -29,11 +29,11 @@ export function AskVideo(
 }
 
 
-function loadComments(videoID: string, pageIndex: number, prevCommentThread?: ExpectedCommentThread) {
-	console.log(pageIndex)
-	console.log(prevCommentThread)
+function loadComments(videoID: string, _: number, prevCommentThread?: ExpectedCommentThread) {
+	const details = prevCommentThread?.details;
+	const token = details && details?.nextPageToken;
 	return urlWithArgs(`/api/${isMock}/commentThreads`, {
-		videoID: videoID,
+		videoID: videoID, pageToken: token || ""
 	})
 }
 
@@ -53,7 +53,9 @@ export function AskCommentThreads(videoID: string): SWRInfResponse<ExpectedComme
 		{
 			revalidateIfStale: false,
 			revalidateOnFocus: false,
-			revalidateOnReconnect: false
+			revalidateOnReconnect: false,
+			revalidateFirstPage: false,
+			revalidateAll: false
 		}
 	);
 }

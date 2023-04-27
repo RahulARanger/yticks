@@ -14,7 +14,7 @@ export default async function handler(
 	request: NextApiRequest,
 	response: NextApiResponse<ExpectedCommentThread>
 ) {
-	const { videoID } = request.query;
+	const { videoID, pageToken } = request.query;
 
 	if (!videoID) {
 		return letThemKnow(response, "Please provide the ID for the video.");
@@ -26,6 +26,7 @@ export default async function handler(
 				videoId: String(videoID),
 				part: "id,snippet,replies",
 				order: "relevance",
+				pageToken: String(pageToken || "")
 			}
 		);
 

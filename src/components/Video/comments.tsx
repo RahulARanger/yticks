@@ -9,12 +9,13 @@ import ListItemText from "@mui/material/ListItemText";
 import IconButton from "@mui/material/IconButton";
 import Button from "@mui/material/Button";
 import CommentIcon from "@mui/icons-material/Comment";
-import { ReactNode, Fragment } from "react";
+import { ReactNode, Fragment, useRef } from "react";
 import Typography from "@mui/material/Typography";
 import { AskCommentThreads, AskVideo } from "../helper/ask";
 import { CommentThread } from "../types/Comments";
 import Alert from "@mui/material/Alert";
 import Avatar from "@mui/material/Avatar";
+import Skeleton from "@mui/material/Skeleton";
 import Image from "next/image";
 import EditIcon from "@mui/icons-material/Edit";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
@@ -31,6 +32,11 @@ export interface CommentSharedProps {
 interface CommentProps extends CommentSharedProps {
 	formatter: Intl.NumberFormat;
 }
+
+interface CommentState {
+	pageToken: string;
+}
+
 
 export function CommentCount(props: CommentProps) {
 	const { data, error } = AskVideo(props.videoID);
@@ -237,15 +243,22 @@ export function CommentListItems(props: CommentProps) {
 }
 
 function CommentFooter(props: { videoID: string }) {
-	const { data, error, isLoading } = AskCommentThreads(props.videoID);
+	const { data, error, isLoading, size, setSize } = AskCommentThreads(props.videoID);
+	const details = data?.at(-1)?.details;
 
-	return (
-		<ListItemButton sx={{ textAlign: "center" }}>
-			<Typography color="orangered" align="center" m="0 auto">
-				Show More
-			</Typography>
-		</ListItemButton>
-	);
+	const notReady = isLoading || (size > 0 && typeof data?.at(size - 1) === "undefined")
+
+	if (details && details?.nextPageToken) {
+		return (
+			<ListItemButton sx={{ textAlign: "center" }} data-token={details.nextPageToken} onClick={() => {
+				setSize(size + 1)
+			}} disabled={notReady}>
+				<Typography color="orangered" align="center" m="0 auto">
+					{notReady ? "Loading..." : "Show More"}
+				</Typography>
+			</ListItemButton>
+		);
+	}
 
 	return <></>;
 }
