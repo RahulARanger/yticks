@@ -13,17 +13,20 @@ export default abstract class ListArea<PROPs> extends Component<PROPs> {
 	abstract render(): ReactNode;
 
 	footer(): ReactNode {
-		return <></>
+		return <></>;
 	}
 
-	renderList(listItems: ReactNode, className: string): ReactNode {
+	renderList(listItems: ReactNode): ReactNode {
 		return (
-			<Paper elevation={3} sx={{ flexGrow: 1, height: "90vh", minHeight: "300px" }} className={className}>
+			<Paper
+				elevation={3}
+				sx={{ flexGrow: 1, height: "90vh", minHeight: "300px" }}
+			>
 				<List
 					sx={{
 						border: "1px solid black",
 						height: "100%",
-						overflowY: "scroll"
+						overflowY: "scroll",
 					}}
 					subheader={
 						<ListSubheader>

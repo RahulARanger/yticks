@@ -352,7 +352,7 @@ export default class CommentArea extends ListArea<CommentProps> {
 		const valueForWordCloud = "word-cloud";
 
 		return (
-			<Box sx={{ width: "100%", typography: "body1" }}>
+			<Box sx={{ width: "100%" }}>
 				<TabContext value={valueForComments}>
 					<Box sx={{ borderBottom: 1, borderColor: "divider" }}>
 						<TabList aria-label="lab API tabs example">
@@ -366,11 +366,16 @@ export default class CommentArea extends ListArea<CommentProps> {
 							/>
 						</TabList>
 					</Box>
-					<TabPanel value={valueForComments}>
-						<CommentListItems
-							formatter={this.props.formatter}
-							videoID={this.props.videoID}
-						/>
+					<TabPanel
+						value={valueForComments}
+						sx={{ padding: "0px", paddingTop: "10px" }}
+					>
+						{this.renderList(
+							<CommentListItems
+								formatter={this.props.formatter}
+								videoID={this.props.videoID}
+							/>
+						)}
 					</TabPanel>
 					<TabPanel value={valueForWordCloud}>Item Two</TabPanel>
 				</TabContext>
