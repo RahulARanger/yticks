@@ -72,9 +72,15 @@ export function EmbeddedVideo(props: VideoPlayerSharedProps) {
 			></div>
 		);
 	return (
-		<Alert color="error" severity="error" title="error">
-			{data?.failed || error}
-		</Alert>
+		<Stack
+			className={videoPlayerStyles.frame}
+			justifyContent={"center"}
+			alignItems={"center"}
+		>
+			<Alert color="error" severity="error" title="error">
+				{data?.failed || String(error)}
+			</Alert>
+		</Stack>
 	);
 }
 
@@ -269,9 +275,7 @@ export function VideoSummary(props: VideoPlayerProps) {
 			anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
 		>
 			<Alert severity="error" color="error" title="Error">
-				{data?.failed ||
-					error ||
-					"Failed to fetch the details of the video"}
+				{data?.failed || String(error)}
 			</Alert>
 		</Snackbar>
 	);

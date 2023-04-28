@@ -22,6 +22,12 @@ import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import CommentStyles from "@/styles/comments.module.css";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import Tab from "@mui/material/Tab";
+import TabContext from "@mui/lab/TabContext";
+import TabList from "@mui/lab/TabList";
+import TabPanel from "@mui/lab/TabPanel";
+import Box from "@mui/material/Box";
+import CloudIcon from "@mui/icons-material/Cloud";
 
 dayjs.extend(relativeTime);
 
@@ -36,7 +42,6 @@ interface CommentProps extends CommentSharedProps {
 interface CommentState {
 	pageToken: string;
 }
-
 
 export function CommentCount(props: CommentProps) {
 	const { data, error } = AskVideo(props.videoID);
@@ -99,7 +104,7 @@ function NameComponent(props: { authorName: string; date: string }) {
 				flexWrap={"nowrap"}
 			>
 				<Typography variant="subtitle2">{props.authorName}</Typography>
-				<Typography variant="caption">
+				<Typography variant="caption" sx={{ fontStyle: "italic" }}>
 					{dayjs(props.date).fromNow()}
 				</Typography>
 			</Stack>
@@ -139,6 +144,8 @@ function CommentItemFooter(props: {
 				flexDirection={"row"}
 				justifyContent={"space-between"}
 				alignItems="center"
+				flexWrap={"wrap"}
+				sx={{ mt: "3px" }}
 			>
 				<LikeComponent
 					count={props.formatter.format(
@@ -243,16 +250,24 @@ export function CommentListItems(props: CommentProps) {
 }
 
 function CommentFooter(props: { videoID: string }) {
-	const { data, error, isLoading, size, setSize } = AskCommentThreads(props.videoID);
+	const { data, error, isLoading, size, setSize } = AskCommentThreads(
+		props.videoID
+	);
 	const details = data?.at(-1)?.details;
 
-	const notReady = isLoading || (size > 0 && typeof data?.at(size - 1) === "undefined")
+	const notReady =
+		isLoading || (size > 0 && typeof data?.at(size - 1) === "undefined");
 
 	if (details && details?.nextPageToken) {
 		return (
-			<ListItemButton sx={{ textAlign: "center" }} data-token={details.nextPageToken} onClick={() => {
-				setSize(size + 1)
-			}} disabled={notReady}>
+			<ListItemButton
+				sx={{ textAlign: "center" }}
+				data-token={details.nextPageToken}
+				onClick={() => {
+					setSize(size + 1);
+				}}
+				disabled={notReady}
+			>
 				<Typography color="orangered" align="center" m="0 auto">
 					{notReady ? "Loading..." : "Show More"}
 				</Typography>
@@ -328,20 +343,38 @@ export default class CommentArea extends ListArea<CommentProps> {
 		);
 	}
 
-	renderListItems(): ReactNode {
-		return super.renderListItems(
-			<CommentListItems
-				formatter={this.props.formatter}
-				videoID={this.props.videoID}
-			/>
-		);
-	}
-
 	footer(): ReactNode {
 		return <CommentFooter videoID={this.props.videoID} />;
 	}
 
 	render(): ReactNode {
-		return <>{this.renderListItems()}</>;
+		const valueForComments = "comment-box";
+		const valueForWordCloud = "word-cloud";
+
+		return (
+			<Box sx={{ width: "100%", typography: "body1" }}>
+				<TabContext value={valueForComments}>
+					<Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+						<TabList aria-label="lab API tabs example">
+							<Tab
+								icon={<CommentIcon />}
+								value={valueForComments}
+							/>
+							<Tab
+								icon={<CloudIcon />}
+								value={valueForWordCloud}
+							/>
+						</TabList>
+					</Box>
+					<TabPanel value={valueForComments}>
+						<CommentListItems
+							formatter={this.props.formatter}
+							videoID={this.props.videoID}
+						/>
+					</TabPanel>
+					<TabPanel value={valueForWordCloud}>Item Two</TabPanel>
+				</TabContext>
+			</Box>
+		);
 	}
 }

@@ -18,3 +18,7 @@
 .commentAvatar {
 	margin-top: 2%;
 }
+
+.commentBox {
+	min-width: 300px !important;
+}

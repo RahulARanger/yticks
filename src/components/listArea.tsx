@@ -16,13 +16,9 @@ export default abstract class ListArea<PROPs> extends Component<PROPs> {
 		return <></>
 	}
 
-	renderListItems(items: ReactNode): ReactNode {
-		return this.renderList(items)
-	};
-
-	renderList(listItems: ReactNode): ReactNode {
+	renderList(listItems: ReactNode, className: string): ReactNode {
 		return (
-			<Paper elevation={3} sx={{ flexGrow: 1, height: "90vh", minHeight: "300px" }}>
+			<Paper elevation={3} sx={{ flexGrow: 1, height: "90vh", minHeight: "300px" }} className={className}>
 				<List
 					sx={{
 						border: "1px solid black",

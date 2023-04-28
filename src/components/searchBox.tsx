@@ -87,7 +87,9 @@ export class SearchBarForYoutubeVideo extends SearchBar {
 
 	protected validate(event: ChangeEvent<HTMLInputElement>): boolean {
 		const url: string = (event.target.value = event.target.value.trim());
-		this.setState({ passed: this.regMatcher.test(url) });
+		this.setState({
+			passed: this.regMatcher.test(url),
+		});
 		return true;
 	}
 
