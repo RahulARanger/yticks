@@ -30,16 +30,17 @@ interface SearchBarProps extends SharedProps {
 
 const WithStyleTextField = styled(TextField)(({ theme }) => {
     const transition = "all ease-in-out .5s";
+    const referWidth = "max(30%, 300px)"
     return {
         backgroundColor: alpha(theme.palette.common.white, 0.005),
         margin: ".69%",
-        maxWidth: "300px",
+        maxWidth: referWidth,
         transition,
         "&:hover": {
             backgroundColor: alpha(theme.palette.common.white, 0.05),
         },
         "&:focus-within": {
-            maxWidth: "400px",
+            maxWidth: `calc(${referWidth} + 69px)`,
         },
     };
 });

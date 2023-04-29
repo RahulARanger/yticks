@@ -12,7 +12,7 @@ import Settings, {
 
 interface DetailedVideoViewState
     extends VideoSettings,
-        FromMainPageWhichAreState {
+    FromMainPageWhichAreState {
     openSettings: boolean;
 }
 
@@ -31,9 +31,9 @@ export default class DetailedVideoView extends Component<
     }
 
     toggleSettings(force: boolean) {
-        this.setState({
-            openSettings: force ? force : !this.state.openSettings,
-        });
+        // this.setState({
+        //     openSettings: force ? force : !this.state.openSettings,
+        // });
     }
 
     setSettings(settings: VideoSettings) {

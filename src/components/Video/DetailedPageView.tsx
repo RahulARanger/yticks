@@ -41,6 +41,7 @@ export default class DetailedPageView extends Component<
                     direction="row"
                     pl="2%"
                     py="2%"
+                    pr="10px"
                     columnGap={1}
                     rowGap={1}
                     flexWrap={"wrap"}

@@ -200,7 +200,6 @@ export function PureVideoSummary(props: miniProps) {
             <Box
                 flexDirection={"column"}
                 flexWrap={"nowrap"}
-                sx={{ maxWidth: "710px" }}
             >
                 <Typography gutterBottom variant="h5" mt="10px">
                     {snippet.title}
