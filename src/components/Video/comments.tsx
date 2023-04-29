@@ -84,6 +84,7 @@ export function LikeComponent(props: { userLiked?: boolean; count: string }) {
                 alignItems="center"
                 justifyContent="space-between"
                 flexWrap={"nowrap"}
+                component="span"
             >
                 <IconButton color="primary" disabled>
                     {icon}
@@ -117,6 +118,8 @@ function CommentItemFooter(props: {
     details: CommentThread;
     formatter: Intl.NumberFormat;
 }) {
+    // note secondary text is p tag, so ensure there's no big tags like div, p inside it 
+
     const details = props.details;
     const topLevelComment = details.snippet.topLevelComment;
     const isEdited =
@@ -124,7 +127,7 @@ function CommentItemFooter(props: {
         topLevelComment.snippet.updatedAt;
 
     const edit = isEdited ? (
-        <Typography variant={"caption"} fontSize={"small"}>
+        <Typography variant={"caption"} fontSize={"small"} component="span">
             {dayjs(topLevelComment.snippet.updatedAt).fromNow()}
             <EditIcon fontSize={"inherit"} sx={{ ml: "3px", mb: "-1px" }} />
         </Typography>
@@ -147,14 +150,13 @@ function CommentItemFooter(props: {
                 alignItems="center"
                 flexWrap={"wrap"}
                 sx={{ mt: "3px" }}
+                component="span"
             >
-                <Tooltip title={topLevelComment.snippet.likeCount}>
-                    <LikeComponent
-                        count={props.formatter.format(
-                            Number(topLevelComment.snippet.likeCount)
-                        )}
-                    />
-                </Tooltip>
+                <LikeComponent
+                    count={props.formatter.format(
+                        Number(topLevelComment.snippet.likeCount)
+                    )}
+                />
                 {showMore}
                 {edit}
             </Stack>
@@ -193,7 +195,7 @@ export function CommentItem(props: {
                 }
                 secondary={
                     <>
-                        <Typography variant="body2">
+                        <Typography variant="body2" component={"span"}>
                             {topLevelComment.snippet.textOriginal}
                         </Typography>
                         <CommentItemFooter
