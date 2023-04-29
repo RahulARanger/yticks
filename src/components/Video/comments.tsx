@@ -9,7 +9,7 @@ import ListItemText from "@mui/material/ListItemText";
 import IconButton from "@mui/material/IconButton";
 import Button from "@mui/material/Button";
 import CommentIcon from "@mui/icons-material/Comment";
-import { ReactNode, Fragment, useRef } from "react";
+import { ReactNode, Fragment, useRef, SyntheticEvent } from "react";
 import Typography from "@mui/material/Typography";
 import { AskCommentThreads, AskVideo } from "../helper/ask";
 import { CommentThread } from "../types/Comments";
@@ -37,6 +37,10 @@ export interface CommentSharedProps {
 
 interface CommentProps extends CommentSharedProps {
     formatter: Intl.NumberFormat;
+}
+
+interface CommentState {
+    tabSelected?: string;
 }
 
 export function CommentCount(props: CommentProps) {
@@ -83,7 +87,7 @@ export function LikeComponent(props: { userLiked?: boolean; count: string }) {
                 <IconButton color="primary" disabled>
                     {icon}
                 </IconButton>
-                <Typography variant={"subtitle2"} sx={{ mb: "-2px" }}>
+                <Typography variant={"subtitle2"} sx={{ mb: "-2px" }} component="span">
                     {props.count}
                 </Typography>
             </Stack>
@@ -143,11 +147,13 @@ function CommentItemFooter(props: {
                 flexWrap={"wrap"}
                 sx={{ mt: "3px" }}
             >
-                <LikeComponent
-                    count={props.formatter.format(
-                        Number(topLevelComment.snippet.likeCount)
-                    )}
-                />
+                <Tooltip title={topLevelComment.snippet.likeCount}>
+                    <LikeComponent
+                        count={props.formatter.format(
+                            Number(topLevelComment.snippet.likeCount)
+                        )}
+                    />
+                </Tooltip>
                 {showMore}
                 {edit}
             </Stack>
@@ -274,9 +280,10 @@ function CommentFooter(props: { videoID: string }) {
     return <></>;
 }
 
-export default class CommentArea extends ListArea<CommentProps> {
+export default class CommentArea extends ListArea<CommentProps, CommentState> {
     title: string = "Comments";
     maxWidth: string = "500px";
+    state: CommentState = {}
 
     header() {
         return (
@@ -314,12 +321,6 @@ export default class CommentArea extends ListArea<CommentProps> {
         );
     }
 
-    componentDidMount(): void {
-        document.querySelectorAll(".formatME").forEach(function (element) {
-            console.log(element);
-        });
-    }
-
     commentItem(comment: CommentThread) {
         const topLevelComment = comment.snippet.topLevelComment;
         return (
@@ -346,12 +347,15 @@ export default class CommentArea extends ListArea<CommentProps> {
     render(): ReactNode {
         const valueForComments = "comment-box";
         const valueForWordCloud = "word-cloud";
+        const selected = this.state.tabSelected ?? valueForComments
 
         return (
             <Box sx={{ width: "100%" }}>
-                <TabContext value={valueForComments}>
+                <TabContext value={selected}>
                     <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-                        <TabList aria-label="lab API tabs example">
+                        <TabList aria-label="lab API tabs example" onChange={(_: SyntheticEvent, newValue: string) => {
+                            // this.setState({ tabSelected: newValue })
+                        }}>
                             <Tab
                                 icon={<CommentIcon />}
                                 value={valueForComments}
@@ -373,7 +377,7 @@ export default class CommentArea extends ListArea<CommentProps> {
                             />
                         )}
                     </TabPanel>
-                    <TabPanel value={valueForWordCloud}>Item Two</TabPanel>
+                    <TabPanel value={valueForWordCloud}>In Progress</TabPanel>
                 </TabContext>
             </Box>
         );

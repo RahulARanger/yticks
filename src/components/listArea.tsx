@@ -4,7 +4,7 @@ import Stack from "@mui/material/Stack";
 import { Component, ReactNode } from "react";
 import ListSubheader from "@mui/material/ListSubheader";
 
-export default abstract class ListArea<PROPs> extends Component<PROPs> {
+export default abstract class ListArea<PROPs, STATEs> extends Component<PROPs, STATEs> {
     title: string = "...";
     minWidth: string = "250px";
     maxWidth: string = "500px";
