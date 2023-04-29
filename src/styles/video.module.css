@@ -1,5 +1,22 @@
 .detailedView {
-    flex-grow: 1;
     opacity: 1;
     transition: all 0.5s cubic-bezier(0.075, 0.82, 0.165, 1);
+    --max-video: 60%;
+    --max-comment: calc(100% - var(--max-video) - 10px);
+}
+
+.embeddedVideo {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    flex-basis: var(--max-video);
+    flex-grow: 1;
+}
+
+.commentBox {
+    max-height: 97%;
+    flex-basis: var(--max-comment);
+    margin-left: 0px !important;
+    flex-grow: 1;
+    min-width: 330px;
 }

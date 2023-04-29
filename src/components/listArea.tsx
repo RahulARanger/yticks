@@ -6,8 +6,6 @@ import ListSubheader from "@mui/material/ListSubheader";
 
 export default abstract class ListArea<PROPs, STATEs> extends Component<PROPs, STATEs> {
     title: string = "...";
-    minWidth: string = "250px";
-    maxWidth: string = "500px";
 
     abstract header(): ReactNode;
     abstract render(): ReactNode;
@@ -20,7 +18,7 @@ export default abstract class ListArea<PROPs, STATEs> extends Component<PROPs, S
         return (
             <Paper
                 elevation={3}
-                sx={{ flexGrow: 1, height: "90vh", minHeight: "300px" }}
+                sx={{ flexGrow: 1, height: "90vh", minHeight: "300px" }} // let this be constant for now when its reused we should parameterize it
             >
                 <List
                     sx={{

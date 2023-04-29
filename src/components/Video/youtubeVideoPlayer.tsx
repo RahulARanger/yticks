@@ -15,7 +15,6 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import videoPlayerStyles from "@/styles/videoPlayer.module.css";
 import { AskVideo } from "../helper/ask";
 import Alert from "@mui/material/Alert";
-import { ExpectedVideoDetails } from "@/pages/api/data/videoById";
 import { Snackbar } from "@mui/material";
 import { VideoDetails } from "../types/Video";
 import ParseDesc, { YoutubeHashTag } from "../parseDesc";
@@ -46,6 +45,7 @@ export interface VideoPlayerSharedProps {
 
 interface VideoPlayerProps extends VideoPlayerSharedProps {
     formatter: Intl.NumberFormat;
+    className?: string;
 }
 
 type miniProps = { details: VideoDetails; formatter: Intl.NumberFormat };
@@ -285,19 +285,8 @@ export default class VideoEmbedded extends Component<VideoPlayerProps> {
     render(): ReactNode {
         return (
             <>
-                <Box>
-                    <Stack
-                        sx={{
-                            minWidth: "300px",
-                            height: "400px",
-                            flexGrow: 1,
-                            backdropFilter: "blur(20px)",
-                        }}
-                        alignItems="center"
-                        justifyContent="center"
-                    >
-                        <EmbeddedVideo videoID={this.props.videoID} />
-                    </Stack>
+                <Box className={this.props.className}>
+                    <EmbeddedVideo videoID={this.props.videoID} />
                     <VideoSummary
                         videoID={this.props.videoID}
                         formatter={this.props.formatter}

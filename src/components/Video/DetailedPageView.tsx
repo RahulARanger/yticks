@@ -16,11 +16,11 @@ export interface FromMainPageWhichAreState {
 
 export interface DetailedPageViewRelatedProps
     extends FromMainPageWhichAreProps,
-        FromMainPageWhichAreState {}
+    FromMainPageWhichAreState { }
 
 interface VideoSummaryState
     extends VideoPlayerSharedProps,
-        CommentSharedProps {}
+    CommentSharedProps { }
 
 export default class DetailedPageView extends Component<
     DetailedPageViewRelatedProps,
@@ -39,10 +39,11 @@ export default class DetailedPageView extends Component<
             <>
                 <Stack
                     direction="row"
-                    px="2%"
+                    pl="2%"
                     py="2%"
-                    spacing={2}
-                    flexWrap={"nowrap"}
+                    columnGap={1}
+                    rowGap={1}
+                    flexWrap={"wrap"}
                     className={VideoStyle.detailedView}
                     justifyContent={"stretch"}
                     alignItems={"stretch"}
@@ -50,10 +51,12 @@ export default class DetailedPageView extends Component<
                     <VideoEmbedded
                         videoID={this.props.videoID}
                         formatter={this.formatter}
+                        className={VideoStyle.embeddedVideo}
                     />
                     <CommentArea
                         videoID={this.props.videoID}
                         formatter={this.formatter}
+                        className={VideoStyle.commentBox}
                     />
                 </Stack>
             </>

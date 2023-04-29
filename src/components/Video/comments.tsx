@@ -37,6 +37,7 @@ export interface CommentSharedProps {
 
 interface CommentProps extends CommentSharedProps {
     formatter: Intl.NumberFormat;
+    className?: string
 }
 
 interface CommentState {
@@ -184,7 +185,6 @@ export function CommentItem(props: {
                 className={CommentStyles.commentAvatar}
             />
             <ListItemText
-                sx={{ ml: "10px" }}
                 primary={
                     <NameComponent
                         authorName={topLevelComment.snippet.authorDisplayName}
@@ -193,7 +193,7 @@ export function CommentItem(props: {
                 }
                 secondary={
                     <>
-                        <Typography>
+                        <Typography variant="body2">
                             {topLevelComment.snippet.textOriginal}
                         </Typography>
                         <CommentItemFooter
@@ -252,7 +252,7 @@ export function CommentListItems(props: CommentProps) {
 }
 
 function CommentFooter(props: { videoID: string }) {
-    const { data, error, isLoading, size, setSize } = AskCommentThreads(
+    const { data, error: _, isLoading, size, setSize } = AskCommentThreads(
         props.videoID
     );
     const details = data?.at(-1)?.details;
@@ -282,7 +282,6 @@ function CommentFooter(props: { videoID: string }) {
 
 export default class CommentArea extends ListArea<CommentProps, CommentState> {
     title: string = "Comments";
-    maxWidth: string = "500px";
     state: CommentState = {}
 
     header() {
@@ -311,7 +310,6 @@ export default class CommentArea extends ListArea<CommentProps, CommentState> {
                     <Typography>{name}</Typography>
                     <Typography
                         data-id={publishedDate}
-                        className="formatME"
                         variant="caption"
                     >
                         {publishedDate}
@@ -350,10 +348,10 @@ export default class CommentArea extends ListArea<CommentProps, CommentState> {
         const selected = this.state.tabSelected ?? valueForComments
 
         return (
-            <Box sx={{ width: "100%" }}>
+            <Box className={this.props.className}>
                 <TabContext value={selected}>
                     <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-                        <TabList aria-label="lab API tabs example" onChange={(_: SyntheticEvent, newValue: string) => {
+                        <TabList aria-label="Tabs for the comments seen for the Youtube video" onChange={(_: SyntheticEvent, newValue: string) => {
                             // this.setState({ tabSelected: newValue })
                         }}>
                             <Tab
@@ -363,6 +361,8 @@ export default class CommentArea extends ListArea<CommentProps, CommentState> {
                             <Tab
                                 icon={<CloudIcon />}
                                 value={valueForWordCloud}
+                                disabled
+                                title="Work in Progress"
                             />
                         </TabList>
                     </Box>

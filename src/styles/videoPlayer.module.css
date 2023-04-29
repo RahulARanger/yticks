@@ -1,8 +1,6 @@
 .frame {
-    height: 400px !important;
-    width: 95vw !important;
-    max-width: 710px;
-    min-width: 250px;
+    flex-grow: 1;
+    min-height: 350px;
 }
 
 .description {
