@@ -37,9 +37,10 @@ export default class Header extends Component<HeaderProps, HeaderStates> {
     }
 
     menuItems() {
+        const hide = { display: { xs: "block", sm: "none" } }
         return (
             <>
-                <Box sx={{ display: { xs: "block", sm: "none" } }}>
+                <Box sx={hide}>
                     <IconButton
                         color="inherit"
                         aria-label="open drawer"
@@ -49,10 +50,8 @@ export default class Header extends Component<HeaderProps, HeaderStates> {
                     >
                         <MenuIcon />
                     </IconButton>
-                    <Drawer anchor="left" open={this.state.openDrawer} onClose={this.toggleDrawer.bind(this)} ModalProps={{
-                        keepMounted: true
-                    }} sx={{
-                        '& .MuiDrawer-paper': { boxSizing: 'border-box', width: "200px" },
+                    <Drawer anchor="left" open={this.state.openDrawer} onClose={this.toggleDrawer.bind(this)} sx={{
+                        '& .MuiDrawer-paper': { boxSizing: 'border-box', width: "200px" }, ...hide
                     }}>
                         <Typography variant="subtitle1" ml="2px">Menu</Typography>
                         <List>
@@ -126,6 +125,7 @@ export default class Header extends Component<HeaderProps, HeaderStates> {
                             onSearch={this.props.onSearch}
                             className={headerStyles.textField}
                             pocket={this.props.pocket}
+                            atTop={showAtTop}
                         />
 
                         {this.iconButtons()}

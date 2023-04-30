@@ -48,7 +48,7 @@ export default class DetailedVideoView extends Component<
                 </Head>
                 <Header
                     textSearched={this.state.videoID}
-                    title="YTA"
+                    title="YTicks"
                     onSearch={this.handleSearch.bind(this)}
                     pocket={this.searchBar}
                     onSettingsRequest={this.toggleSettings.bind(this, true)}
