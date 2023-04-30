@@ -21,14 +21,15 @@ import { styled, alpha, SxProps, Theme } from "@mui/material/styles";
 
 type changeEvent = ChangeEvent<HTMLInputElement>;
 
+
 interface SearchBarState {
     passed?: boolean;
     modalOpened: boolean;
+    url: string;
 }
 
 export interface SharedProps {
     onSearch: (videoId: string) => void;
-    pocket: RefObject<HTMLInputElement>;
 }
 
 interface SearchBarProps extends SharedProps {
@@ -57,11 +58,10 @@ const WithStyleTextField = styled(TextField)(({ theme }) => {
 });
 
 abstract class SearchBar extends Component<SearchBarProps, SearchBarState> {
-    state: SearchBarState = { modalOpened: false };
-    pocket: RefObject<HTMLInputElement> = createRef();
+    state: SearchBarState = { modalOpened: false, url: "" };
 
     abstract handleRedirect(): undefined;
-    abstract textFieldElement(feed?: (event: changeEvent) => boolean, sx?: SxProps<Theme>): ReactNode;
+    abstract textFieldElement(sx?: SxProps<Theme>): ReactNode;
     protected abstract validate(event: changeEvent): boolean
 
     onEnterPress(event: KeyboardEvent<HTMLInputElement>): undefined {
@@ -81,7 +81,7 @@ abstract class SearchBar extends Component<SearchBarProps, SearchBarState> {
         const hide = { display: { sm: "none", xs: "block" } };
         return (
             <>
-                {this.textFieldElement(undefined, { opacity: { sm: 1, xs: 0 } })}
+                {this.textFieldElement({ display: { xs: "none", sm: "block" } })}
                 <Box sx={hide}>
                     <IconButton onClick={this.toggleModal.bind(this)}><YoutubeSearchedForIcon /></IconButton>
                     <Dialog sx={hide} open={this.state.modalOpened} onClose={this.toggleModal.bind(this)} fullWidth maxWidth={"xs"}>
@@ -89,7 +89,7 @@ abstract class SearchBar extends Component<SearchBarProps, SearchBarState> {
                         <DialogContent>
                             You can just copy and paste the url from youtube.
                             <DialogActions>
-                                {this.textFieldElement(this.feedValue.bind(this))}
+                                {this.textFieldElement()}
                             </DialogActions>
                         </DialogContent>
                     </Dialog>
@@ -124,11 +124,6 @@ abstract class SearchBar extends Component<SearchBarProps, SearchBarState> {
             </>
         );
     }
-    protected feedValue(event: changeEvent): boolean {
-        const url: string = (event.target.value = event.target.value.trim());
-        if (this.props.pocket.current) this.props.pocket.current.value = url;
-        return true;
-    }
 }
 
 export class SearchBarForYoutubeVideo extends SearchBar {
@@ -141,12 +136,13 @@ export class SearchBarForYoutubeVideo extends SearchBar {
         this.setState({
             passed: this.regMatcher.test(url),
         });
+        this.setState({ url })
         return true;
     }
 
     handleRedirect(): undefined {
         if (!this.state.passed) return;
-        const url: string = this.props.pocket.current?.value ?? "";
+        const url: string = this.state.url;
         const matches = url.match(this.regMatcher);
 
         let found = matches?.at(-2) ?? false;
@@ -157,14 +153,15 @@ export class SearchBarForYoutubeVideo extends SearchBar {
             return;
         }
         if (this.props.atTop) this.forceModal(false);
+
         this.props.onSearch(found);
     }
 
-    textFieldElement(feed?: (event: changeEvent) => boolean, sx?: SxProps<Theme>) {
+    textFieldElement(sx?: SxProps<Theme>) {
         return <WithStyleTextField
             fullWidth
             size={this.props.size}
-            onChange={feed || this.validate.bind(this)}
+            onChange={this.validate.bind(this)}
             error={!this.state.passed}
             placeholder="https://www.youtube.com/watch?v=tXKG7p4Fn5E"
             name="yt-url"
@@ -180,10 +177,10 @@ export class SearchBarForYoutubeVideo extends SearchBar {
                 endAdornment: this.goSearch(),
             }}
             onKeyDown={this.onEnterPress.bind(this)}
-            inputRef={feed ? null : this.props.pocket}
             autoFocus
             className={this.props.className}
             sx={sx}
+            value={this.state.url}
         />
     }
 

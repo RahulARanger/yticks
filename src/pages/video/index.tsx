@@ -2,7 +2,6 @@ import Head from "next/head";
 import { Component, ReactNode, RefObject, createRef } from "react";
 import Header from "@/components/header";
 import DetailedPageView, {
-    FromMainPageWhichAreProps,
     FromMainPageWhichAreState,
 } from "@/components/Video/DetailedPageView";
 import Settings, {
@@ -17,10 +16,8 @@ interface DetailedVideoViewState
 }
 
 export default class DetailedVideoView extends Component<
-    FromMainPageWhichAreProps,
     DetailedVideoViewState
 > {
-    searchBar: RefObject<HTMLInputElement> = createRef();
     state: DetailedVideoViewState = {
         videoID: "",
         openSettings: false,
@@ -50,7 +47,6 @@ export default class DetailedVideoView extends Component<
                     textSearched={this.state.videoID}
                     title="YTicks"
                     onSearch={this.handleSearch.bind(this)}
-                    pocket={this.searchBar}
                     onSettingsRequest={this.toggleSettings.bind(this, true)}
                 />
                 <Settings
@@ -60,7 +56,6 @@ export default class DetailedVideoView extends Component<
                 {this.state.videoID ? (
                     <DetailedPageView
                         videoID={this.state.videoID}
-                        suggest={this.searchBar}
                     />
                 ) : (
                     <></>

@@ -124,7 +124,6 @@ export default class Header extends Component<HeaderProps, HeaderStates> {
                             size={showAtTop ? "small" : "medium"}
                             onSearch={this.props.onSearch}
                             className={headerStyles.textField}
-                            pocket={this.props.pocket}
                             atTop={showAtTop}
                         />
 

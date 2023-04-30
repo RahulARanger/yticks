@@ -6,17 +6,13 @@ import CommentArea, { CommentSharedProps } from "@/components/Video/comments";
 import VideoStyle from "@/styles/video.module.css";
 import Stack from "@mui/material/Stack";
 
-export interface FromMainPageWhichAreProps {
-    suggest: RefObject<HTMLInputElement>;
-}
 
 export interface FromMainPageWhichAreState {
     videoID: string;
 }
 
 export interface DetailedPageViewRelatedProps
-    extends FromMainPageWhichAreProps,
-    FromMainPageWhichAreState { }
+    extends FromMainPageWhichAreState { }
 
 interface VideoSummaryState
     extends VideoPlayerSharedProps,
