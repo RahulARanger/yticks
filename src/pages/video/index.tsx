@@ -21,10 +21,15 @@ class DetailedVideoView extends Component<
 > {
     state: DetailedVideoViewState = {
         videoID: "",
-        openSettings: false,
+        openSettings: false
     };
 
     handleSearch(videoID: string): void {
+        this.props.router.push(
+            {
+                pathname: this.props.router.pathname, query: { id: videoID }
+            }
+        )
         this.setState({ videoID });
     }
 
@@ -49,7 +54,7 @@ class DetailedVideoView extends Component<
                     title="YTicks"
                     onSearch={this.handleSearch.bind(this)}
                     onSettingsRequest={this.toggleSettings.bind(this, true)}
-                    requested={String(this.props.router.query.q || "")}
+                    requested={String(this.props.router.query.q || this.props.router.query.id || "")}
                 />
                 <Settings
                     open={this.state.openSettings}

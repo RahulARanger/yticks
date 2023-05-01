@@ -197,6 +197,10 @@ export class SearchBarForYoutubeVideo extends SearchBar {
     componentDidUpdate(): void {
         if (this.props.atTop) return;
         if (!this.state.url && this.props.requested) {
+            if (!this.props.requested.startsWith("https")) {
+                this.props.onSearch(this.props.requested);
+                return;
+            }
             const found = this._handleRedirect(this.props.requested)
             if (!found) return alert(`${this.props.requested} is not proper URL, please check once`)
             this.props.onSearch(found);
