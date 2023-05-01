@@ -3,9 +3,7 @@ import {
     ChangeEvent,
     Component,
     ReactNode,
-    KeyboardEvent,
-    createRef,
-    RefObject
+    KeyboardEvent
 } from "react";
 import InputAdornment from "@mui/material/InputAdornment";
 import IconButton from "@mui/material/IconButton";
@@ -30,6 +28,7 @@ interface SearchBarState {
 
 export interface SharedProps {
     onSearch: (videoId: string) => void;
+    requested: string;
 }
 
 interface SearchBarProps extends SharedProps {
@@ -57,8 +56,9 @@ const WithStyleTextField = styled(TextField)(({ theme }) => {
     };
 });
 
+
 abstract class SearchBar extends Component<SearchBarProps, SearchBarState> {
-    state: SearchBarState = { modalOpened: false, url: "" };
+    state: SearchBarState = { modalOpened: false, url: "" }
 
     abstract handleRedirect(): undefined;
     abstract textFieldElement(sx?: SxProps<Theme>): ReactNode;
@@ -134,19 +134,22 @@ export class SearchBarForYoutubeVideo extends SearchBar {
     protected validate(event: changeEvent): boolean {
         const url: string = (event.target.value = event.target.value.trim());
         this.setState({
-            passed: this.regMatcher.test(url),
+            passed: this.regMatcher.test(url), url
         });
-        this.setState({ url })
         return true;
+    }
+
+    _handleRedirect(url: string) {
+        const matches = url.match(this.regMatcher);
+
+        const found = matches?.at(-2) ?? false;
+        return found === "shorts" ? matches?.at(-1)?.slice(1) ?? false : found;
     }
 
     handleRedirect(): undefined {
         if (!this.state.passed) return;
-        const url: string = this.state.url;
-        const matches = url.match(this.regMatcher);
 
-        let found = matches?.at(-2) ?? false;
-        found = found === "shorts" ? matches?.at(-1)?.slice(1) ?? false : found;
+        const found = this._handleRedirect(this.state.url)
 
         if (!found) {
             this.state.passed = false;
@@ -189,5 +192,14 @@ export class SearchBarForYoutubeVideo extends SearchBar {
         if (!this.props.atTop) return this.textFieldElement();
         return this.searchModal()
     }
-}
 
+
+    componentDidUpdate(): void {
+        if (this.props.atTop) return;
+        if (!this.state.url && this.props.requested) {
+            const found = this._handleRedirect(this.props.requested)
+            if (!found) return alert(`${this.props.requested} is not proper URL, please check once`)
+            this.props.onSearch(found);
+        }
+    }
+}

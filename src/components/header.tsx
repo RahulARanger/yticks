@@ -125,6 +125,7 @@ export default class Header extends Component<HeaderProps, HeaderStates> {
                             onSearch={this.props.onSearch}
                             className={headerStyles.textField}
                             atTop={showAtTop}
+                            requested={this.props.requested}
                         />
 
                         {this.iconButtons()}
