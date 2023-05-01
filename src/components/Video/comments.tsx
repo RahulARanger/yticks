@@ -28,8 +28,24 @@ import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import Box from "@mui/material/Box";
 import CloudIcon from "@mui/icons-material/Cloud";
+import ReactEChartsCore from 'echarts-for-react/lib/core';
+import * as echarts from 'echarts/core';
+import {
+    BarChart, BarSeriesOption
+} from "echarts/charts"
+import {
+    TooltipComponent, DatasetComponent, GridComponent, TitleComponent
+} from "echarts/components"
+import {
+    CanvasRenderer
+} from 'echarts/renderers';
 
 dayjs.extend(relativeTime);
+
+echarts.use(
+    [TitleComponent, TooltipComponent, GridComponent, BarChart, CanvasRenderer]
+);
+
 
 export interface CommentSharedProps {
     videoID: string;
@@ -282,6 +298,11 @@ function CommentFooter(props: { videoID: string }) {
     return <></>;
 }
 
+function SentimentChart(props: { videoID: string }) {
+    const { data, error, isLoading } = AskCommentThreads(props.videoID);
+    return <></>
+}
+
 export default class CommentArea extends ListArea<CommentProps, CommentState> {
     title: string = "Comments";
     state: CommentState = {}
@@ -293,6 +314,7 @@ export default class CommentArea extends ListArea<CommentProps, CommentState> {
                 justifyContent={"center"}
                 alignContent="center"
             >
+                <SentimentChart videoID={this.props.videoID} />
                 <CommentCount
                     formatter={this.props.formatter}
                     videoID={this.props.videoID}

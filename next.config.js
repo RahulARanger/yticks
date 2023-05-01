@@ -1,7 +1,8 @@
-const constants = require("next/constants")
+const constants = require("next/constants");
+const withTM = require("next-transpile-modules")(["echarts", "zrender"]);
 
 /** @type {import('next').NextConfig} */
-const nextConfig = {
+const nextConfig = withTM({
   reactStrictMode: true,
   images: {
     remotePatterns: [
@@ -19,7 +20,7 @@ const nextConfig = {
       }
     ]
   }
-}
+})
 
 module.exports = (phase, { defaultConfig }) => {
   let extras = {};

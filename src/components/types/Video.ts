@@ -32,7 +32,7 @@ export interface VideoDetails {
             title: string;
             description: string;
         };
-        defaultAudioLanguage: string;
+        defaultAudioLanguage?: string;
     };
     contentDetails: {
         duration: string;
@@ -116,7 +116,7 @@ export interface VideoDetails {
             ytRating?: string;
         };
         projection: string;
-        hasCustomThumbnail: boolean;
+        hasCustomThumbnail?: boolean;
     };
     status: {
         uploadStatus?: string;
