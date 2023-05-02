@@ -9,9 +9,9 @@ import ListItemText from "@mui/material/ListItemText";
 import IconButton from "@mui/material/IconButton";
 import Button from "@mui/material/Button";
 import CommentIcon from "@mui/icons-material/Comment";
-import { ReactNode, Fragment, useRef, SyntheticEvent } from "react";
+import { ReactNode, Fragment, useRef, SyntheticEvent, useState } from "react";
 import Typography from "@mui/material/Typography";
-import { AskCommentThreads, AskVideo } from "../helper/ask";
+import { AskCommentThreads, askLangResults, AskVideo } from "../helper/ask";
 import { CommentThread } from "../types/Comments";
 import Alert from "@mui/material/Alert";
 import Avatar from "@mui/material/Avatar";
@@ -39,6 +39,8 @@ import {
 import {
     CanvasRenderer
 } from 'echarts/renderers';
+import { AskForLanguage, LanguageResult } from "../types/askForNLP";
+import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh';
 
 dayjs.extend(relativeTime);
 
@@ -135,6 +137,11 @@ function CommentItemFooter(props: {
     formatter: Intl.NumberFormat;
 }) {
     // note secondary text is p tag, so ensure there's no big tags like div, p inside it 
+    const [plot, setPlot] = useState<AskForLanguage | undefined>(undefined)
+
+    function plotChart(results: AskForLanguage) {
+        setPlot(results)
+    }
 
     const details = props.details;
     const topLevelComment = details.snippet.topLevelComment;
@@ -175,9 +182,28 @@ function CommentItemFooter(props: {
                 />
                 {showMore}
                 {edit}
+                <FetchMoreInfo comment_id={topLevelComment.id} text={topLevelComment.snippet.textOriginal} />
             </Stack>
         </>
     );
+}
+
+function FetchMoreInfo(props: { text: string, comment_id: string }) {
+    const results = useRef(null);
+    const [requested, setRequested] = useState(false)
+    const { data, error, isLoading } = askLangResults(props.text, props.comment_id, requested)
+    const passed = data?.details && (data.details[0].label)
+    return (<>
+        {!passed ? (
+            <IconButton color="primary" disabled={isLoading} onClick={
+                async function () {
+                    setRequested(true);
+                }
+            }>
+                <AutoFixHighIcon />
+            </IconButton>
+        ) : <></>}
+    </>)
 }
 
 function CommentAvatarComponent(props: { pfp: string; className: string }) {

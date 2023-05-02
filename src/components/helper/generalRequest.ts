@@ -28,25 +28,28 @@ export async function requestFromUser(
     return fetch(urlWithArgs(url, args));
 }
 
+async function ensure(url: string, response: Response) {
+    if (response.ok) return;
+
+    let resp;
+    try {
+        resp = await response.json();
+    } catch (error) {
+        throw new Error(
+            `Failed to request url: ${url} because, ${response.statusText}`
+        );
+    }
+    if (resp?.failed) throw new Error(resp?.failed);
+    throw new Error(
+        `Unknown Error, please note the steps and let me know || ${response.statusText} - ${url}	`
+    );
+}
+
 export async function askButRead<ExpectedResponse>(
     url: string
 ): Promise<ExpectedResponse> {
     return fetch(url).then(async function (response) {
-        let resp;
-        if (!response.ok) {
-            try {
-                resp = await response.json();
-            } catch (error) {
-                throw new Error(
-                    `Failed to request url: ${url} because, ${response.statusText}`
-                );
-            }
-
-            if (resp?.failed) throw new Error(resp?.failed);
-            throw new Error(
-                `Unknown Error, please note the steps and let me know || ${response.statusText} - ${url}	`
-            );
-        }
+        await ensure(url, response);
         return response.json();
     });
 }
@@ -67,4 +70,20 @@ export function sendError(actualError: unknown, fallbackError: string): string {
         "_KEY_"
     );
     return safeError ?? fallbackError;
+}
+
+export async function askHuggingFace<ExpectedResponse>(
+    url: string,
+    body: Object
+): Promise<ExpectedResponse> {
+    return await fetch(url, {
+        headers: {
+            Authorization: `Bearer ${process.env.HUGGING_FACE}`,
+        },
+        method: "POST",
+        body: JSON.stringify(body),
+    }).then(async function (response) {
+        await ensure(url, response);
+        return response.json();
+    });
 }

@@ -4,6 +4,8 @@ import useSWRInfinite from "swr/infinite";
 import { askButRead } from "./generalRequest";
 import { ExpectedVideoDetails } from "@/pages/api/data/videoById";
 import { ExpectedCommentThread } from "@/pages/api/data/commentThreads";
+import { extract_needed } from "./simpilify";
+import { ExpectedLanguageResults } from "@/pages/api/data/detectLanguage";
 
 const isMock = process.env.NEXT_PUBLIC_IS_DEV ? "mock" : "data";
 
@@ -39,6 +41,16 @@ function loadComments(
         videoID: videoID,
         pageToken: token || "",
     });
+}
+
+
+export function askLangResults(comment_text: string, commentID: string, sendIt: boolean): SWRResponse<ExpectedLanguageResults> {
+    return useSWRImmutable(
+        sendIt ? urlWithArgs(`/api/${isMock}/detectLanguage`, {
+            commentText: extract_needed(comment_text), commentID
+        }) : null,
+        (url: string) => askButRead<ExpectedLanguageResults>(url)
+    );
 }
 
 interface SWRInfResponse<Details> {
