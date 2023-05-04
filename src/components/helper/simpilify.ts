@@ -8,7 +8,7 @@ export function extract_needed(originalText: string): string {
 }
 
 export function isModalLoading(
-    _response: NextApiResponse<ExpectedDetails<false>>,
+    _response: NextApiResponse<ExpectedDetails<any> | undefined>,
     response: { error: string; estimated_time: number } | any
 ) {
     if (response?.error && typeof response?.estimated_time === "number")

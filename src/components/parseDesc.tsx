@@ -28,6 +28,12 @@ export function YoutubeHashTag(props: { tag: string }) {
 
 export default function ParseDesc(props: DescProps) {
     if (!props.text) return <br />;
+    const style = {
+        whiteSpace: "break-spaces",
+        overflowWrap: "break-word",
+        display: "inline-block",
+    };
+
     const words = props.text.split(" ");
     const components = words.map(function (word, index) {
         if (word.startsWith("#")) {
@@ -36,18 +42,27 @@ export default function ParseDesc(props: DescProps) {
 
         if (word.startsWith("http") || word.startsWith("www")) {
             return (
-                <Link key={index} href={word}>
+                <Link key={index} href={word} sx={style}>
                     {word}&nbsp;
                 </Link>
             );
         }
-        return <span key={index}>{word + " "}</span>;
+        return (
+            <span
+                key={index}
+                style={{
+                    display: "inline-block",
+                }}
+            >
+                {word}&nbsp;
+            </span>
+        );
     });
     return (
         <Typography
             variant={props.variant ?? "body2"}
             component={"span"}
-            sx={{ wordWrap: "word-break" }}
+            sx={style}
         >
             {components}
         </Typography>

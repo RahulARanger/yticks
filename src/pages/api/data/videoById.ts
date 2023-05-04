@@ -1,6 +1,6 @@
-import { ExpectedDetails } from "@/components/types/response";
+import { ExpectedDetails, unpredictableResponse } from "@/components/types/response";
 import { VideoListDetails } from "@/components/types/Video";
-import type { NextApiRequest, NextApiResponse } from "next";
+import type { NextApiRequest } from "next";
 import ask, {
     letThemKnow,
     sendError,
@@ -10,11 +10,11 @@ export interface contentDetails {
     duration: string;
 }
 
-export type ExpectedVideoDetails = ExpectedDetails<VideoListDetails | false>;
+export type ExpectedVideoDetails = ExpectedDetails<VideoListDetails>;
 
 export default async function handler(
     request: NextApiRequest,
-    response: NextApiResponse<ExpectedVideoDetails>
+    response: unpredictableResponse
 ) {
     const { videoID, maxWidth, maxHeight } = request.query;
 

@@ -197,10 +197,7 @@ export function PureVideoSummary(props: miniProps) {
 
     return (
         <>
-            <Box
-                flexDirection={"column"}
-                flexWrap={"nowrap"}
-            >
+            <Box flexDirection={"column"} flexWrap={"nowrap"}>
                 <Typography gutterBottom variant="h5" mt="10px">
                     {snippet.title}
                 </Typography>

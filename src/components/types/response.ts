@@ -1,6 +1,8 @@
+import type { NextApiResponse } from "next";
+
 export interface ExpectedDetails<T> {
     failed: false | string;
-    details: T | false;
+    details: T | undefined;
 }
 
 export interface errorResponse {
@@ -10,3 +12,7 @@ export interface errorResponse {
         errors: Array<string>;
     };
 }
+
+export type unpredictableResponse = NextApiResponse<
+    ExpectedDetails<any> | undefined
+>;

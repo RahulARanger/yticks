@@ -1,5 +1,5 @@
-import { ExpectedDetails } from "@/components/types/response";
-import type { NextApiRequest, NextApiResponse } from "next";
+import { ExpectedDetails, unpredictableResponse } from "@/components/types/response";
+import type { NextApiRequest } from "next";
 import {
     askHuggingFace,
     letThemKnow,
@@ -31,11 +31,11 @@ export const languageMap = {
     zh: "chinese",
 };
 
-export type ExpectedLanguageResults = ExpectedDetails<AskForLanguage | false>;
+export type ExpectedLanguageResults = ExpectedDetails<AskForLanguage>;
 
 export default async function handler(
     request: NextApiRequest,
-    response: NextApiResponse<ExpectedLanguageResults>
+    response: unpredictableResponse
 ) {
     const { commentText, commentID } = request.query;
     // commentID is planned to be used in the future {in DB}

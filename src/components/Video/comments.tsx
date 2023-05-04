@@ -11,7 +11,7 @@ import Button from "@mui/material/Button";
 import CommentIcon from "@mui/icons-material/Comment";
 import { ReactNode, Fragment, useRef, SyntheticEvent, useState } from "react";
 import Typography from "@mui/material/Typography";
-import { AskCommentThreads, askLangResults, AskVideo } from "../helper/ask";
+import { AskCommentThreads, AskLangResults, AskVideo } from "../helper/ask";
 import { CommentThread } from "../types/Comments";
 import Alert from "@mui/material/Alert";
 import Avatar from "@mui/material/Avatar";
@@ -28,26 +28,28 @@ import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import Box from "@mui/material/Box";
 import CloudIcon from "@mui/icons-material/Cloud";
-import ReactEChartsCore from 'echarts-for-react/lib/core';
-import * as echarts from 'echarts/core';
+import ReactEChartsCore from "echarts-for-react/lib/core";
+import * as echarts from "echarts/core";
+import { BarChart, BarSeriesOption } from "echarts/charts";
 import {
-    BarChart, BarSeriesOption
-} from "echarts/charts"
-import {
-    TooltipComponent, DatasetComponent, GridComponent, TitleComponent
-} from "echarts/components"
-import {
-    CanvasRenderer
-} from 'echarts/renderers';
+    TooltipComponent,
+    DatasetComponent,
+    GridComponent,
+    TitleComponent,
+} from "echarts/components";
+import { CanvasRenderer } from "echarts/renderers";
 import { AskForLanguage, LanguageResult } from "../types/askForNLP";
-import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh';
+import AutoFixHighIcon from "@mui/icons-material/AutoFixHigh";
 
 dayjs.extend(relativeTime);
 
-echarts.use(
-    [TitleComponent, TooltipComponent, GridComponent, BarChart, CanvasRenderer]
-);
-
+echarts.use([
+    TitleComponent,
+    TooltipComponent,
+    GridComponent,
+    BarChart,
+    CanvasRenderer,
+]);
 
 export interface CommentSharedProps {
     videoID: string;
@@ -55,7 +57,7 @@ export interface CommentSharedProps {
 
 interface CommentProps extends CommentSharedProps {
     formatter: Intl.NumberFormat;
-    className?: string
+    className?: string;
 }
 
 interface CommentState {
@@ -107,7 +109,11 @@ export function LikeComponent(props: { userLiked?: boolean; count: string }) {
                 <IconButton color="primary" disabled>
                     {icon}
                 </IconButton>
-                <Typography variant={"subtitle2"} sx={{ mb: "-2px" }} component="span">
+                <Typography
+                    variant={"subtitle2"}
+                    sx={{ mb: "-2px" }}
+                    component="span"
+                >
                     {props.count}
                 </Typography>
             </Stack>
@@ -132,15 +138,25 @@ function NameComponent(props: { authorName: string; date: string }) {
     );
 }
 
+function langResultsChart(
+    results: AskForLanguage | false | string | undefined
+) {
+    if (!results) return <></>;
+    if (typeof results === "string") return;
+    return "hi";
+}
+
 function CommentItemFooter(props: {
     details: CommentThread;
     formatter: Intl.NumberFormat;
 }) {
-    // note secondary text is p tag, so ensure there's no big tags like div, p inside it 
-    const [plot, setPlot] = useState<AskForLanguage | undefined>(undefined)
+    // note secondary text is p tag, so ensure there's no big tags like div, p inside it
+    const [langPlot, setLangPlot] = useState<
+        AskForLanguage | false | undefined
+    >(undefined);
 
-    function plotChart(results: AskForLanguage) {
-        setPlot(results)
+    function plotChart(results: AskForLanguage | false) {
+        setLangPlot(results);
     }
 
     const details = props.details;
@@ -148,6 +164,8 @@ function CommentItemFooter(props: {
     const isEdited =
         topLevelComment.snippet.publishedAt !==
         topLevelComment.snippet.updatedAt;
+
+    const results = langResultsChart(langPlot);
 
     const edit = isEdited ? (
         <Typography variant={"caption"} fontSize={"small"} component="span">
@@ -182,28 +200,50 @@ function CommentItemFooter(props: {
                 />
                 {showMore}
                 {edit}
-                <FetchMoreInfo comment_id={topLevelComment.id} text={topLevelComment.snippet.textOriginal} />
+                <FetchMoreInfo
+                    comment_id={topLevelComment.id}
+                    text={topLevelComment.snippet.textOriginal}
+                    sendLangResults={plotChart}
+                />
             </Stack>
+            {results}
         </>
     );
 }
 
-function FetchMoreInfo(props: { text: string, comment_id: string }) {
+function FetchMoreInfo(props: {
+    text: string;
+    comment_id: string;
+    sendLangResults: (results: AskForLanguage) => void;
+}) {
     const results = useRef(null);
-    const [requested, setRequested] = useState(false)
-    const { data, error, isLoading } = askLangResults(props.text, props.comment_id, requested)
-    const passed = data?.details && (data.details[0].label)
-    return (<>
-        {!passed ? (
-            <IconButton color="primary" disabled={isLoading} onClick={
-                async function () {
-                    setRequested(true);
-                }
-            }>
-                <AutoFixHighIcon />
-            </IconButton>
-        ) : <></>}
-    </>)
+    const [requested, setRequested] = useState(false);
+    const {
+        data: langResults,
+        error,
+        isLoading,
+    } = AskLangResults(props.text, props.comment_id, requested);
+    const passed = langResults?.details && langResults.details[0].label;
+
+    passed && props.sendLangResults(langResults);
+
+    return (
+        <>
+            {!passed ? (
+                <IconButton
+                    color="primary"
+                    disabled={isLoading}
+                    onClick={async function () {
+                        setRequested(true);
+                    }}
+                >
+                    <AutoFixHighIcon />
+                </IconButton>
+            ) : (
+                <></>
+            )}
+        </>
+    );
 }
 
 function CommentAvatarComponent(props: { pfp: string; className: string }) {
@@ -286,9 +326,14 @@ export function CommentListItems(props: CommentProps) {
                 <span>Loading...</span>
             ) : (
                 <Alert title="Error" severity="error" color="error">
-                    {data?.at(-1)?.failed ||
-                        String(error) ||
-                        "Failed to fetch the required comments"}
+                    <div
+                        dangerouslySetInnerHTML={{
+                            __html:
+                                data?.at(-1)?.failed ||
+                                String(error) ||
+                                "Failed to fetch the required comments",
+                        }}
+                    ></div>
                 </Alert>
             )}
         </Stack>
@@ -296,15 +341,19 @@ export function CommentListItems(props: CommentProps) {
 }
 
 function CommentFooter(props: { videoID: string }) {
-    const { data, error: _, isLoading, size, setSize } = AskCommentThreads(
-        props.videoID
-    );
+    const {
+        data,
+        error: _,
+        isLoading,
+        size,
+        setSize,
+    } = AskCommentThreads(props.videoID);
     const details = data?.at(-1)?.details;
 
     const notReady =
         isLoading || (size > 0 && typeof data?.at(size - 1) === "undefined");
 
-    if (details && details?.nextPageToken) {
+    if (details?.nextPageToken) {
         return (
             <ListItemButton
                 sx={{ textAlign: "center" }}
@@ -324,14 +373,9 @@ function CommentFooter(props: { videoID: string }) {
     return <></>;
 }
 
-function SentimentChart(props: { videoID: string }) {
-    const { data, error, isLoading } = AskCommentThreads(props.videoID);
-    return <></>
-}
-
 export default class CommentArea extends ListArea<CommentProps, CommentState> {
     title: string = "Comments";
-    state: CommentState = {}
+    state: CommentState = {};
 
     header() {
         return (
@@ -340,7 +384,6 @@ export default class CommentArea extends ListArea<CommentProps, CommentState> {
                 justifyContent={"center"}
                 alignContent="center"
             >
-                <SentimentChart videoID={this.props.videoID} />
                 <CommentCount
                     formatter={this.props.formatter}
                     videoID={this.props.videoID}
@@ -358,10 +401,7 @@ export default class CommentArea extends ListArea<CommentProps, CommentState> {
                     alignItems={"baseline"}
                 >
                     <Typography>{name}</Typography>
-                    <Typography
-                        data-id={publishedDate}
-                        variant="caption"
-                    >
+                    <Typography data-id={publishedDate} variant="caption">
                         {publishedDate}
                     </Typography>
                 </Stack>
@@ -395,15 +435,18 @@ export default class CommentArea extends ListArea<CommentProps, CommentState> {
     render(): ReactNode {
         const valueForComments = "comment-box";
         const valueForWordCloud = "word-cloud";
-        const selected = this.state.tabSelected ?? valueForComments
+        const selected = this.state.tabSelected ?? valueForComments;
 
         return (
             <Box className={this.props.className}>
                 <TabContext value={selected}>
                     <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-                        <TabList aria-label="Tabs for the comments seen for the Youtube video" onChange={(_: SyntheticEvent, newValue: string) => {
-                            // this.setState({ tabSelected: newValue })
-                        }}>
+                        <TabList
+                            aria-label="Tabs for the comments seen for the Youtube video"
+                            onChange={(_: SyntheticEvent, newValue: string) => {
+                                // this.setState({ tabSelected: newValue })
+                            }}
+                        >
                             <Tab
                                 icon={<CommentIcon />}
                                 value={valueForComments}

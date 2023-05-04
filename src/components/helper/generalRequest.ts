@@ -1,6 +1,4 @@
-import type { NextApiResponse } from "next";
-import { env } from "process";
-import { ExpectedDetails } from "../types/response";
+import { unpredictableResponse } from "../types/response";
 
 type askArgs = { [key: string]: string };
 
@@ -54,13 +52,10 @@ export async function askButRead<ExpectedResponse>(
     });
 }
 
-export function letThemKnow(
-    response: NextApiResponse<ExpectedDetails<false>>,
-    error: string
-) {
+export function letThemKnow(response: unpredictableResponse, error: string) {
     response.status(500).json({
         failed: error,
-        details: false,
+        details: undefined,
     });
 }
 

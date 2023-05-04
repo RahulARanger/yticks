@@ -43,12 +43,18 @@ function loadComments(
     });
 }
 
-
-export function askLangResults(comment_text: string, commentID: string, sendIt: boolean): SWRResponse<ExpectedLanguageResults> {
+export function AskLangResults(
+    comment_text: string,
+    commentID: string,
+    sendIt: boolean
+): SWRResponse<ExpectedLanguageResults> {
     return useSWRImmutable(
-        sendIt ? urlWithArgs(`/api/${isMock}/detectLanguage`, {
-            commentText: extract_needed(comment_text), commentID
-        }) : null,
+        sendIt
+            ? urlWithArgs(`/api/${isMock}/detectLanguage`, {
+                  commentText: extract_needed(comment_text),
+                  commentID,
+              })
+            : null,
         (url: string) => askButRead<ExpectedLanguageResults>(url)
     );
 }

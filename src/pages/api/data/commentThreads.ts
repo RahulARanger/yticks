@@ -7,12 +7,12 @@ import ask, {
 } from "../../../components/helper/generalRequest";
 
 export type ExpectedCommentThread = ExpectedDetails<
-    ListCommentThreadResponse | false
+    ListCommentThreadResponse
 >;
 
 export default async function handler(
     request: NextApiRequest,
-    response: NextApiResponse<ExpectedCommentThread>
+    response: NextApiResponse<ExpectedCommentThread | undefined>
 ) {
     const { videoID, pageToken } = request.query;
 
