@@ -32,6 +32,7 @@ export default function ParseDesc(props: DescProps) {
         whiteSpace: "break-spaces",
         overflowWrap: "break-word",
         display: "inline-block",
+        wordBreak: "break-word",
     };
 
     const words = props.text.split(" ");
