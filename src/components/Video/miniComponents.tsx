@@ -83,11 +83,13 @@ export function CommentAvatarComponent(props: {
                         alt="Profile Picture"
                         quality={"100"}
                         onError={fallback}
+                        sizes="40px"
                     />
                 ) : (
                     <PersonIcon />
                 )}
             </Avatar>
         </ListItemAvatar>
+
     );
 }
