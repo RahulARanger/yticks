@@ -1,4 +1,7 @@
-import { ExpectedDetails, unpredictableResponse } from "@/components/types/response";
+import {
+    ExpectedDetails,
+    unpredictableResponse,
+} from "@/components/types/response";
 import type { NextApiRequest } from "next";
 import {
     askHuggingFace,

@@ -4,7 +4,6 @@ import Chip from "@mui/material/Chip";
 import Tooltip from "@mui/material/Tooltip";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
-import ListItemAvatar from "@mui/material/ListItemAvatar";
 import ListItemText from "@mui/material/ListItemText";
 import IconButton from "@mui/material/IconButton";
 import Button from "@mui/material/Button";
@@ -14,14 +13,10 @@ import Typography from "@mui/material/Typography";
 import { AskCommentThreads, AskLangResults, AskVideo } from "../helper/ask";
 import { CommentThread } from "../types/Comments";
 import Alert from "@mui/material/Alert";
-import Avatar from "@mui/material/Avatar";
 import Skeleton from "@mui/material/Skeleton";
-import Image from "next/image";
 import EditIcon from "@mui/icons-material/Edit";
-import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import CommentStyles from "@/styles/comments.module.css";
 import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
 import Tab from "@mui/material/Tab";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
@@ -40,8 +35,17 @@ import {
 import { CanvasRenderer } from "echarts/renderers";
 import { AskForLanguage, LanguageResult } from "../types/askForNLP";
 import AutoFixHighIcon from "@mui/icons-material/AutoFixHigh";
-
-dayjs.extend(relativeTime);
+import LanguageIcon from "@mui/icons-material/Language";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
+import {
+    LikeComponent,
+    NameComponent,
+    CommentAvatarComponent,
+} from "./miniComponents";
 
 echarts.use([
     TitleComponent,
@@ -62,6 +66,11 @@ interface CommentProps extends CommentSharedProps {
 
 interface CommentState {
     tabSelected?: string;
+}
+
+interface RequestForMoreDetails {
+    requestFor: string;
+    response: AskForLanguage;
 }
 
 export function CommentCount(props: CommentProps) {
@@ -90,54 +99,6 @@ export function CommentCount(props: CommentProps) {
     );
 }
 
-export function LikeComponent(props: { userLiked?: boolean; count: string }) {
-    const icon = (
-        <ThumbUpIcon
-            color={props.userLiked ? "action" : "disabled"}
-            fontSize="small"
-        />
-    );
-    return (
-        <>
-            <Stack
-                direction="row"
-                alignItems="center"
-                justifyContent="space-between"
-                flexWrap={"nowrap"}
-                component="span"
-            >
-                <IconButton color="primary" disabled>
-                    {icon}
-                </IconButton>
-                <Typography
-                    variant={"subtitle2"}
-                    sx={{ mb: "-2px" }}
-                    component="span"
-                >
-                    {props.count}
-                </Typography>
-            </Stack>
-        </>
-    );
-}
-
-function NameComponent(props: { authorName: string; date: string }) {
-    return (
-        <>
-            <Stack
-                justifyContent={"space-between"}
-                flexDirection={"row"}
-                flexWrap={"nowrap"}
-            >
-                <Typography variant="subtitle2">{props.authorName}</Typography>
-                <Typography variant="caption" sx={{ fontStyle: "italic" }}>
-                    {dayjs(props.date).fromNow()}
-                </Typography>
-            </Stack>
-        </>
-    );
-}
-
 function langResultsChart(
     results: AskForLanguage | false | string | undefined
 ) {
@@ -151,21 +112,12 @@ function CommentItemFooter(props: {
     formatter: Intl.NumberFormat;
 }) {
     // note secondary text is p tag, so ensure there's no big tags like div, p inside it
-    const [langPlot, setLangPlot] = useState<
-        AskForLanguage | false | undefined
-    >(undefined);
-
-    function plotChart(results: AskForLanguage | false) {
-        setLangPlot(results);
-    }
 
     const details = props.details;
     const topLevelComment = details.snippet.topLevelComment;
     const isEdited =
         topLevelComment.snippet.publishedAt !==
         topLevelComment.snippet.updatedAt;
-
-    const results = langResultsChart(langPlot);
 
     const edit = isEdited ? (
         <Typography variant={"caption"} fontSize={"small"} component="span">
@@ -203,56 +155,51 @@ function CommentItemFooter(props: {
                 <FetchMoreInfo
                     comment_id={topLevelComment.id}
                     text={topLevelComment.snippet.textOriginal}
-                    sendLangResults={plotChart}
                 />
             </Stack>
-            {results}
         </>
     );
 }
 
-function FetchMoreInfo(props: {
-    text: string;
-    comment_id: string;
-    sendLangResults: (results: AskForLanguage) => void;
-}) {
+function FetchMoreInfo(props: { text: string; comment_id: string }) {
     const results = useRef(null);
-    const [requested, setRequested] = useState(false);
+    const [requestedForLang, setRequestedForLang] = useState(false);
     const {
         data: langResults,
         error,
         isLoading,
-    } = AskLangResults(props.text, props.comment_id, requested);
+    } = AskLangResults(props.text, props.comment_id, requestedForLang);
     const passed = langResults?.details && langResults.details[0].label;
-
-    passed && props.sendLangResults(langResults);
+    let title;
+    let comp = <></>;
+    if (!requestedForLang || isLoading || error) {
+        title = error ? String(error) : "Ask";
+        comp = (
+            <IconButton
+                color="primary"
+                disabled={isLoading || Boolean(error)}
+                onClick={async function () {
+                    setRequestedForLang(true);
+                }}
+            >
+                <AutoFixHighIcon />
+            </IconButton>
+        );
+    } else if (passed) {
+        title = "Language";
+        comp = (
+            <IconButton color="info">
+                <LanguageIcon />
+            </IconButton>
+        );
+    }
 
     return (
         <>
-            {!passed ? (
-                <IconButton
-                    color="primary"
-                    disabled={isLoading}
-                    onClick={async function () {
-                        setRequested(true);
-                    }}
-                >
-                    <AutoFixHighIcon />
-                </IconButton>
-            ) : (
-                <></>
-            )}
+            <Tooltip title={title}>
+                <span>{comp}</span>
+            </Tooltip>
         </>
-    );
-}
-
-function CommentAvatarComponent(props: { pfp: string; className: string }) {
-    return (
-        <ListItemAvatar>
-            <Avatar className={props.className}>
-                <Image src={props.pfp} fill alt="User Pfp" quality={"100"} />
-            </Avatar>
-        </ListItemAvatar>
     );
 }
 
@@ -272,7 +219,7 @@ export function CommentItem(props: {
                 primary={
                     <NameComponent
                         authorName={topLevelComment.snippet.authorDisplayName}
-                        date={topLevelComment.snippet.publishedAt}
+                        creationDate={topLevelComment.snippet.publishedAt}
                     />
                 }
                 secondary={
@@ -290,9 +237,14 @@ export function CommentItem(props: {
         </ListItem>
     );
 }
-
 export function CommentListItems(props: CommentProps) {
     const { data, error, isLoading } = AskCommentThreads(props.videoID);
+    const [isOpened, setOpened] = useState<boolean>(false);
+    // const plot = <></>;
+
+    function plotChart(data: RequestForMoreDetails) {
+        setOpened(true);
+    }
 
     if (data?.length && data.at(-1)?.details) {
         const expectedThreads = data.flatMap((commentThread) =>

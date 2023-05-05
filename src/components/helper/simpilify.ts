@@ -12,6 +12,6 @@ export function isModalLoading(
     response: { error: string; estimated_time: number } | any
 ) {
     if (response?.error && typeof response?.estimated_time === "number")
-        return letThemKnow(_response, "Modal is laoding, please request again");
+        return letThemKnow(_response, "Modal is loading, please request again");
     return false;
 }

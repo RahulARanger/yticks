@@ -53,7 +53,7 @@ export async function askButRead<ExpectedResponse>(
 }
 
 export function letThemKnow(response: unpredictableResponse, error: string) {
-    response.status(500).json({
+    response.status(502).json({
         failed: error,
         details: undefined,
     });
