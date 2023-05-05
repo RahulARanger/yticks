@@ -6,7 +6,9 @@ import dayjs from "dayjs";
 import Avatar from "@mui/material/Avatar";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
 import Image from "next/image";
+import PersonIcon from "@mui/icons-material/Person";
 import relativeTime from "dayjs/plugin/relativeTime";
+import { ReactEventHandler, useState } from "react";
 
 dayjs.extend(relativeTime);
 
@@ -66,10 +68,25 @@ export function CommentAvatarComponent(props: {
     pfp: string;
     className: string;
 }) {
+    const [isImage, setIsImage] = useState(true);
+    function fallback() {
+        setIsImage(false);
+    }
+
     return (
         <ListItemAvatar>
             <Avatar className={props.className}>
-                <Image src={props.pfp} fill alt="User Pfp" quality={"100"} />
+                {isImage ? (
+                    <Image
+                        src={props.pfp}
+                        fill
+                        alt="Profile Picture"
+                        quality={"100"}
+                        onError={fallback}
+                    />
+                ) : (
+                    <PersonIcon />
+                )}
             </Avatar>
         </ListItemAvatar>
     );
