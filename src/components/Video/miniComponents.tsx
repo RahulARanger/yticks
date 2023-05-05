@@ -8,7 +8,12 @@ import ListItemAvatar from "@mui/material/ListItemAvatar";
 import Image from "next/image";
 import PersonIcon from "@mui/icons-material/Person";
 import relativeTime from "dayjs/plugin/relativeTime";
-import { ReactEventHandler, useState } from "react";
+import { useState } from "react";
+import { AskVideo } from "../helper/ask";
+import { CommentProps } from "../types/CommentsUI";
+import Chip from "@mui/material/Chip";
+import Tooltip from "@mui/material/Tooltip";
+import CommentIcon from "@mui/icons-material/Comment";
 
 dayjs.extend(relativeTime);
 
@@ -90,6 +95,31 @@ export function CommentAvatarComponent(props: {
                 )}
             </Avatar>
         </ListItemAvatar>
+    );
+}
 
+export function CountOfComments(props: CommentProps) {
+    const { data, error } = AskVideo(props.videoID);
+
+    if (data?.details) {
+        const format = Intl.NumberFormat();
+        const commentCount =
+            Number(data.details.items[0].statistics.commentCount) ?? 0;
+
+        return (
+            <Tooltip title={`Comment Count: ${format.format(commentCount)}`}>
+                <Chip
+                    label={props.formatter.format(commentCount)}
+                    icon={<CommentIcon />}
+                    size="small"
+                    sx={{ p: "2px" }}
+                />
+            </Tooltip>
+        );
+    }
+    return (
+        <Tooltip title={data?.failed || error}>
+            <span>--</span>
+        </Tooltip>
     );
 }

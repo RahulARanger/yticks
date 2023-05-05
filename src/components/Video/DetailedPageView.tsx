@@ -2,21 +2,20 @@ import { Component, ReactNode, RefObject, createRef } from "react";
 import VideoEmbedded, {
     VideoPlayerSharedProps,
 } from "@/components/Video/youtubeVideoPlayer";
-import CommentArea, { CommentSharedProps } from "@/components/Video/comments";
+import CommentArea from "@/components/Video/commentListArea";
 import VideoStyle from "@/styles/video.module.css";
 import Stack from "@mui/material/Stack";
-
-
+import { CommentSharedProps } from "../types/CommentsUI";
 export interface FromMainPageWhichAreState {
     videoID: string;
 }
 
 export interface DetailedPageViewRelatedProps
-    extends FromMainPageWhichAreState { }
+    extends FromMainPageWhichAreState {}
 
 interface VideoSummaryState
     extends VideoPlayerSharedProps,
-    CommentSharedProps { }
+        CommentSharedProps {}
 
 export default class DetailedPageView extends Component<
     DetailedPageViewRelatedProps,
