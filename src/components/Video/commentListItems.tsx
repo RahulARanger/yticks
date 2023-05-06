@@ -37,8 +37,11 @@ function ShowMoreReplies(props: {
             title="Replies"
             onClose={props.closeModal}
             maxWidth="md"
+            PaperProps={{
+                elevation: 1,
+            }}
         >
-            <DialogTitle>
+            <DialogTitle sx={{ p: 1.5 }}>
                 <Stack
                     justifyContent={"space-between"}
                     direction="row"
@@ -61,8 +64,8 @@ function ShowMoreReplies(props: {
                     </IconButton>
                 </Stack>
             </DialogTitle>
-            <DialogContent>
-                <Paper elevation={3}>
+            <DialogContent sx={{ p: 1.5 }}>
+                <Paper elevation={4}>
                     <List>
                         {comments.map((comment: Comment) => {
                             return (
