@@ -1,60 +1,36 @@
-import { RequestForMoreDetails } from "../types/CommentsUI";
 import { CommentProps } from "../types/CommentsUI";
 import { AskCommentThreads } from "../helper/ask";
-import { CommentThread } from "../types/Comments";
+import { Comment, CommentThread } from "../types/Comments";
 import { useRef, useState } from "react";
 import CommentItem from "./commentItem";
 import Alert from "@mui/material/Alert";
 import Stack from "@mui/material/Stack";
 import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
+import List from "@mui/material/List";
 import DialogTitle from "@mui/material/DialogTitle";
 import CloseIcon from "@mui/icons-material/Close";
+import Paper from "@mui/material/Paper";
 import IconButton from "@mui/material/IconButton";
 import { Typography } from "@mui/material";
 import { AskForLanguage } from "../types/askForNLP";
 
-function EmotionalPieChart(props: { details: AskForLanguage }) { }
+function EmotionalPieChart(props: { details: AskForLanguage }) {}
 
-
-function ShowEmotionalDetails(props: {
-    comment: RequestForMoreDetails | undefined;
-    opened: boolean;
-    closeModal: () => void;
-}) {
-    const comment = props.comment?.details;
-    const results = props.comment?.results;
-
-    return (
-        <Dialog
-            open={props.opened}
-            title="Analysis on the Comment"
-            onClose={props.closeModal}
-            maxWidth="md"
-        >
-            <DialogTitle>
-                <Stack
-                    justifyContent={"space-between"}
-                    direction="row"
-                    alignItems={"center"}
-                >
-                    <Typography>Requested Details for the Comment</Typography>
-                    <IconButton onClick={props.closeModal}>
-                        <CloseIcon />
-                    </IconButton>
-                </Stack>
-            </DialogTitle>
-            <DialogContent>
-                <DialogContentText></DialogContentText>
-            </DialogContent>
-        </Dialog>
-    );
+interface selectedCommentDetails {
+    main: Comment;
+    replies?: Array<Comment>;
 }
 
+function ShowMoreReplies(props: {
+    details?: selectedCommentDetails;
+    opened: boolean;
+    closeModal: () => void;
+    formatter: Intl.NumberFormat;
+}) {
+    const comments = props?.details?.replies || [];
+    const [isOpened, setOpened] = useState<boolean>(false);
 
-function ShowMoreReplies(props: { thread?: CommentThread, opened: boolean, closeModal: () => void }) {
     return (
         <Dialog
             open={props.opened}
@@ -68,14 +44,38 @@ function ShowMoreReplies(props: { thread?: CommentThread, opened: boolean, close
                     direction="row"
                     alignItems={"center"}
                 >
-                    <Typography>Requested Details for the Comment</Typography>
+                    {props.details?.main ? (
+                        <Paper elevation={5}>
+                            <CommentItem
+                                comment={props.details.main}
+                                formatter={props.formatter}
+                                key={`_M_${props.details.main.id}`}
+                            />
+                        </Paper>
+                    ) : (
+                        <></>
+                    )}
+                    &nbsp;
                     <IconButton onClick={props.closeModal}>
                         <CloseIcon />
                     </IconButton>
                 </Stack>
             </DialogTitle>
             <DialogContent>
-                <DialogContentText></DialogContentText>
+                <Paper elevation={3}>
+                    <List>
+                        {comments.map((comment: Comment) => {
+                            return (
+                                <CommentItem
+                                    comment={comment}
+                                    key={comment.id}
+                                    formatter={props.formatter}
+                                    getReplies={(x, y) => {}}
+                                />
+                            );
+                        })}
+                    </List>
+                </Paper>
             </DialogContent>
         </Dialog>
     );
@@ -84,11 +84,12 @@ function ShowMoreReplies(props: { thread?: CommentThread, opened: boolean, close
 export default function CommentListItems(props: CommentProps) {
     const { data, error, isLoading } = AskCommentThreads(props.videoID);
     const [isOpened, setOpened] = useState<boolean>(false);
-    const selectedComment = useRef<undefined | CommentThread>();
+    const selectedComment = useRef<undefined | selectedCommentDetails>();
 
     const closeModal = () => setOpened(false);
-    function getReplies(thread: CommentThread) {
-        selectedComment.current = thread;
+    function getReplies(comment: Comment, replies?: Array<Comment>) {
+        selectedComment.current = { main: comment, replies };
+        setOpened(true);
     }
 
     if (data?.length && data.at(-1)?.details) {
@@ -101,14 +102,20 @@ export default function CommentListItems(props: CommentProps) {
                     {expectedThreads.map((commentThread: CommentThread) => {
                         return (
                             <CommentItem
-                                comment={commentThread}
+                                comment={commentThread.snippet.topLevelComment}
                                 key={commentThread.id}
                                 formatter={props.formatter}
                                 getReplies={getReplies}
+                                replies={commentThread?.replies?.comments}
                             />
                         );
                     })}
-                    <ShowMoreReplies opened={isOpened} closeModal={closeModal} thread={selectedComment.current} />
+                    <ShowMoreReplies
+                        opened={isOpened}
+                        closeModal={closeModal}
+                        details={selectedComment.current}
+                        formatter={props.formatter}
+                    />
                 </>
             );
         else return <span key={0}>No Comments Found</span>;

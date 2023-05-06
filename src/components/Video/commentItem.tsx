@@ -9,77 +9,22 @@ import EditIcon from "@mui/icons-material/Edit";
 import dayjs from "dayjs";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
-import IconButton from "@mui/material/IconButton";
 import { useState } from "react";
-import { AskLangResults } from "../helper/ask";
-import AutoFixHighIcon from "@mui/icons-material/AutoFixHigh";
-import LanguageIcon from "@mui/icons-material/Language";
 import Tooltip from "@mui/material/Tooltip";
-import { sendDetailsFetched } from "../types/CommentsUI";
+import { sendComment } from "../types/CommentsUI";
 import { formatDateTime } from "../helper/simpilify";
 
 interface CommentItemProps {
-    comment: CommentThread;
-    formatter: Intl.NumberFormat;
-    getReplies: sendDetailsFetched;
-}
-
-function FetchMoreInfo(props: {
     comment: Comment;
-    plotChart: sendDetailsFetched;
-}) {
-    const [requestedForLang, setRequestedForLang] = useState(false);
-
-    const text = props.comment.snippet.textOriginal;
-    const comment_id = props.comment.id;
-    const {
-        data: langResults,
-        error,
-        isLoading,
-    } = AskLangResults(text, comment_id, requestedForLang);
-    const passed = langResults?.details && langResults.details[0].label;
-
-    let title;
-    let comp = <></>;
-
-    if (!requestedForLang || isLoading || error) {
-        title = error ? String(error) : "Ask";
-        comp = (
-            <IconButton
-                color="primary"
-                disabled={isLoading || Boolean(error)}
-                onClick={async function () {
-                    setRequestedForLang(true);
-                }}
-            >
-                <AutoFixHighIcon />
-            </IconButton>
-        );
-    } else if (langResults?.details) {
-        title = "Language";
-        comp = (
-            <IconButton
-                color="info"
-            >
-                <LanguageIcon />
-            </IconButton>
-        );
-    }
-
-    return (
-        <>
-            <Tooltip title={title}>
-                <span>{comp}</span>
-            </Tooltip>
-        </>
-    );
+    formatter: Intl.NumberFormat;
+    getReplies?: sendComment;
+    replies?: Array<Comment>;
 }
 
 function CommentItemFooter(props: CommentItemProps) {
     // note secondary text is p tag, so ensure there's no big tags like div, p inside it
 
-    const details = props.comment;
-    const topLevelComment = details.snippet.topLevelComment;
+    const topLevelComment = props.comment;
     const isEdited =
         topLevelComment.snippet.publishedAt !==
         topLevelComment.snippet.updatedAt;
@@ -89,18 +34,20 @@ function CommentItemFooter(props: CommentItemProps) {
             <Typography variant={"caption"} fontSize={"small"} component="span">
                 {dayjs(topLevelComment.snippet.updatedAt).fromNow()}
                 <EditIcon fontSize={"inherit"} sx={{ ml: "3px", mb: "-1px" }} />
-            </Typography >
+            </Typography>
         </Tooltip>
     ) : (
         <></>
     );
 
-    const showMore = details.replies?.comments?.length ? (
-        <Button size="small" onClick={() => {
-            props.getReplies(props.comment)
-        }}>{`Replies ${props.formatter.format(
-            details.snippet.totalReplyCount
-        )}`}</Button>
+    const showMore = props.replies ? (
+        <Button
+            size="small"
+            onClick={() => {
+                props.getReplies &&
+                    props.getReplies(props.comment, props.replies);
+            }}
+        >{`Replies ${props.formatter.format(props.replies.length)}`}</Button>
     ) : (
         <></>
     );
@@ -131,7 +78,7 @@ function CommentItemFooter(props: CommentItemProps) {
 }
 
 export default function CommentItem(props: CommentItemProps) {
-    const topLevelComment = props.comment.snippet.topLevelComment;
+    const topLevelComment = props.comment;
     const [text, setText] = useState(topLevelComment.snippet.textOriginal);
 
     return (
@@ -153,8 +100,10 @@ export default function CommentItem(props: CommentItemProps) {
                             variant="body2"
                             component={"span"}
                             onInput={(event) => {
-                                alert(event.currentTarget.textContent)
-                                setText(event.currentTarget.textContent || text)
+                                alert(event.currentTarget.textContent);
+                                setText(
+                                    event.currentTarget.textContent || text
+                                );
                             }}
                         >
                             {text}
@@ -163,6 +112,7 @@ export default function CommentItem(props: CommentItemProps) {
                             comment={props.comment}
                             formatter={props.formatter}
                             getReplies={props.getReplies}
+                            replies={props.replies}
                         />
                     </>
                 }

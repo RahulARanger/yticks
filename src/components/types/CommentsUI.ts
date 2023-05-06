@@ -1,4 +1,4 @@
-import { Comment, CommentThread } from "./Comments";
+import { Comment } from "./Comments";
 import { AskForLanguage } from "./askForNLP";
 
 export interface CommentSharedProps {
@@ -15,4 +15,4 @@ export interface RequestForMoreDetails {
     results: AskForLanguage | undefined;
 }
 
-export type sendDetailsFetched = (thread: CommentThread) => void;
+export type sendComment = (comment: Comment, replies?: Array<Comment>) => void;
