@@ -14,8 +14,10 @@ import Paper from "@mui/material/Paper";
 import IconButton from "@mui/material/IconButton";
 import { Typography } from "@mui/material";
 import { AskForLanguage } from "../types/askForNLP";
+import ListSubHeader from "@mui/material/ListSubheader";
+import { CountOfComments } from "./miniComponents";
 
-function EmotionalPieChart(props: { details: AskForLanguage }) {}
+function EmotionalPieChart(props: { details: AskForLanguage }) { }
 
 interface selectedCommentDetails {
     main: Comment;
@@ -36,7 +38,7 @@ function ShowMoreReplies(props: {
             open={props.opened}
             title="Replies"
             onClose={props.closeModal}
-            maxWidth="md"
+            sx={{ maxwidth: "500px" }}
             PaperProps={{
                 elevation: 1,
             }}
@@ -66,14 +68,22 @@ function ShowMoreReplies(props: {
             </DialogTitle>
             <DialogContent sx={{ p: 1.5 }}>
                 <Paper elevation={4}>
-                    <List>
+                    <List subheader={
+                        (<ListSubHeader>
+                            <Stack justifyContent={"space-between"} direction="row">
+                                <Typography>
+                                    Replies
+                                </Typography>
+
+                            </Stack>
+                        </ListSubHeader>)
+                    }>
                         {comments.map((comment: Comment) => {
                             return (
                                 <CommentItem
                                     comment={comment}
                                     key={comment.id}
                                     formatter={props.formatter}
-                                    getReplies={(x, y) => {}}
                                 />
                             );
                         })}
@@ -110,6 +120,7 @@ export default function CommentListItems(props: CommentProps) {
                                 formatter={props.formatter}
                                 getReplies={getReplies}
                                 replies={commentThread?.replies?.comments}
+                                replyCount={commentThread.snippet.totalReplyCount}
                             />
                         );
                     })}

@@ -24,7 +24,7 @@ export default async function handler(
     try {
         const resp = await ask("https://www.googleapis.com/youtube/v3/videos", {
             id: String(videoID),
-            part: "contentDetails,liveStreamingDetails,localizations,player,recordingDetails,snippet,statistics,status,topicDetails",
+            part: "liveStreamingDetails,player,recordingDetails,snippet,statistics,status,topicDetails",
             maxWidth: String(maxWidth),
             maxHeight: String(maxHeight),
         });

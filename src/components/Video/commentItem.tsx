@@ -19,6 +19,7 @@ interface CommentItemProps {
     formatter: Intl.NumberFormat;
     getReplies?: sendComment;
     replies?: Array<Comment>;
+    replyCount?: number;
 }
 
 function CommentItemFooter(props: CommentItemProps) {
@@ -45,9 +46,9 @@ function CommentItemFooter(props: CommentItemProps) {
             size="small"
             onClick={() => {
                 props.getReplies &&
-                    props.getReplies(props.comment, props.replies);
+                    props.getReplies(props.comment, props.replies, props.replyCount);
             }}
-        >{`Replies ${props.formatter.format(props.replies.length)}`}</Button>
+        >{`Replies ${props.formatter.format(props.replyCount || 0)}`}</Button>
     ) : (
         <></>
     );
@@ -80,6 +81,7 @@ function CommentItemFooter(props: CommentItemProps) {
 export default function CommentItem(props: CommentItemProps) {
     const topLevelComment = props.comment;
     const [text, setText] = useState(topLevelComment.snippet.textOriginal);
+    const [showMore, setShowMore] = useState<boolean>(false);
 
     return (
         <ListItem key={props.comment.id} className={CommentStyles.commentItem}>
@@ -106,17 +108,25 @@ export default function CommentItem(props: CommentItemProps) {
                                 );
                             }}
                         >
-                            {text}
+                            {
+                                text.length < 100 ? text : (
+                                    <>
+                                        {showMore ? text : text.slice(0, 100)}
+                                        <Button variant="text" onClick={() => setShowMore(!showMore)}><Typography variant="caption">{`Show ${showMore ? "Less" : "More"}`}</Typography></Button>
+                                    </>
+                                )
+                            }
                         </Typography>
                         <CommentItemFooter
                             comment={props.comment}
                             formatter={props.formatter}
                             getReplies={props.getReplies}
                             replies={props.replies}
+                            replyCount={props.replyCount}
                         />
                     </>
                 }
             />
-        </ListItem>
+        </ListItem >
     );
 }
