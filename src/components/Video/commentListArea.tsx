@@ -24,7 +24,7 @@ import {
     TitleComponent,
 } from "echarts/components";
 import { CanvasRenderer } from "echarts/renderers";
-import { CountOfComments } from "./miniComponents";
+import { CountOfTopLevelComments } from "./miniComponents";
 import CommentListItems from "./commentListItems";
 import { CommentProps } from "../types/CommentsUI";
 
@@ -84,7 +84,7 @@ export default class CommentArea extends ListArea<CommentProps, CommentState> {
                 justifyContent={"center"}
                 alignContent="center"
             >
-                <CountOfComments
+                <CountOfTopLevelComments
                     formatter={this.props.formatter}
                     videoID={this.props.videoID}
                 />

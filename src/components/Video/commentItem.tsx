@@ -19,7 +19,7 @@ interface CommentItemProps {
     formatter: Intl.NumberFormat;
     getReplies?: sendComment;
     replies?: Array<Comment>;
-    replyCount?: number;
+    replyCount: number;
 }
 
 function CommentItemFooter(props: CommentItemProps) {
@@ -46,7 +46,7 @@ function CommentItemFooter(props: CommentItemProps) {
             size="small"
             onClick={() => {
                 props.getReplies &&
-                    props.getReplies(props.comment, props.replies, props.replyCount);
+                    props.getReplies(props.comment, props.replyCount, props.replies);
             }}
         >{`Replies ${props.formatter.format(props.replyCount || 0)}`}</Button>
     ) : (

@@ -22,6 +22,7 @@ function EmotionalPieChart(props: { details: AskForLanguage }) { }
 interface selectedCommentDetails {
     main: Comment;
     replies?: Array<Comment>;
+    replyCount: number;
 }
 
 function ShowMoreReplies(props: {
@@ -31,7 +32,6 @@ function ShowMoreReplies(props: {
     formatter: Intl.NumberFormat;
 }) {
     const comments = props?.details?.replies || [];
-    const [isOpened, setOpened] = useState<boolean>(false);
 
     return (
         <Dialog
@@ -55,6 +55,7 @@ function ShowMoreReplies(props: {
                                 comment={props.details.main}
                                 formatter={props.formatter}
                                 key={`_M_${props.details.main.id}`}
+                                replyCount={0}
                             />
                         </Paper>
                     ) : (
@@ -69,12 +70,12 @@ function ShowMoreReplies(props: {
             <DialogContent sx={{ p: 1.5 }}>
                 <Paper elevation={4}>
                     <List subheader={
-                        (<ListSubHeader>
+                        (<ListSubHeader sx={{ p: "9px" }}>
                             <Stack justifyContent={"space-between"} direction="row">
                                 <Typography>
                                     Replies
                                 </Typography>
-
+                                <CountOfComments formatter={props.formatter} count={Number(props.details?.replyCount)} />
                             </Stack>
                         </ListSubHeader>)
                     }>
@@ -84,6 +85,7 @@ function ShowMoreReplies(props: {
                                     comment={comment}
                                     key={comment.id}
                                     formatter={props.formatter}
+                                    replyCount={0}
                                 />
                             );
                         })}
@@ -100,8 +102,8 @@ export default function CommentListItems(props: CommentProps) {
     const selectedComment = useRef<undefined | selectedCommentDetails>();
 
     const closeModal = () => setOpened(false);
-    function getReplies(comment: Comment, replies?: Array<Comment>) {
-        selectedComment.current = { main: comment, replies };
+    function getReplies(comment: Comment, replyCount: number, replies?: Array<Comment>) {
+        selectedComment.current = { main: comment, replies, replyCount };
         setOpened(true);
     }
 

@@ -101,24 +101,28 @@ export function CommentAvatarComponent(props: {
     );
 }
 
-export function CountOfComments(props: CommentProps) {
+export function CountOfComments(props: { formatter: Intl.NumberFormat, count: number }) {
+    const format = Intl.NumberFormat();
+    const commentCount =
+        props.count ?? 0;
+
+    return (
+        <Tooltip title={`Comment Count: ${format.format(commentCount)}`}>
+            <Chip
+                label={props.formatter.format(commentCount)}
+                icon={<CommentIcon />}
+                size="small"
+                sx={{ p: "2px" }}
+            />
+        </Tooltip>
+    );
+}
+
+export function CountOfTopLevelComments(props: CommentProps) {
     const { data, error } = AskVideo(props.videoID);
 
     if (data?.details) {
-        const format = Intl.NumberFormat();
-        const commentCount =
-            Number(data.details.items[0].statistics.commentCount) ?? 0;
-
-        return (
-            <Tooltip title={`Comment Count: ${format.format(commentCount)}`}>
-                <Chip
-                    label={props.formatter.format(commentCount)}
-                    icon={<CommentIcon />}
-                    size="small"
-                    sx={{ p: "2px" }}
-                />
-            </Tooltip>
-        );
+        return <CountOfComments count={Number(data.details.items[0].statistics.commentCount)} formatter={props.formatter} />
     }
     return (
         <Tooltip title={data?.failed || error}>

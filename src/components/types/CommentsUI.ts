@@ -15,4 +15,4 @@ export interface RequestForMoreDetails {
     results: AskForLanguage | undefined;
 }
 
-export type sendComment = (comment: Comment, replies?: Array<Comment>, replyCount?: number) => void;
+export type sendComment = (comment: Comment, replyCount: number, replies?: Array<Comment>) => void;
