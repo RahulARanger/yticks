@@ -14,6 +14,7 @@ import { CommentProps } from "../types/CommentsUI";
 import Chip from "@mui/material/Chip";
 import Tooltip from "@mui/material/Tooltip";
 import CommentIcon from "@mui/icons-material/Comment";
+import { formatDateTime } from "../helper/simpilify";
 
 dayjs.extend(relativeTime);
 
@@ -61,9 +62,11 @@ export function NameComponent(props: {
                 flexWrap={"nowrap"}
             >
                 <Typography variant="subtitle2">{props.authorName}</Typography>
-                <Typography variant="caption" sx={{ fontStyle: "italic" }}>
-                    {dayjs(props.creationDate).fromNow()}
-                </Typography>
+                <Tooltip title={formatDateTime(props.creationDate)}>
+                    <Typography variant="caption" sx={{ fontStyle: "italic" }}>
+                        {dayjs(props.creationDate).fromNow()}
+                    </Typography>
+                </Tooltip>
             </Stack>
         </>
     );

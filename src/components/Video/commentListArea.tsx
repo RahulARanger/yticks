@@ -25,7 +25,7 @@ import {
 } from "echarts/components";
 import { CanvasRenderer } from "echarts/renderers";
 import { CountOfComments } from "./miniComponents";
-import CommentListItems from "./commentListItem";
+import CommentListItems from "./commentListItems";
 import { CommentProps } from "../types/CommentsUI";
 
 echarts.use([

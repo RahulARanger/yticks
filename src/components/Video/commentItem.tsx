@@ -1,4 +1,4 @@
-import { CommentThread } from "../types/Comments";
+import { Comment, CommentThread } from "../types/Comments";
 import CommentStyles from "@/styles/comments.module.css";
 import { CommentAvatarComponent, NameComponent } from "./miniComponents";
 import ListItem from "@mui/material/ListItem";
@@ -15,17 +15,33 @@ import { AskLangResults } from "../helper/ask";
 import AutoFixHighIcon from "@mui/icons-material/AutoFixHigh";
 import LanguageIcon from "@mui/icons-material/Language";
 import Tooltip from "@mui/material/Tooltip";
+import { sendDetailsFetched } from "../types/CommentsUI";
+import { formatDateTime } from "../helper/simpilify";
 
-function FetchMoreInfo(props: { text: string; comment_id: string }) {
+interface CommentItemProps {
+    comment: CommentThread;
+    formatter: Intl.NumberFormat;
+    getReplies: sendDetailsFetched;
+}
+
+function FetchMoreInfo(props: {
+    comment: Comment;
+    plotChart: sendDetailsFetched;
+}) {
     const [requestedForLang, setRequestedForLang] = useState(false);
+
+    const text = props.comment.snippet.textOriginal;
+    const comment_id = props.comment.id;
     const {
         data: langResults,
         error,
         isLoading,
-    } = AskLangResults(props.text, props.comment_id, requestedForLang);
+    } = AskLangResults(text, comment_id, requestedForLang);
     const passed = langResults?.details && langResults.details[0].label;
+
     let title;
     let comp = <></>;
+
     if (!requestedForLang || isLoading || error) {
         title = error ? String(error) : "Ask";
         comp = (
@@ -39,10 +55,12 @@ function FetchMoreInfo(props: { text: string; comment_id: string }) {
                 <AutoFixHighIcon />
             </IconButton>
         );
-    } else if (passed) {
+    } else if (langResults?.details) {
         title = "Language";
         comp = (
-            <IconButton color="info">
+            <IconButton
+                color="info"
+            >
                 <LanguageIcon />
             </IconButton>
         );
@@ -57,29 +75,30 @@ function FetchMoreInfo(props: { text: string; comment_id: string }) {
     );
 }
 
-function CommentItemFooter(props: {
-    details: CommentThread;
-    formatter: Intl.NumberFormat;
-}) {
+function CommentItemFooter(props: CommentItemProps) {
     // note secondary text is p tag, so ensure there's no big tags like div, p inside it
 
-    const details = props.details;
+    const details = props.comment;
     const topLevelComment = details.snippet.topLevelComment;
     const isEdited =
         topLevelComment.snippet.publishedAt !==
         topLevelComment.snippet.updatedAt;
 
     const edit = isEdited ? (
-        <Typography variant={"caption"} fontSize={"small"} component="span">
-            {dayjs(topLevelComment.snippet.updatedAt).fromNow()}
-            <EditIcon fontSize={"inherit"} sx={{ ml: "3px", mb: "-1px" }} />
-        </Typography>
+        <Tooltip title={formatDateTime(topLevelComment.snippet.updatedAt)}>
+            <Typography variant={"caption"} fontSize={"small"} component="span">
+                {dayjs(topLevelComment.snippet.updatedAt).fromNow()}
+                <EditIcon fontSize={"inherit"} sx={{ ml: "3px", mb: "-1px" }} />
+            </Typography >
+        </Tooltip>
     ) : (
         <></>
     );
 
     const showMore = details.replies?.comments?.length ? (
-        <Button size="small">{`Replies ${props.formatter.format(
+        <Button size="small" onClick={() => {
+            props.getReplies(props.comment)
+        }}>{`Replies ${props.formatter.format(
             details.snippet.totalReplyCount
         )}`}</Button>
     ) : (
@@ -102,20 +121,18 @@ function CommentItemFooter(props: {
                 />
                 {showMore}
                 {edit}
-                <FetchMoreInfo
-                    comment_id={topLevelComment.id}
-                    text={topLevelComment.snippet.textOriginal}
-                />
+                {/* <FetchMoreInfo
+                    comment={topLevelComment}
+                    plotChart={props.plotChart}
+                /> */}
             </Stack>
         </>
     );
 }
 
-export default function CommentItem(props: {
-    comment: CommentThread;
-    formatter: Intl.NumberFormat;
-}) {
+export default function CommentItem(props: CommentItemProps) {
     const topLevelComment = props.comment.snippet.topLevelComment;
+    const [text, setText] = useState(topLevelComment.snippet.textOriginal);
 
     return (
         <ListItem key={props.comment.id} className={CommentStyles.commentItem}>
@@ -132,12 +149,20 @@ export default function CommentItem(props: {
                 }
                 secondary={
                     <>
-                        <Typography variant="body2" component={"span"}>
-                            {topLevelComment.snippet.textOriginal}
+                        <Typography
+                            variant="body2"
+                            component={"span"}
+                            onInput={(event) => {
+                                alert(event.currentTarget.textContent)
+                                setText(event.currentTarget.textContent || text)
+                            }}
+                        >
+                            {text}
                         </Typography>
                         <CommentItemFooter
-                            details={props.comment}
+                            comment={props.comment}
                             formatter={props.formatter}
+                            getReplies={props.getReplies}
                         />
                     </>
                 }
