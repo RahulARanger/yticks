@@ -2,7 +2,10 @@ import AppBar from "@mui/material/AppBar";
 import { Component, ReactNode } from "react";
 import Toolbar from "@mui/material/Toolbar";
 import Drawer from "@mui/material/Drawer";
-import { SearchBarForYoutubeVideo } from "@/components/searchBox";
+import {
+    SearchBarForPlaylistOfVideos,
+    SearchBarForYoutubeVideo,
+} from "@/components/searchBox";
 import Typography from "@mui/material/Typography";
 import headerStyles from "@/styles/header.module.css";
 import { SharedProps } from "@/components/searchBox";
@@ -29,9 +32,11 @@ interface HeaderStates {
     openDrawer: boolean;
 }
 
-export default class Header extends Component<HeaderProps, HeaderStates> {
+export abstract class CommonHeader extends Component<
+    HeaderProps,
+    HeaderStates
+> {
     state: HeaderStates = { openDrawer: false };
-
     githubURL = "https://github.com/RahulARanger/yticks";
 
     toggleDrawer() {
@@ -122,6 +127,8 @@ export default class Header extends Component<HeaderProps, HeaderStates> {
         );
     }
 
+    abstract searchBar(showAtTop: boolean): ReactNode;
+
     render(): ReactNode {
         const showAtTop = Boolean(this.props.textSearched);
         return (
@@ -144,20 +151,42 @@ export default class Header extends Component<HeaderProps, HeaderStates> {
                         }
                     >
                         {this.onLeft()}
-                        <SearchBarForYoutubeVideo
-                            showLabel={!showAtTop}
-                            size={showAtTop ? "small" : "medium"}
-                            onSearch={this.props.onSearch}
-                            className={headerStyles.textField}
-                            atTop={showAtTop}
-                            requested={this.props.requested}
-                        />
-
+                        {this.searchBar(showAtTop)}
                         {this.iconButtons()}
                         {this.menuItems()}
                     </Toolbar>
                 </AppBar>
             </>
+        );
+    }
+}
+
+export default class VideoPlayerHeader extends CommonHeader {
+    searchBar(showAtTop: boolean) {
+        return (
+            <SearchBarForYoutubeVideo
+                showLabel={!showAtTop}
+                size={showAtTop ? "small" : "medium"}
+                onSearch={this.props.onSearch}
+                className={headerStyles.textField}
+                atTop={showAtTop}
+                requested={this.props.requested}
+            />
+        );
+    }
+}
+
+export class VideoPlayListHeader extends CommonHeader {
+    searchBar(showAtTop: boolean) {
+        return (
+            <SearchBarForPlaylistOfVideos
+                showLabel={!showAtTop}
+                size={showAtTop ? "small" : "medium"}
+                onSearch={this.props.onSearch}
+                className={headerStyles.textField}
+                atTop={showAtTop}
+                requested={this.props.requested}
+            />
         );
     }
 }

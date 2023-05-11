@@ -1,6 +1,6 @@
 import Head from "next/head";
 import { Component, ReactNode } from "react";
-import Header from "@/components/header";
+import VideoPlayerHeader from "@/components/header";
 import DetailedPageView, {
     FromMainPageWhichAreState,
 } from "@/components/Video/DetailedPageView";
@@ -15,7 +15,8 @@ interface DetailedVideoViewState
 }
 
 class DetailedVideoView extends Component<
-    DetailedVideoViewState & WithRouterProps
+    DetailedVideoViewState & WithRouterProps,
+    DetailedVideoViewState
 > {
     state: DetailedVideoViewState = {
         videoID: "",
@@ -60,7 +61,7 @@ class DetailedVideoView extends Component<
                 <Head>
                     <title>Video by ID</title>
                 </Head>
-                <Header
+                <VideoPlayerHeader
                     textSearched={this.state.videoID}
                     title="YTicks"
                     resetSearch={this.resetSearch.bind(this)}

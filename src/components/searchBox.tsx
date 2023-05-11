@@ -1,24 +1,17 @@
 import TextField from "@mui/material/TextField";
-import {
-    ChangeEvent,
-    Component,
-    ReactNode,
-    KeyboardEvent
-} from "react";
+import { ChangeEvent, Component, ReactNode, KeyboardEvent } from "react";
 import InputAdornment from "@mui/material/InputAdornment";
 import IconButton from "@mui/material/IconButton";
 import YoutubeSearchedForIcon from "@mui/icons-material/YoutubeSearchedFor";
 import Tooltip from "@mui/material/Tooltip";
-import Box from "@mui/material/Box"
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
+import Box from "@mui/material/Box";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogActions from "@mui/material/DialogActions";
 import { styled, alpha, SxProps, Theme } from "@mui/material/styles";
 
-
 type changeEvent = ChangeEvent<HTMLInputElement>;
-
 
 interface SearchBarState {
     passed?: boolean;
@@ -35,12 +28,12 @@ interface SearchBarProps extends SharedProps {
     showLabel?: boolean;
     size: "medium" | "small";
     className: string;
-    atTop: boolean
+    atTop: boolean;
 }
 
 const WithStyleTextField = styled(TextField)(({ theme }) => {
     const transition = "all ease-in-out .5s";
-    const referWidth = "max(30%, 300px)"
+    const referWidth = "max(30%, 300px)";
 
     return {
         backgroundColor: alpha(theme.palette.common.white, 0.005),
@@ -52,17 +45,37 @@ const WithStyleTextField = styled(TextField)(({ theme }) => {
         maxWidth: referWidth,
         "&:focus-within": {
             maxWidth: `calc(${referWidth} + 69px)`,
-        }
+        },
     };
 });
 
-
 abstract class SearchBar extends Component<SearchBarProps, SearchBarState> {
-    state: SearchBarState = { modalOpened: false, url: "" }
+    state: SearchBarState = { modalOpened: false, url: "" };
+    abstract regMatcher: RegExp;
+    abstract dummyURL: string;
+    abstract name: string;
 
-    abstract handleRedirect(): undefined;
-    abstract textFieldElement(sx?: SxProps<Theme>): ReactNode;
-    protected abstract validate(event: changeEvent): boolean
+    protected validate(event: changeEvent): boolean {
+        const url: string = (event.target.value = event.target.value.trim());
+        this.setState({ passed: this.regMatcher.test(url), url });
+        return true;
+    }
+
+    abstract _handleRedirect(url: string): string | false; // return the id (result of the url)
+
+    handleRedirect(): undefined {
+        if (!this.state.passed) return;
+
+        const found = this._handleRedirect(this.state.url);
+
+        if (!found) {
+            this.setState({ passed: false });
+            return;
+        }
+        if (this.props.atTop) this.forceModal(false);
+
+        this.props.onSearch(found);
+    }
 
     onEnterPress(event: KeyboardEvent<HTMLInputElement>): undefined {
         if (event.key !== "Enter") return;
@@ -74,17 +87,27 @@ abstract class SearchBar extends Component<SearchBarProps, SearchBarState> {
     }
 
     forceModal(forced: boolean) {
-        this.setState({ modalOpened: forced })
+        this.setState({ modalOpened: forced });
     }
 
     searchModal() {
         const hide = { display: { sm: "none", xs: "block" } };
         return (
             <>
-                {this.textFieldElement({ display: { xs: "none", sm: "block" } })}
+                {this.textFieldElement({
+                    display: { xs: "none", sm: "block" },
+                })}
                 <Box sx={hide}>
-                    <IconButton onClick={this.toggleModal.bind(this)}><YoutubeSearchedForIcon /></IconButton>
-                    <Dialog sx={hide} open={this.state.modalOpened} onClose={this.toggleModal.bind(this)} fullWidth maxWidth={"xs"}>
+                    <IconButton onClick={this.toggleModal.bind(this)}>
+                        <YoutubeSearchedForIcon />
+                    </IconButton>
+                    <Dialog
+                        sx={hide}
+                        open={this.state.modalOpened}
+                        onClose={this.toggleModal.bind(this)}
+                        fullWidth
+                        maxWidth={"xs"}
+                    >
                         <DialogTitle>Search Video</DialogTitle>
                         <DialogContent>
                             You can just copy and paste the url from youtube.
@@ -95,7 +118,7 @@ abstract class SearchBar extends Component<SearchBarProps, SearchBarState> {
                     </Dialog>
                 </Box>
             </>
-        )
+        );
     }
 
     protected goSearch(): ReactNode {
@@ -124,75 +147,35 @@ abstract class SearchBar extends Component<SearchBarProps, SearchBarState> {
             </>
         );
     }
-}
-
-export class SearchBarForYoutubeVideo extends SearchBar {
-    regMatcher = new RegExp(
-        /^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube(-nocookie)?\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?$/
-    );
-
-    protected validate(event: changeEvent): boolean {
-        const url: string = (event.target.value = event.target.value.trim());
-        this.setState({
-            passed: this.regMatcher.test(url), url
-        });
-        return true;
-    }
-
-    _handleRedirect(url: string) {
-        const matches = url.match(this.regMatcher);
-
-        const found = matches?.at(-2) ?? false;
-        return found === "shorts" ? matches?.at(-1)?.slice(1) ?? false : found;
-    }
-
-    handleRedirect(): undefined {
-        if (!this.state.passed) return;
-
-        const found = this._handleRedirect(this.state.url)
-
-        if (!found) {
-            this.state.passed = false;
-            return;
-        }
-        if (this.props.atTop) this.forceModal(false);
-
-        this.props.onSearch(found);
-    }
 
     textFieldElement(sx?: SxProps<Theme>) {
-        return <WithStyleTextField
-            fullWidth
-            size={this.props.size}
-            onChange={this.validate.bind(this)}
-            error={!this.state.passed}
-            placeholder="https://www.youtube.com/watch?v=tXKG7p4Fn5E"
-            name="yt-url"
-            label={
-                this.props.showLabel
-                    ? this.state.passed
-                        ? "You can now search"
-                        : "Paste a valid Youtube URL"
-                    : ""
-            }
-            InputLabelProps={{ shrink: true }}
-            InputProps={{
-                endAdornment: this.goSearch(),
-            }}
-            onKeyDown={this.onEnterPress.bind(this)}
-            autoFocus
-            className={this.props.className}
-            sx={sx}
-            value={this.state.url}
-        />
+        return (
+            <WithStyleTextField
+                fullWidth
+                size={this.props.size}
+                onChange={this.validate.bind(this)}
+                error={!this.state.passed}
+                placeholder={this.dummyURL}
+                name={this.name}
+                label={
+                    this.props.showLabel
+                        ? this.state.passed
+                            ? "You can now search"
+                            : "Paste a valid Youtube URL"
+                        : ""
+                }
+                InputLabelProps={{ shrink: true }}
+                InputProps={{
+                    endAdornment: this.goSearch(),
+                }}
+                onKeyDown={this.onEnterPress.bind(this)}
+                autoFocus
+                className={this.props.className}
+                sx={sx}
+                value={this.state.url}
+            />
+        );
     }
-
-
-    render(): React.ReactNode {
-        if (!this.props.atTop) return this.textFieldElement();
-        return this.searchModal()
-    }
-
 
     componentDidUpdate(): void {
         if (this.props.atTop) return;
@@ -201,9 +184,45 @@ export class SearchBarForYoutubeVideo extends SearchBar {
                 this.props.onSearch(this.props.requested);
                 return;
             }
-            const found = this._handleRedirect(this.props.requested)
-            if (!found) return alert(`${this.props.requested} is not proper URL, please check once`)
+            const found = this._handleRedirect(this.props.requested);
+            if (!found)
+                return alert(
+                    `${this.props.requested} is not proper URL, please check once`
+                );
             this.props.onSearch(found);
         }
+    }
+
+    render(): React.ReactNode {
+        if (!this.props.atTop) return this.textFieldElement();
+        return this.searchModal();
+    }
+}
+
+export class SearchBarForYoutubeVideo extends SearchBar {
+    regMatcher = new RegExp(
+        /^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube(-nocookie)?\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?$/
+    );
+    name = "yt-url";
+    dummyURL: string = "https://www.youtube.com/watch?v=tXKG7p4Fn5E";
+
+    _handleRedirect(url: string) {
+        const matches = url.match(this.regMatcher);
+
+        const found = matches?.at(-2) ?? false;
+        return found === "shorts" ? matches?.at(-1)?.slice(1) ?? false : found;
+    }
+}
+
+export class SearchBarForPlaylistOfVideos extends SearchBar {
+    regMatcher =
+        /^(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/|youtu\.be\/).*[?&]list=([^&]+)/;
+    dummyURL: string = "https://www.youtube.com/watch?v=tXKG7p4Fn5E";
+    name = "yt-playlist";
+
+    _handleRedirect(url: string): string | false {
+        const matches = url.match(this.regMatcher);
+        const found = matches?.at(1) ?? false;
+        return found;
     }
 }
