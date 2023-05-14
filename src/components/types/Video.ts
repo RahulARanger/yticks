@@ -1,4 +1,4 @@
-interface thumbNail {
+export interface thumbNail {
     [key: string]: {
         url: string;
         width: number;

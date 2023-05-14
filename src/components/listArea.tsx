@@ -4,7 +4,10 @@ import Stack from "@mui/material/Stack";
 import { Component, ReactNode } from "react";
 import ListSubheader from "@mui/material/ListSubheader";
 
-export default abstract class ListArea<PROPs, STATEs> extends Component<PROPs, STATEs> {
+export default abstract class ListArea<PROPs, STATEs> extends Component<
+    PROPs,
+    STATEs
+> {
     title: string = "...";
 
     abstract header(): ReactNode;
@@ -27,16 +30,20 @@ export default abstract class ListArea<PROPs, STATEs> extends Component<PROPs, S
                         overflowY: "scroll",
                     }}
                     subheader={
-                        <ListSubheader>
-                            <Stack
-                                flexDirection={"row"}
-                                justifyContent={"space-between"}
-                                alignItems={"center"}
-                            >
-                                {this.title}
-                                {this.header()}
-                            </Stack>
-                        </ListSubheader>
+                        this.title ? (
+                            <ListSubheader>
+                                <Stack
+                                    flexDirection={"row"}
+                                    justifyContent={"space-between"}
+                                    alignItems={"center"}
+                                >
+                                    {this.title}
+                                    {this.header()}
+                                </Stack>
+                            </ListSubheader>
+                        ) : (
+                            <></>
+                        )
                     }
                 >
                     {listItems}

@@ -1,3 +1,5 @@
+import { errorResponse } from "./response";
+
 export interface PlaylistItem {
     kind: "youtube#playlistItem";
     etag: string;
@@ -36,7 +38,56 @@ export interface PlaylistItem {
     };
 }
 
+export interface PlayListResponse extends errorResponse {
+    kind: "youtube#playlistItemListResponse";
+    etag: string;
+    nextPageToken: string;
+    prevPageToken: string;
+    pageInfo: {
+        totalResults: number;
+        resultsPerPage: number;
+    };
+    items: Array<Playlist>;
+}
+
 export interface Playlist {
+    kind: "youtube#playlist";
+    etag: string;
+    id: string;
+    snippet: {
+        publishedAt: string;
+        channelId: string;
+        title: string;
+        description: string;
+        thumbnails: {
+            [key: string]: {
+                url: string;
+                width: number;
+                height: number;
+            };
+        };
+        channelTitle: string;
+        defaultLanguage: string;
+        localized: {
+            title: string;
+            description: string;
+        };
+    };
+    status: {
+        privacyStatus: string;
+    };
+    contentDetails: {
+        itemCount: number;
+    };
+    localizations: {
+        [key: string]: {
+            title: string;
+            description: string;
+        };
+    };
+}
+
+export interface PlayListItemResponse extends errorResponse {
     kind: "youtube#playlistItemListResponse";
     etag: string;
     nextPageToken: string;
@@ -47,13 +98,15 @@ export interface Playlist {
     };
     items: Array<PlaylistItem>;
 }
-
-export interface PlayListViewState {
+export interface CommonPropsForPlayListItems {
     listID: string;
 }
+export interface CommonPropsForPlayList extends CommonPropsForPlayListItems {
+    videoID: string;
+}
 
-export interface PlayListDetailedViewProps {}
-
+export interface PlayListDetailedViewProps extends CommonPropsForPlayList {}
+export interface PlayListViewState extends CommonPropsForPlayList {}
 export interface PlayListDetailedViewState {
     videoIDs: Array<string>;
     index: number;

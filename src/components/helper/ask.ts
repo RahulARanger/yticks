@@ -4,6 +4,8 @@ import useSWRInfinite from "swr/infinite";
 import { askButRead } from "./generalRequest";
 import { ExpectedVideoDetails } from "@/pages/api/data/videoById";
 import { ExpectedCommentThread } from "@/pages/api/data/commentThreads";
+import { ExpectedPlaylist } from "@/pages/api/data/playList";
+import { ExpectedPlaylistItems } from "@/pages/api/data/playlistItems";
 
 const isMock = process.env.NEXT_PUBLIC_IS_DEV ? "mock" : "data";
 
@@ -14,16 +16,18 @@ interface SWRResponse<Details> {
 }
 
 export function AskVideo(
-    videoID: string,
+    videoID: string | null,
     width?: string,
     height?: string
 ): SWRResponse<ExpectedVideoDetails> {
     return useSWRImmutable(
-        urlWithArgs(`/api/${isMock}/videoById`, {
-            maxWidth: width ?? "730",
-            maxHeight: height ?? "400",
-            videoID: videoID,
-        }),
+        videoID
+            ? urlWithArgs(`/api/${isMock}/videoById`, {
+                  maxWidth: width ?? "730",
+                  maxHeight: height ?? "400",
+                  videoID: videoID,
+              })
+            : "",
         (url: string) => askButRead<ExpectedVideoDetails>(url)
     );
 }
@@ -62,5 +66,31 @@ export function AskCommentThreads(
             revalidateFirstPage: false,
             revalidateAll: false,
         }
+    );
+}
+
+export function AskPlayList(
+    listID: string | null
+): SWRResponse<ExpectedPlaylist> {
+    return useSWRImmutable(
+        listID
+            ? urlWithArgs(`/api/${isMock}/playList`, {
+                  listID,
+              })
+            : null,
+        (url: string) => askButRead<ExpectedPlaylist>(url)
+    );
+}
+
+export function AskPlayListItems(
+    listID: string | null
+): SWRResponse<ExpectedPlaylistItems> {
+    return useSWRImmutable(
+        listID
+            ? urlWithArgs(`/api/${isMock}/playlistItems`, {
+                  listID,
+              })
+            : null,
+        (url: string) => askButRead<ExpectedPlaylistItems>(url)
     );
 }

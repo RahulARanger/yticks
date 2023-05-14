@@ -2,6 +2,7 @@ import { NextApiResponse } from "next";
 import { letThemKnow } from "./generalRequest";
 import { ExpectedDetails } from "../types/response";
 import dayjs from "dayjs";
+import { thumbNail } from "../types/Video";
 
 export function extract_needed(originalText: string): string {
     const text = originalText.replace(/[^a-zA-Z\s]/g, ""); // we do not need symbols, punctuations for detecting the language
@@ -18,5 +19,18 @@ export function isModalLoading(
 }
 
 export function formatDateTime(datetime: string) {
-    return dayjs(datetime).format("MMMM D, YYYY h:mm A")
+    return dayjs(datetime).format("MMMM D, YYYY h:mm A");
+}
+
+export function truncateText(text: string, limit: number) {
+    const length = text.length;
+    return length <= limit ? text : text.slice(0, limit + 1) + "...";
+}
+
+export function extractThumbnail(thumbnail: thumbNail) {
+    if (thumbnail.maxres) return thumbnail.maxres;
+    if (thumbnail.high) return thumbnail.high;
+    if (thumbnail.standard) return thumbnail.standard;
+    if (thumbnail.medium) return thumbnail.medium;
+    return thumbnail.default;
 }

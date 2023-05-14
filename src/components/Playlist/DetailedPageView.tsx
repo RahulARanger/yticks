@@ -6,9 +6,11 @@ import {
     PlayListDetailedViewState,
 } from "../types/playlist";
 import VideoEmbedded, {
+    EmbeddedPlayList,
     VideoPlayerSharedProps,
 } from "@/components/Video/youtubeVideoPlayer";
 import VideoStyle from "@/styles/video.module.css";
+import PlayListItems from "./playListItems";
 
 export default class DetailedPageView extends Component<
     PlayListDetailedViewProps,
@@ -24,7 +26,6 @@ export default class DetailedPageView extends Component<
     };
 
     render() {
-        const videoID = this.state.videoIDs[this.state.index] || "";
         return (
             <>
                 <Stack
@@ -39,17 +40,19 @@ export default class DetailedPageView extends Component<
                     justifyContent={"stretch"}
                     alignItems={"stretch"}
                 >
-                    <VideoEmbedded
-                        videoID={videoID}
-                        formatter={this.formatter}
+                    <EmbeddedPlayList
+                        videoID={this.props.videoID}
+                        listID={this.props.listID}
                         className={VideoStyle.embeddedVideo}
+                        formatter={this.formatter}
                     />
                     <CommentArea
-                        videoID={videoID}
+                        videoID={this.props.videoID}
                         formatter={this.formatter}
                         className={VideoStyle.commentBox}
                     />
                 </Stack>
+                <PlayListItems listID={this.props.listID} />
             </>
         );
     }

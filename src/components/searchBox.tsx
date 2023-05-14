@@ -10,6 +10,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import { styled, alpha, SxProps, Theme } from "@mui/material/styles";
+import { encodeID } from "@/pages/api/data/playList";
 
 type changeEvent = ChangeEvent<HTMLInputElement>;
 
@@ -216,13 +217,15 @@ export class SearchBarForYoutubeVideo extends SearchBar {
 
 export class SearchBarForPlaylistOfVideos extends SearchBar {
     regMatcher =
-        /^(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/|youtu\.be\/).*[?&]list=([^&]+)/;
-    dummyURL: string = "https://www.youtube.com/watch?v=tXKG7p4Fn5E";
+        /^(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/|youtu\.be\/).*?[?&]v=([^&]+).*[?&]list=([^&]+)/;
+    dummyURL: string =
+        "https://www.youtube.com/watch?v=7FDRQifEMUQ&list=RDxtfXl7TZTac&index=12";
     name = "yt-playlist";
 
     _handleRedirect(url: string): string | false {
         const matches = url.match(this.regMatcher);
-        const found = matches?.at(1) ?? false;
-        return found;
+        const videoID = matches?.at(1) ?? false;
+        const listID = matches?.at(2) ?? false;
+        return videoID && listID ? encodeID(videoID, listID) : false;
     }
 }

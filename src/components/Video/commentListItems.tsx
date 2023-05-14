@@ -17,7 +17,7 @@ import { AskForLanguage } from "../types/askForNLP";
 import ListSubHeader from "@mui/material/ListSubheader";
 import { CountOfComments } from "./miniComponents";
 
-function EmotionalPieChart(props: { details: AskForLanguage }) { }
+function EmotionalPieChart(props: { details: AskForLanguage }) {}
 
 interface selectedCommentDetails {
     main: Comment;
@@ -50,7 +50,7 @@ function ShowMoreReplies(props: {
                     alignItems={"center"}
                 >
                     {props.details?.main ? (
-                        <Paper elevation={5}>
+                        <Paper elevation={5} sx={{ width: "100%" }}>
                             <CommentItem
                                 comment={props.details.main}
                                 formatter={props.formatter}
@@ -69,16 +69,24 @@ function ShowMoreReplies(props: {
             </DialogTitle>
             <DialogContent sx={{ p: 1.5 }}>
                 <Paper elevation={4}>
-                    <List subheader={
-                        (<ListSubHeader sx={{ p: "9px" }}>
-                            <Stack justifyContent={"space-between"} direction="row">
-                                <Typography>
-                                    Replies
-                                </Typography>
-                                <CountOfComments formatter={props.formatter} count={Number(props.details?.replyCount)} />
-                            </Stack>
-                        </ListSubHeader>)
-                    }>
+                    <List
+                        subheader={
+                            <ListSubHeader sx={{ p: "9px" }}>
+                                <Stack
+                                    justifyContent={"space-between"}
+                                    direction="row"
+                                >
+                                    <Typography>Replies</Typography>
+                                    <CountOfComments
+                                        formatter={props.formatter}
+                                        count={Number(
+                                            props.details?.replyCount
+                                        )}
+                                    />
+                                </Stack>
+                            </ListSubHeader>
+                        }
+                    >
                         {comments.map((comment: Comment) => {
                             return (
                                 <CommentItem
@@ -102,7 +110,11 @@ export default function CommentListItems(props: CommentProps) {
     const selectedComment = useRef<undefined | selectedCommentDetails>();
 
     const closeModal = () => setOpened(false);
-    function getReplies(comment: Comment, replyCount: number, replies?: Array<Comment>) {
+    function getReplies(
+        comment: Comment,
+        replyCount: number,
+        replies?: Array<Comment>
+    ) {
         selectedComment.current = { main: comment, replies, replyCount };
         setOpened(true);
     }
@@ -122,7 +134,9 @@ export default function CommentListItems(props: CommentProps) {
                                 formatter={props.formatter}
                                 getReplies={getReplies}
                                 replies={commentThread?.replies?.comments}
-                                replyCount={commentThread.snippet.totalReplyCount}
+                                replyCount={
+                                    commentThread.snippet.totalReplyCount
+                                }
                             />
                         );
                     })}

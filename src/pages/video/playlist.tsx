@@ -1,14 +1,16 @@
-import VideoPlayerHeader, { VideoPlayListHeader } from "@/components/header";
+import { VideoPlayListHeader } from "@/components/header";
 import { Component, ReactNode } from "react";
 import Head from "next/head";
 import { withRouter } from "next/router";
 import { WithRouterProps } from "next/dist/client/with-router";
 import { PlayListViewState } from "@/components/types/playlist";
 import DetailedPageView from "@/components/Playlist/DetailedPageView";
+import { decodeID } from "../api/data/playList";
 
 class Playlist extends Component<WithRouterProps, PlayListViewState> {
     state: PlayListViewState = {
         listID: "",
+        videoID: "",
     };
 
     resetSearch() {
@@ -16,17 +18,18 @@ class Playlist extends Component<WithRouterProps, PlayListViewState> {
             pathname: this.props.router.pathname,
             query: {},
         });
-        this.setState({ listID: "" });
+        this.setState({ listID: "", videoID: "" });
     }
 
     toggleSettings() {}
 
-    handleSearch(listID: string) {
+    handleSearch(rawID: string) {
         this.props.router.push({
             pathname: this.props.router.pathname,
-            query: { id: listID },
+            query: { id: rawID },
         });
-        this.setState({ listID });
+        const [videoID, listID] = decodeID(rawID);
+        this.setState({ videoID, listID });
     }
 
     render(): ReactNode {
@@ -47,7 +50,14 @@ class Playlist extends Component<WithRouterProps, PlayListViewState> {
                     )}
                     onSearch={this.handleSearch.bind(this)}
                 />
-                {this.state.listID ? <DetailedPageView /> : <></>}
+                {this.state.listID ? (
+                    <DetailedPageView
+                        videoID={this.state.videoID}
+                        listID={this.state.listID}
+                    />
+                ) : (
+                    <></>
+                )}
             </>
         );
     }

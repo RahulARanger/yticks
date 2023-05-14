@@ -3,6 +3,7 @@ import Box from "@mui/material/Box";
 import Skeleton from "@mui/material/Skeleton";
 import Typography from "@mui/material/Typography";
 import Link from "@mui/material/Link";
+import Script from "next/script";
 import Accordion from "@mui/material/Accordion";
 import Stack from "@mui/material/Stack";
 import AccordionSummary from "@mui/material/AccordionSummary";
@@ -13,7 +14,7 @@ import Chip from "@mui/material/Chip";
 import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import videoPlayerStyles from "@/styles/videoPlayer.module.css";
-import { AskVideo } from "../helper/ask";
+import { AskPlayList, AskVideo } from "../helper/ask";
 import Alert from "@mui/material/Alert";
 import { Snackbar } from "@mui/material";
 import { VideoDetails } from "../types/Video";
@@ -48,10 +49,44 @@ interface VideoPlayerProps extends VideoPlayerSharedProps {
     className?: string;
 }
 
+interface PlayListProps extends VideoPlayerProps {
+    listID: string;
+}
+
 type miniProps = { details: VideoDetails; formatter: Intl.NumberFormat };
 
-export function EmbeddedVideo(props: VideoPlayerSharedProps) {
-    const { data, isLoading, error } = AskVideo(props.videoID);
+interface embeddedProps {
+    id: string;
+    className: string;
+}
+
+class RawEmbeddedVideoPlayer extends Component<embeddedProps> {
+    frame: string = "frame-id";
+    player: undefined | YT.Player = undefined;
+
+    render() {
+        return <div id={this.frame} className={this.props.className}></div>;
+    }
+    componentDidMount(): void {
+        this.player = new YT.Player(this.frame, {
+            videoId: this.props.id,
+            playerVars: {
+                autoplay: 0,
+            },
+        });
+    }
+    componentWillUnmount() {
+        if (this.player) this.player.destroy();
+    }
+}
+
+export function EmbeddedVideo(props: { isVideo: boolean; id: string }) {
+    const from_video = AskVideo(props.isVideo ? props.id : null);
+    const from_playlist = AskPlayList(props.isVideo ? null : props.id);
+    const { data, isLoading, error } = props.isVideo
+        ? from_video
+        : from_playlist;
+
     if (isLoading)
         return (
             <Skeleton
@@ -64,12 +99,10 @@ export function EmbeddedVideo(props: VideoPlayerSharedProps) {
         );
     if (data?.details)
         return (
-            <div
-                dangerouslySetInnerHTML={{
-                    __html: data.details.items[0].player.embedHtml,
-                }}
+            <RawEmbeddedVideoPlayer
+                id={props.id}
                 className={videoPlayerStyles.frame}
-            ></div>
+            />
         );
     return (
         <Stack
@@ -281,8 +314,26 @@ export default class VideoEmbedded extends Component<VideoPlayerProps> {
     render(): ReactNode {
         return (
             <>
+                <Script src="https://www.youtube.com/iframe_api"></Script>
                 <Box className={this.props.className}>
-                    <EmbeddedVideo videoID={this.props.videoID} />
+                    <EmbeddedVideo isVideo={true} id={this.props.videoID} />
+                    <VideoSummary
+                        videoID={this.props.videoID}
+                        formatter={this.props.formatter}
+                    />
+                </Box>
+            </>
+        );
+    }
+}
+
+export class EmbeddedPlayList extends Component<PlayListProps> {
+    render(): ReactNode {
+        return (
+            <>
+                <Script src="https://www.youtube.com/iframe_api"></Script>
+                <Box className={this.props.className}>
+                    <EmbeddedVideo isVideo={false} id={this.props.listID} />
                     <VideoSummary
                         videoID={this.props.videoID}
                         formatter={this.props.formatter}

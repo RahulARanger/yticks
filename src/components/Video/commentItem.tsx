@@ -1,4 +1,4 @@
-import { Comment, CommentThread } from "../types/Comments";
+import { Comment } from "../types/Comments";
 import CommentStyles from "@/styles/comments.module.css";
 import { CommentAvatarComponent, NameComponent } from "./miniComponents";
 import ListItem from "@mui/material/ListItem";
@@ -46,7 +46,11 @@ function CommentItemFooter(props: CommentItemProps) {
             size="small"
             onClick={() => {
                 props.getReplies &&
-                    props.getReplies(props.comment, props.replyCount, props.replies);
+                    props.getReplies(
+                        props.comment,
+                        props.replyCount,
+                        props.replies
+                    );
             }}
         >{`Replies ${props.formatter.format(props.replyCount || 0)}`}</Button>
     ) : (
@@ -108,14 +112,21 @@ export default function CommentItem(props: CommentItemProps) {
                                 );
                             }}
                         >
-                            {
-                                text.length < 100 ? text : (
-                                    <>
-                                        {showMore ? text : text.slice(0, 100)}
-                                        <Button variant="text" onClick={() => setShowMore(!showMore)}><Typography variant="caption">{`Show ${showMore ? "Less" : "More"}`}</Typography></Button>
-                                    </>
-                                )
-                            }
+                            {text.length < 150 ? (
+                                text
+                            ) : (
+                                <>
+                                    {showMore ? text : text.slice(0, 100)}
+                                    <Button
+                                        variant="text"
+                                        onClick={() => setShowMore(!showMore)}
+                                    >
+                                        <Typography variant="caption">{`Show ${
+                                            showMore ? "Less" : "More"
+                                        }`}</Typography>
+                                    </Button>
+                                </>
+                            )}
                         </Typography>
                         <CommentItemFooter
                             comment={props.comment}
@@ -127,6 +138,6 @@ export default function CommentItem(props: CommentItemProps) {
                     </>
                 }
             />
-        </ListItem >
+        </ListItem>
     );
 }
