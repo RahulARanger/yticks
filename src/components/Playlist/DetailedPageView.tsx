@@ -26,6 +26,7 @@ export default class DetailedPageView extends Component<
     };
 
     render() {
+        alert(this.props.videoID);
         return (
             <>
                 <Stack
@@ -40,9 +41,10 @@ export default class DetailedPageView extends Component<
                     justifyContent={"stretch"}
                     alignItems={"stretch"}
                 >
-                    <EmbeddedPlayList
+                    <VideoEmbedded
                         videoID={this.props.videoID}
-                        listID={this.props.listID}
+                        // listID={this.props.listID}
+
                         className={VideoStyle.embeddedVideo}
                         formatter={this.formatter}
                     />

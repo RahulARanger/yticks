@@ -24,7 +24,7 @@ export function formatDateTime(datetime: string) {
 
 export function truncateText(text: string, limit: number) {
     const length = text.length;
-    return length <= limit ? text : text.slice(0, limit + 1) + "...";
+    return length <= limit ? text : text.slice(0, limit - 10) + "...";
 }
 
 export function extractThumbnail(thumbnail: thumbNail) {

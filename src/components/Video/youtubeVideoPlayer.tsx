@@ -58,6 +58,8 @@ type miniProps = { details: VideoDetails; formatter: Intl.NumberFormat };
 interface embeddedProps {
     id: string;
     className: string;
+    listOfIds?: Array<string>;
+    index?: number;
 }
 
 class RawEmbeddedVideoPlayer extends Component<embeddedProps> {
@@ -67,11 +69,17 @@ class RawEmbeddedVideoPlayer extends Component<embeddedProps> {
     render() {
         return <div id={this.frame} className={this.props.className}></div>;
     }
+    onReady(event: YT.PlayerEvent) {}
+
     componentDidMount(): void {
         this.player = new YT.Player(this.frame, {
             videoId: this.props.id,
             playerVars: {
                 autoplay: 0,
+                enablejsapi: 1,
+            },
+            events: {
+                onReady: this.onReady.bind(this),
             },
         });
     }
@@ -79,6 +87,8 @@ class RawEmbeddedVideoPlayer extends Component<embeddedProps> {
         if (this.player) this.player.destroy();
     }
 }
+
+class RawEmbeddedPlaylist extends RawEmbeddedVideoPlayer {}
 
 export function EmbeddedVideo(props: { isVideo: boolean; id: string }) {
     const from_video = AskVideo(props.isVideo ? props.id : null);
@@ -98,10 +108,17 @@ export function EmbeddedVideo(props: { isVideo: boolean; id: string }) {
             />
         );
     if (data?.details)
-        return (
+        return props.isVideo ? (
             <RawEmbeddedVideoPlayer
                 id={props.id}
                 className={videoPlayerStyles.frame}
+            />
+        ) : (
+            <RawEmbeddedPlaylist
+                id={props.id}
+                className={videoPlayerStyles.frame}
+                index={0}
+                listOfIds={data.details.items.map((video) => video.id)}
             />
         );
     return (
@@ -333,7 +350,7 @@ export class EmbeddedPlayList extends Component<PlayListProps> {
             <>
                 <Script src="https://www.youtube.com/iframe_api"></Script>
                 <Box className={this.props.className}>
-                    <EmbeddedVideo isVideo={false} id={this.props.listID} />
+                    <EmbeddedVideo isVideo={true} id={this.props.videoID} />
                     <VideoSummary
                         videoID={this.props.videoID}
                         formatter={this.props.formatter}

@@ -11,6 +11,7 @@ import Skeleton from "@mui/material/Skeleton";
 import Fab from "@mui/material/Fab";
 import PlaylistPlayIcon from "@mui/icons-material/PlaylistPlay";
 import Paper from "@mui/material/Paper";
+import Avatar from "@mui/material/Avatar";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
 import Image from "next/image";
 import Stack from "@mui/material/Stack";
@@ -22,7 +23,7 @@ function PlayListVideoItems(props: CommonPropsForPlayListItems) {
     const { data, error, isLoading } = AskPlayListItems(props.listID);
     const items = data?.details?.items;
     if (!items || error) return <></>;
-    if (isLoading) return <Skeleton height={50} />;
+    if (isLoading) return <Skeleton height={250} width={400} />;
 
     return (
         <>
@@ -72,13 +73,18 @@ function PlayListVideoItems(props: CommonPropsForPlayListItems) {
 }
 
 function PlayListSummary(props: CommonPropsForPlayListItems) {
-    const { data } = AskPlayList(props.listID);
+    const { data, isLoading } = AskPlayList(props.listID);
     const playlistDetails = data?.details?.items[0];
+
+    if (isLoading) return <Skeleton height={50} variant="rounded" />;
+
     if (!playlistDetails)
         return (
-            <Typography fontStyle={"italic"} variant="subtitle1" p="6px">
-                No Details Found about Playlist
-            </Typography>
+            <Tooltip title="No Details Found, Assuming it to Mix">
+                <Typography p="6px" variant={"h6"}>
+                    Mix
+                </Typography>
+            </Tooltip>
         );
     return (
         <Stack
@@ -88,12 +94,16 @@ function PlayListSummary(props: CommonPropsForPlayListItems) {
             justifyContent={"space-between"}
             flexDirection={"row"}
         >
-            <Image
-                alt="Playlist thumbnail"
-                src={extractThumbnail(playlistDetails.snippet.thumbnails).url}
-                width={"69"}
-                height={"50"}
-            />
+            <Avatar>
+                <Image
+                    alt="Playlist thumbnail"
+                    src={
+                        extractThumbnail(playlistDetails.snippet.thumbnails).url
+                    }
+                    width={"69"}
+                    height={"50"}
+                />
+            </Avatar>
             <Typography p="6px" variant={"h6"}>
                 {playlistDetails.snippet.title}
             </Typography>
