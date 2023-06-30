@@ -15,7 +15,7 @@ export function decodeID(encoded: string): [string, string] {
     return [videoID, listID];
 }
 
-export default async function handler(request: NextRequest) {
+export default async function GET(request: NextRequest) {
     const { listID } = await request.json();
     if (!listID) letThemKnow("Please provide the ID for the playlist.");
 

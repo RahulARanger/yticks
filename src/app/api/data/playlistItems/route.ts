@@ -5,7 +5,7 @@ import ask, {
 import { PlayListItemResponse } from "@/components/types/playlist";
 import { NextRequest, NextResponse } from "next/server";
 
-export default async function handler(request: NextRequest) {
+export default async function GET(request: NextRequest) {
     const { listID } = await request.json();
 
     if (!listID) return letThemKnow("Please provide the ID for the playlist.");

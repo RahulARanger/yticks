@@ -1,14 +1,14 @@
 "use client";
 
 import Head from "next/head";
-import { Component, ReactNode } from "react";
+import { Component, ReactNode, useState } from "react";
 import VideoPlayerHeader from "@/components/header";
 import DetailedPageView, {
     FromMainPageWhichAreState,
 } from "@/components/Video/DetailedPageView";
 import Settings, { VideoSettings } from "@/components/Video/settings";
-import { withRouter } from "next/router";
-import { WithRouterProps } from "next/dist/client/with-router";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context";
 
 interface DetailedVideoViewState
     extends VideoSettings,
@@ -17,7 +17,7 @@ interface DetailedVideoViewState
 }
 
 class DetailedVideoView extends Component<
-    DetailedVideoViewState & WithRouterProps,
+    { router: AppRouterInstance; param_key: string },
     DetailedVideoViewState
 > {
     state: DetailedVideoViewState = {
@@ -26,10 +26,7 @@ class DetailedVideoView extends Component<
     };
 
     handleSearch(videoID: string): void {
-        this.props.router.push({
-            pathname: this.props.router.pathname,
-            query: { id: videoID },
-        });
+        this.props.router.push(`/video?id=${videoID}`);
         this.setState({ videoID });
     }
 
@@ -46,10 +43,7 @@ class DetailedVideoView extends Component<
     resetSearch() {
         // order matters
         // first reset the location
-        this.props.router.push({
-            pathname: this.props.router.pathname,
-            query: {},
-        });
+        this.props.router.push("/video");
         // then reset the state
         this.setState({
             videoID: "",
@@ -69,11 +63,7 @@ class DetailedVideoView extends Component<
                     resetSearch={this.resetSearch.bind(this)}
                     onSearch={this.handleSearch.bind(this)}
                     onSettingsRequest={this.toggleSettings.bind(this, true)}
-                    requested={String(
-                        this.props.router.query.q ||
-                            this.props.router.query.id ||
-                            ""
-                    )}
+                    requested={this.props.param_key}
                 />
                 <Settings
                     open={this.state.openSettings}
@@ -89,4 +79,13 @@ class DetailedVideoView extends Component<
     }
 }
 
-export default withRouter(DetailedVideoView);
+export default function WithCached() {
+    const router = useRouter();
+    const params = useSearchParams();
+    return (
+        <DetailedVideoView
+            router={router}
+            param_key={params.get("q") || params.get("id") || ""}
+        />
+    );
+}

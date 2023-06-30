@@ -5,7 +5,7 @@ import ask, {
 } from "@/components/helper/generalRequest";
 import { NextRequest, NextResponse } from "next/server";
 
-export default async function handler(request: NextRequest) {
+export default async function GET(request: NextRequest) {
     const { videoID, pageToken } = await request.json();
     if (!videoID) return letThemKnow("Please provide the ID for the video.");
 
