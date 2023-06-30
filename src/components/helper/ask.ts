@@ -2,10 +2,10 @@ import { urlWithArgs } from "./generalRequest";
 import useSWRImmutable from "swr/immutable";
 import useSWRInfinite from "swr/infinite";
 import { askButRead } from "./generalRequest";
-import { ExpectedVideoDetails } from "@/pages/api/data/videoById";
-import { ExpectedCommentThread } from "@/pages/api/data/commentThreads";
+import type { ExpectedVideoDetails } from "../types/Video";
 import { ExpectedPlaylist } from "@/pages/api/data/playList";
 import { ExpectedPlaylistItems } from "@/pages/api/data/playlistItems";
+import { ExpectedCommentThread } from "../types/Comments";
 
 const isMock = process.env.NEXT_PUBLIC_IS_DEV ? "mock" : "data";
 

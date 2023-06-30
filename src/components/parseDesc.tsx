@@ -1,25 +1,11 @@
 import Typography from "@mui/material/Typography";
 import Link from "@mui/material/Link";
 import { hashTag } from "./helper/urls";
+import { Variant } from "@mui/material/styles/createTypography";
 
 interface DescProps {
     text: string;
-    variant?:
-        | "button"
-        | "caption"
-        | "h1"
-        | "h2"
-        | "h3"
-        | "h4"
-        | "h5"
-        | "h6"
-        | "inherit"
-        | "subtitle1"
-        | "subtitle2"
-        | "body1"
-        | "body2"
-        | "overline"
-        | undefined;
+    variant?: Variant;
 }
 
 export function YoutubeHashTag(props: { tag: string }) {

@@ -1,4 +1,4 @@
-import { errorResponse } from "./response";
+import { ExpectedDetails, errorResponse } from "./response";
 
 export interface Comment {
     kind: "youtube#comment";
@@ -52,3 +52,5 @@ export interface ListCommentThreadResponse extends errorResponse {
     };
     items: Array<CommentThread>;
 }
+
+export type ExpectedCommentThread = ExpectedDetails<ListCommentThreadResponse>;

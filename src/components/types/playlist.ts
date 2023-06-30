@@ -1,4 +1,4 @@
-import { errorResponse } from "./response";
+import { ExpectedDetails, errorResponse } from "./response";
 
 export interface PlaylistItem {
     kind: "youtube#playlistItem";
@@ -111,3 +111,6 @@ export interface PlayListDetailedViewState {
     videoIDs: Array<string>;
     index: number;
 }
+
+export type ExpectedPlaylist = ExpectedDetails<PlayListResponse>;
+export type ExpectedPlaylistItems = ExpectedDetails<PlayListItemResponse>;

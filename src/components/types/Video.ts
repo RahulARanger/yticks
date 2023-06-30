@@ -1,3 +1,5 @@
+import { ExpectedDetails } from "./response";
+
 export interface thumbNail {
     [key: string]: {
         url: string;
@@ -227,3 +229,5 @@ export interface VideoListDetails {
     };
     items: Array<VideoDetails>;
 }
+
+export type ExpectedVideoDetails = ExpectedDetails<VideoListDetails>;

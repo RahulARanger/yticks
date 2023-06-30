@@ -1,6 +1,3 @@
-import { NextApiResponse } from "next";
-import { letThemKnow } from "./generalRequest";
-import { ExpectedDetails } from "../types/response";
 import dayjs from "dayjs";
 import { thumbNail } from "../types/Video";
 
@@ -9,17 +6,8 @@ export function extract_needed(originalText: string): string {
     return text.slice(0, 100); // first 100 words only...
 }
 
-export function isModalLoading(
-    _response: NextApiResponse<ExpectedDetails<any> | undefined>,
-    response: { error: string; estimated_time: number } | any
-) {
-    if (response?.error && typeof response?.estimated_time === "number")
-        return letThemKnow(_response, "Modal is loading, please request again");
-    return false;
-}
-
-export function formatDateTime(datetime: string) {
-    return dayjs(datetime).format("MMMM D, YYYY h:mm A");
+export function formatDateTime(date_time: string) {
+    return dayjs(date_time).format("MMMM D, YYYY h:mm A");
 }
 
 export function truncateText(text: string, limit: number) {

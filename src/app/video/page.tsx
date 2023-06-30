@@ -1,3 +1,5 @@
+"use client";
+
 import Head from "next/head";
 import { Component, ReactNode } from "react";
 import VideoPlayerHeader from "@/components/header";

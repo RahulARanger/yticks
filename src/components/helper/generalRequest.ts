@@ -1,4 +1,5 @@
-import { unpredictableResponse } from "../types/response";
+import { NextResponse } from "next/server";
+import { ExpectedDetails } from "../types/response";
 
 type askArgs = { [key: string]: string };
 
@@ -52,11 +53,13 @@ export async function askButRead<ExpectedResponse>(
     });
 }
 
-export function letThemKnow(response: unpredictableResponse, error: string) {
-    response.status(502).json({
-        failed: error,
-        details: undefined,
-    });
+export function letThemKnow(
+    error: string
+): NextResponse<ExpectedDetails<undefined>> {
+    return NextResponse.json(
+        { failed: error, details: undefined },
+        { status: 502 }
+    );
 }
 
 export function sendError(actualError: unknown, fallbackError: string): string {
@@ -65,20 +68,4 @@ export function sendError(actualError: unknown, fallbackError: string): string {
         "_KEY_"
     );
     return safeError ?? fallbackError;
-}
-
-export async function askHuggingFace<ExpectedResponse>(
-    url: string,
-    body: Object
-): Promise<ExpectedResponse> {
-    return await fetch(url, {
-        headers: {
-            Authorization: `Bearer ${process.env.HUGGING_FACE}`,
-        },
-        method: "POST",
-        body: JSON.stringify(body),
-    }).then(async function (response) {
-        await ensure(url, response);
-        return response.json();
-    });
 }

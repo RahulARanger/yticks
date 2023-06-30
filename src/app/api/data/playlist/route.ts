@@ -1,12 +1,9 @@
-import { ExpectedDetails } from "@/components/types/response";
-import type { NextApiRequest, NextApiResponse } from "next";
 import ask, {
     letThemKnow,
     sendError,
-} from "../../../components/helper/generalRequest";
+} from "@/components/helper/generalRequest";
 import { PlayListResponse } from "@/components/types/playlist";
-
-export type ExpectedPlaylist = ExpectedDetails<PlayListResponse>;
+import { NextRequest, NextResponse } from "next/server";
 
 export function encodeID(videoID: string, listID: string) {
     return `${videoID} ${listID}`;
@@ -18,15 +15,10 @@ export function decodeID(encoded: string): [string, string] {
     return [videoID, listID];
 }
 
-export default async function handler(
-    request: NextApiRequest,
-    response: NextApiResponse<ExpectedPlaylist | undefined>
-) {
-    const { listID } = request.query;
+export default async function handler(request: NextRequest) {
+    const { listID } = await request.json();
+    if (!listID) letThemKnow("Please provide the ID for the playlist.");
 
-    if (!listID) {
-        return letThemKnow(response, "Please provide the ID for the playlist.");
-    }
     try {
         const resp = await ask(
             "https://www.googleapis.com/youtube/v3/playlists",
@@ -39,16 +31,12 @@ export default async function handler(
         const playList: PlayListResponse = await resp.json();
 
         if (!playList?.items?.length) {
-            if (playList?.error?.message)
-                return letThemKnow(response, playList.error.message);
-            return letThemKnow(response, "No Results found");
-        } else {
+            return letThemKnow(playList?.error?.message || "No Results found");
         }
 
-        response.status(200).json({ failed: false, details: playList });
+        return NextResponse.json({ failed: false, details: playList });
     } catch (error) {
-        letThemKnow(
-            response,
+        return letThemKnow(
             sendError(
                 error,
                 `Failed to retrieve the comments added for the playlist ${listID}`

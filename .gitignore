@@ -40,4 +40,4 @@ package-lock.json
 *.env
 
 # mock data apis
-src/pages/api/mock/*.ts
+src/app/api/mock/*
