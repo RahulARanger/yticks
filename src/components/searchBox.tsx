@@ -12,7 +12,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import { styled, alpha, SxProps, Theme } from "@mui/material/styles";
-import { encodeID } from "@/app/api/data/playlist/route";
+import { encodeID } from "./helper/ask";
 
 type changeEvent = ChangeEvent<HTMLInputElement>;
 
