@@ -5,8 +5,10 @@ import ask, {
 import { PlayListItemResponse } from "@/components/types/playlist";
 import { NextRequest, NextResponse } from "next/server";
 
-export default async function GET(request: NextRequest) {
-    const { listID } = await request.json();
+export async function GET(request: NextRequest) {
+    const { listID } = Object.fromEntries(
+        new URL(request.url).searchParams.entries()
+    );
 
     if (!listID) return letThemKnow("Please provide the ID for the playlist.");
     try {

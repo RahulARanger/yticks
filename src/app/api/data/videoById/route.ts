@@ -5,8 +5,11 @@ import ask, {
 } from "@/components/helper/generalRequest";
 import { VideoListDetails } from "@/components/types/Video";
 
-export default async function GET(request: NextRequest) {
-    const { videoID, maxWidth, maxHeight } = await request.json();
+export async function GET(request: NextRequest) {
+    const { videoID, maxWidth, maxHeight } = Object.fromEntries(
+        new URL(request.url).searchParams.entries()
+    );
+
     if (!videoID) return letThemKnow("Please provide the ID for the video.");
     try {
         const resp = await ask("https://www.googleapis.com/youtube/v3/videos", {

@@ -5,8 +5,10 @@ import ask, {
 } from "@/components/helper/generalRequest";
 import { NextRequest, NextResponse } from "next/server";
 
-export default async function GET(request: NextRequest) {
-    const { videoID, pageToken } = await request.json();
+export async function GET(request: NextRequest) {
+    const { videoID, pageToken } = Object.fromEntries(
+        new URL(request.url).searchParams.entries()
+    );
     if (!videoID) return letThemKnow("Please provide the ID for the video.");
 
     try {

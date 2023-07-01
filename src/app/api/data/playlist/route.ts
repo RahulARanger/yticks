@@ -15,8 +15,10 @@ export function decodeID(encoded: string): [string, string] {
     return [videoID, listID];
 }
 
-export default async function GET(request: NextRequest) {
-    const { listID } = await request.json();
+export async function GET(request: NextRequest) {
+    const { listID } = Object.fromEntries(
+        new URL(request.url).searchParams.entries()
+    );
     if (!listID) letThemKnow("Please provide the ID for the playlist.");
 
     try {
