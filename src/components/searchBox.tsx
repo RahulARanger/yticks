@@ -1,3 +1,5 @@
+"use client";
+
 import TextField from "@mui/material/TextField";
 import { ChangeEvent, Component, ReactNode, KeyboardEvent } from "react";
 import InputAdornment from "@mui/material/InputAdornment";
@@ -18,6 +20,7 @@ interface SearchBarState {
     passed?: boolean;
     modalOpened: boolean;
     url: string;
+    disabled: boolean;
 }
 
 export interface SharedProps {
@@ -51,10 +54,18 @@ const WithStyleTextField = styled(TextField)(({ theme }) => {
 });
 
 abstract class SearchBar extends Component<SearchBarProps, SearchBarState> {
-    state: SearchBarState = { modalOpened: false, url: "" };
     abstract regMatcher: RegExp;
     abstract dummyURL: string;
     abstract name: string;
+
+    constructor(props: SearchBarProps) {
+        super(props);
+        this.state = {
+            disabled: Boolean(this.props.requested),
+            modalOpened: false,
+            url: "",
+        };
+    }
 
     protected validate(event: changeEvent): boolean {
         const url: string = (event.target.value = event.target.value.trim());
@@ -64,21 +75,17 @@ abstract class SearchBar extends Component<SearchBarProps, SearchBarState> {
 
     abstract _handleRedirect(url: string): string | false; // return the id (result of the url)
 
-    handleRedirect(): undefined {
+    handleRedirect(): void {
         if (!this.state.passed) return;
-
         const found = this._handleRedirect(this.state.url);
 
-        if (!found) {
-            this.setState({ passed: false });
-            return;
-        }
+        if (!found) return this.setState({ passed: false });
         if (this.props.atTop) this.forceModal(false);
 
         this.props.onSearch(found);
     }
 
-    onEnterPress(event: KeyboardEvent<HTMLInputElement>): undefined {
+    onEnterPress(event: KeyboardEvent<HTMLInputElement>): void {
         if (event.key !== "Enter") return;
         this.handleRedirect();
     }
@@ -160,7 +167,9 @@ abstract class SearchBar extends Component<SearchBarProps, SearchBarState> {
                 name={this.name}
                 label={
                     this.props.showLabel
-                        ? this.state.passed
+                        ? this.state.disabled
+                            ? "Loading..."
+                            : this.state.passed
                             ? "You can now search"
                             : "Paste a valid Youtube URL"
                         : ""
@@ -174,23 +183,30 @@ abstract class SearchBar extends Component<SearchBarProps, SearchBarState> {
                 className={this.props.className}
                 sx={sx}
                 value={this.state.url}
+                disabled={this.state.disabled}
             />
         );
     }
 
-    componentDidUpdate(): void {
+    async componentDidMount() {
         if (this.props.atTop) return;
+
         if (!this.state.url && this.props.requested) {
-            if (!this.props.requested.startsWith("https")) {
-                this.props.onSearch(this.props.requested);
-                return;
-            }
-            const found = this._handleRedirect(this.props.requested);
-            if (!found)
-                return alert(
+            this.setState({ disabled: true });
+            let to_request;
+
+            if (!this.props.requested.startsWith("https"))
+                to_request = this.props.requested;
+            // in case of the searchParams has "id"
+            else to_request = this._handleRedirect(this.props.requested); //extracting id in case of "q" param
+
+            if (!to_request)
+                alert(
                     `${this.props.requested} is not proper URL, please check once`
                 );
-            this.props.onSearch(found);
+            else this.props.onSearch(to_request); // in case of the searchParams has "q"
+
+            this.setState((prevState) => ({ disabled: !prevState.disabled }));
         }
     }
 
