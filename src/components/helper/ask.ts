@@ -3,8 +3,10 @@ import useSWRImmutable from "swr/immutable";
 import useSWRInfinite from "swr/infinite";
 import { askButRead } from "./generalRequest";
 import type { ExpectedVideoDetails } from "../types/Video";
-import { ExpectedPlaylist } from "@/pages/api/data/playList";
-import { ExpectedPlaylistItems } from "@/pages/api/data/playlistItems";
+import {
+    ExpectedPlaylist,
+    ExpectedPlaylistItems,
+} from "@/components/types/playlist";
 import { ExpectedCommentThread } from "../types/Comments";
 
 const isMock = process.env.NEXT_PUBLIC_IS_DEV ? "mock" : "data";
@@ -93,4 +95,14 @@ export function AskPlayListItems(
             : null,
         (url: string) => askButRead<ExpectedPlaylistItems>(url)
     );
+}
+
+export function encodeID(videoID: string, listID: string) {
+    return `${videoID} ${listID}`;
+}
+
+export function decodeID(encoded: string): [string, string] {
+    console.log(encoded);
+    const [videoID, listID] = encoded.split(" ");
+    return [videoID, listID];
 }

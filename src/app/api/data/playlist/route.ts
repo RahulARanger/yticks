@@ -5,16 +5,6 @@ import ask, {
 import { PlayListResponse } from "@/components/types/playlist";
 import { NextRequest, NextResponse } from "next/server";
 
-export function encodeID(videoID: string, listID: string) {
-    return `${videoID} ${listID}`;
-}
-
-export function decodeID(encoded: string): [string, string] {
-    console.log(encoded);
-    const [videoID, listID] = encoded.split(" ");
-    return [videoID, listID];
-}
-
 export async function GET(request: NextRequest) {
     const { listID } = Object.fromEntries(
         new URL(request.url).searchParams.entries()
