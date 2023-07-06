@@ -1,5 +1,5 @@
+import { type ReactNode } from 'react'
 // import { VideoPlayListHeader } from "@/components/header";
-// import { Component, ReactNode } from "react";
 // import Head from "next/head";
 // import { withRouter } from "next/router";
 // import { WithRouterProps } from "next/dist/client/with-router";
@@ -65,6 +65,6 @@
 
 // export default withRouter(Playlist);
 
-export default function needToWait() {
-  return <>In Progress</>;
+export default function needToWait (): ReactNode {
+  return <>In Progress</>
 }

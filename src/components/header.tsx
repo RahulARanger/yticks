@@ -1,50 +1,50 @@
-import AppBar from "@mui/material/AppBar";
-import { Component, ReactNode } from "react";
-import Toolbar from "@mui/material/Toolbar";
-import Drawer from "@mui/material/Drawer";
+import AppBar from '@mui/material/AppBar'
+import { Component, type ReactNode } from 'react'
+import Toolbar from '@mui/material/Toolbar'
+import Drawer from '@mui/material/Drawer'
 import {
   SearchBarForPlaylistOfVideos,
-  SearchBarForYoutubeVideo,
-} from "@/components/searchBox";
-import Typography from "@mui/material/Typography";
-import headerStyles from "@/styles/header.module.css";
-import { SharedProps } from "@/components/searchBox";
-import GitHubIcon from "@mui/icons-material/GitHub";
-import Box from "@mui/material/Box";
-import IconButton from "@mui/material/IconButton";
-import SettingsIcon from "@mui/icons-material/Settings";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemButton from "@mui/material/ListItemButton";
-import MenuIcon from "@mui/icons-material/Menu";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import ListItemText from "@mui/material/ListItemText";
+  SearchBarForYoutubeVideo
+  , type SharedProps
+} from '@/components/searchBox'
+import Typography from '@mui/material/Typography'
+import headerStyles from '@/styles/header.module.css'
+import GitHubIcon from '@mui/icons-material/GitHub'
+import Box from '@mui/material/Box'
+import IconButton from '@mui/material/IconButton'
+import SettingsIcon from '@mui/icons-material/Settings'
+import List from '@mui/material/List'
+import ListItem from '@mui/material/ListItem'
+import ListItemButton from '@mui/material/ListItemButton'
+import MenuIcon from '@mui/icons-material/Menu'
+import ListItemIcon from '@mui/material/ListItemIcon'
+import ArrowBackIcon from '@mui/icons-material/ArrowBack'
+import ListItemText from '@mui/material/ListItemText'
 
 interface HeaderProps extends SharedProps {
-  textSearched: string;
-  resetSearch: () => void;
-  title: string;
-  onSettingsRequest: () => void;
+  textSearched: string
+  resetSearch: () => void
+  title: string
+  onSettingsRequest: () => void
 }
 
 interface HeaderStates {
-  openDrawer: boolean;
+  openDrawer: boolean
 }
 
 export abstract class CommonHeader extends Component<
-  HeaderProps,
-  HeaderStates
+HeaderProps,
+HeaderStates
 > {
-  state: HeaderStates = { openDrawer: false };
-  githubURL = "https://github.com/RahulARanger/yticks";
+  state: HeaderStates = { openDrawer: false }
+  githubURL = 'https://github.com/RahulARanger/yticks'
 
-  toggleDrawer() {
-    this.setState({ openDrawer: !this.state.openDrawer });
+  toggleDrawer (): void {
+    this.setState({ openDrawer: !this.state.openDrawer })
   }
 
-  menuItems() {
-    const hide = { display: { xs: "block", sm: "none" } };
+  menuItems (): ReactNode {
+    const hide = { display: { xs: 'block', sm: 'none' } }
     return (
       <>
         <Box sx={hide}>
@@ -53,7 +53,7 @@ export abstract class CommonHeader extends Component<
             aria-label="open drawer"
             edge="start"
             onClick={this.toggleDrawer.bind(this)}
-            sx={{ ml: "3px" }}
+            sx={{ ml: '3px' }}
           >
             <MenuIcon />
           </IconButton>
@@ -62,11 +62,11 @@ export abstract class CommonHeader extends Component<
             open={this.state.openDrawer}
             onClose={this.toggleDrawer.bind(this)}
             sx={{
-              "& .MuiDrawer-paper": {
-                boxSizing: "border-box",
-                width: "200px",
+              '& .MuiDrawer-paper': {
+                boxSizing: 'border-box',
+                width: '200px'
               },
-              ...hide,
+              ...hide
             }}
           >
             <Typography variant="subtitle1" ml="2px">
@@ -89,12 +89,12 @@ export abstract class CommonHeader extends Component<
           </Drawer>
         </Box>
       </>
-    );
+    )
   }
 
-  iconButtons() {
+  iconButtons (): ReactNode {
     return (
-      <Box sx={{ display: { xs: "none", sm: "block" } }}>
+      <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
         <IconButton
           target="_blank"
           href="https://github.com/RahulARanger/yticks"
@@ -105,26 +105,26 @@ export abstract class CommonHeader extends Component<
           <SettingsIcon />
         </IconButton>
       </Box>
-    );
+    )
   }
 
-  onLeft(): ReactNode {
+  onLeft (): ReactNode {
     return (
       <>
-        <IconButton sx={{ mr: "2px" }} onClick={this.props.resetSearch}>
+        <IconButton sx={{ mr: '2px' }} onClick={this.props.resetSearch}>
           <ArrowBackIcon />
         </IconButton>
-        <Typography sx={{ flexGrow: 1 }} variant="h6" component={"div"}>
+        <Typography sx={{ flexGrow: 1 }} variant="h6" component={'div'}>
           {this.props.title}
         </Typography>
       </>
-    );
+    )
   }
 
-  abstract searchBar(showAtTop: boolean): ReactNode;
+  abstract searchBar (showAtTop: boolean): ReactNode
 
-  render(): ReactNode {
-    const showAtTop = Boolean(this.props.textSearched);
+  render (): ReactNode {
+    const showAtTop = Boolean(this.props.textSearched)
     return (
       <>
         <AppBar
@@ -149,36 +149,36 @@ export abstract class CommonHeader extends Component<
           </Toolbar>
         </AppBar>
       </>
-    );
+    )
   }
 }
 
 export default class VideoPlayerHeader extends CommonHeader {
-  searchBar(showAtTop: boolean) {
+  searchBar (showAtTop: boolean): ReactNode {
     return (
       <SearchBarForYoutubeVideo
         showLabel={!showAtTop}
-        size={showAtTop ? "small" : "medium"}
+        size={showAtTop ? 'small' : 'medium'}
         onSearch={this.props.onSearch}
         className={headerStyles.textField}
         atTop={showAtTop}
         requested={this.props.requested}
       />
-    );
+    )
   }
 }
 
 export class VideoPlayListHeader extends CommonHeader {
-  searchBar(showAtTop: boolean) {
+  searchBar (showAtTop: boolean): ReactNode {
     return (
       <SearchBarForPlaylistOfVideos
         showLabel={!showAtTop}
-        size={showAtTop ? "small" : "medium"}
+        size={showAtTop ? 'small' : 'medium'}
         onSearch={this.props.onSearch}
         className={headerStyles.textField}
         atTop={showAtTop}
         requested={this.props.requested}
       />
-    );
+    )
   }
 }

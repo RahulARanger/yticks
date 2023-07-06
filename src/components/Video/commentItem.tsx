@@ -1,64 +1,66 @@
-import { Comment } from "../types/Comments";
-import CommentStyles from "@/styles/comments.module.css";
-import { CommentAvatarComponent, NameComponent } from "./miniComponents";
-import ListItem from "@mui/material/ListItem";
-import ListItemText from "@mui/material/ListItemText";
-import Typography from "@mui/material/Typography";
-import { LikeComponent } from "./miniComponents";
-import EditIcon from "@mui/icons-material/Edit";
-import dayjs from "dayjs";
-import Button from "@mui/material/Button";
-import Stack from "@mui/material/Stack";
-import { useState } from "react";
-import Tooltip from "@mui/material/Tooltip";
-import { sendComment } from "../types/CommentsUI";
-import { formatDateTime } from "../helper/simpilify";
+import { type Comment } from '../types/Comments'
+import CommentStyles from '@/styles/comments.module.css'
+import { CommentAvatarComponent, NameComponent, LikeComponent } from './miniComponents'
+import ListItem from '@mui/material/ListItem'
+import ListItemText from '@mui/material/ListItemText'
+import Typography from '@mui/material/Typography'
+import EditIcon from '@mui/icons-material/Edit'
+import dayjs from 'dayjs'
+import Button from '@mui/material/Button'
+import Stack from '@mui/material/Stack'
+import { type ReactNode, useState } from 'react'
+import Tooltip from '@mui/material/Tooltip'
+import { type sendComment } from '../types/CommentsUI'
+import { formatDateTime } from '../helper/simpilify'
 
 interface CommentItemProps {
-  comment: Comment;
-  formatter: Intl.NumberFormat;
-  getReplies?: sendComment;
-  replies?: Array<Comment>;
-  replyCount: number;
+  comment: Comment
+  formatter: Intl.NumberFormat
+  getReplies?: sendComment
+  replies?: Comment[]
+  replyCount: number
 }
 
-function CommentItemFooter(props: CommentItemProps) {
+function CommentItemFooter (props: CommentItemProps): ReactNode {
   // note secondary text is p tag, so ensure there's no big tags like div, p inside it
 
-  const topLevelComment = props.comment;
+  const topLevelComment = props.comment
   const isEdited =
-    topLevelComment.snippet.publishedAt !== topLevelComment.snippet.updatedAt;
+    topLevelComment.snippet.publishedAt !== topLevelComment.snippet.updatedAt
 
-  const edit = isEdited ? (
+  const edit = isEdited
+    ? (
     <Tooltip title={formatDateTime(topLevelComment.snippet.updatedAt)}>
-      <Typography variant={"caption"} fontSize={"small"} component="span">
+      <Typography variant={'caption'} fontSize={'small'} component="span">
         {dayjs(topLevelComment.snippet.updatedAt).fromNow()}
-        <EditIcon fontSize={"inherit"} sx={{ ml: "3px", mb: "-1px" }} />
+        <EditIcon fontSize={'inherit'} sx={{ ml: '3px', mb: '-1px' }} />
       </Typography>
     </Tooltip>
-  ) : (
+      )
+    : (
     <></>
-  );
+      )
 
-  const showMore = props.replies ? (
+  const showMore = props.replies
+    ? (
     <Button
       size="small"
       onClick={() => {
-        props.getReplies &&
-          props.getReplies(props.comment, props.replyCount, props.replies);
+        props.getReplies?.(props.comment, props.replyCount, props.replies)
       }}
     >{`Replies ${props.formatter.format(props.replyCount || 0)}`}</Button>
-  ) : (
+      )
+    : (
     <></>
-  );
+      )
   return (
     <>
       <Stack
-        flexDirection={"row"}
-        justifyContent={"space-between"}
+        flexDirection={'row'}
+        justifyContent={'space-between'}
         alignItems="center"
-        flexWrap={"wrap"}
-        sx={{ mt: "3px" }}
+        flexWrap={'wrap'}
+        sx={{ mt: '3px' }}
         component="span"
       >
         <LikeComponent
@@ -74,13 +76,13 @@ function CommentItemFooter(props: CommentItemProps) {
                 /> */}
       </Stack>
     </>
-  );
+  )
 }
 
-export default function CommentItem(props: CommentItemProps) {
-  const topLevelComment = props.comment;
-  const [text, setText] = useState(topLevelComment.snippet.textOriginal);
-  const [showMore, setShowMore] = useState<boolean>(false);
+export default function CommentItem (props: CommentItemProps): ReactNode {
+  const topLevelComment = props.comment
+  const [text, setText] = useState(topLevelComment.snippet.textOriginal)
+  const [showMore, setShowMore] = useState<boolean>(false)
 
   return (
     <ListItem key={props.comment.id} className={CommentStyles.commentItem}>
@@ -99,24 +101,26 @@ export default function CommentItem(props: CommentItemProps) {
           <>
             <Typography
               variant="body2"
-              component={"span"}
+              component={'span'}
               onInput={(event) => {
-                alert(event.currentTarget.textContent);
-                setText(event.currentTarget.textContent || text);
+                alert(event.currentTarget.textContent)
+                setText(event.currentTarget.textContent ?? text)
               }}
             >
-              {text.length < 150 ? (
-                text
-              ) : (
+              {text.length < 150
+                ? (
+                    text
+                  )
+                : (
                 <>
                   {showMore ? text : text.slice(0, 100)}
-                  <Button variant="text" onClick={() => setShowMore(!showMore)}>
+                  <Button variant="text" onClick={() => { setShowMore(!showMore) }}>
                     <Typography variant="caption">{`Show ${
-                      showMore ? "Less" : "More"
+                      showMore ? 'Less' : 'More'
                     }`}</Typography>
                   </Button>
                 </>
-              )}
+                  )}
             </Typography>
             <CommentItemFooter
               comment={props.comment}
@@ -129,5 +133,5 @@ export default function CommentItem(props: CommentItemProps) {
         }
       />
     </ListItem>
-  );
+  )
 }

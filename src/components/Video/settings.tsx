@@ -1,23 +1,22 @@
-import Drawer from "@mui/material/Drawer";
-import Typography from "@mui/material/Typography";
-import RadioGroup from "@mui/material/RadioGroup";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import FormControl from "@mui/material/FormControl";
-import FormLabel from "@mui/material/FormLabel";
-import { Component, ReactNode } from "react";
-import Radio from "@mui/material/Radio";
+import Drawer from '@mui/material/Drawer'
+import RadioGroup from '@mui/material/RadioGroup'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import FormControl from '@mui/material/FormControl'
+import FormLabel from '@mui/material/FormLabel'
+import { Component, type ReactNode } from 'react'
+import Radio from '@mui/material/Radio'
 
 export interface VideoSettings {
-  searchMode?: string;
+  searchMode?: string
 }
 
 export interface SettingsProps {
-  open: boolean;
-  onClose: () => void;
+  open: boolean
+  onClose: () => void
 }
 
-export default class Settings extends Component<SettingsProps, {}> {
-  safeSearch() {
+export default class Settings extends Component<SettingsProps> {
+  safeSearch (): ReactNode {
     return (
       <>
         <FormLabel id="safe-search">Safe Search</FormLabel>
@@ -35,19 +34,20 @@ export default class Settings extends Component<SettingsProps, {}> {
           <FormControlLabel value="strict" control={<Radio />} label="Strict" />
         </RadioGroup>
       </>
-    );
+    )
   }
-  render(): ReactNode {
+
+  render (): ReactNode {
     return (
       <Drawer
         variant="temporary"
         open={this.props.open}
-        onClose={() => this.props.onClose()}
+        onClose={() => { this.props.onClose() }}
         placeholder="Settings"
-        ModalProps={{ sx: { p: "4px" } }}
+        ModalProps={{ sx: { p: '4px' } }}
       >
         <FormControl>{this.safeSearch()}</FormControl>
       </Drawer>
-    );
+    )
   }
 }

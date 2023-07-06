@@ -1,108 +1,110 @@
-import ThumbUpIcon from "@mui/icons-material/ThumbUp";
-import Stack from "@mui/material/Stack";
-import Typography from "@mui/material/Typography";
-import IconButton from "@mui/material/IconButton";
-import dayjs from "dayjs";
-import Avatar from "@mui/material/Avatar";
-import ListItemAvatar from "@mui/material/ListItemAvatar";
-import Image from "next/image";
-import PersonIcon from "@mui/icons-material/Person";
-import relativeTime from "dayjs/plugin/relativeTime";
-import { useState } from "react";
-import { AskVideo } from "../helper/ask";
-import { CommentProps } from "../types/CommentsUI";
-import Chip from "@mui/material/Chip";
-import Tooltip from "@mui/material/Tooltip";
-import CommentIcon from "@mui/icons-material/Comment";
-import { formatDateTime } from "../helper/simpilify";
+import ThumbUpIcon from '@mui/icons-material/ThumbUp'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
+import IconButton from '@mui/material/IconButton'
+import dayjs from 'dayjs'
+import Avatar from '@mui/material/Avatar'
+import ListItemAvatar from '@mui/material/ListItemAvatar'
+import Image from 'next/image'
+import PersonIcon from '@mui/icons-material/Person'
+import relativeTime from 'dayjs/plugin/relativeTime'
+import { type ReactNode, useState } from 'react'
+import { AskVideo } from '../helper/ask'
+import { type CommentProps } from '../types/CommentsUI'
+import Chip from '@mui/material/Chip'
+import Tooltip from '@mui/material/Tooltip'
+import CommentIcon from '@mui/icons-material/Comment'
+import { formatDateTime } from '../helper/simpilify'
 
-dayjs.extend(relativeTime);
+dayjs.extend(relativeTime)
 
-export function LikeComponent(props: { userLiked?: boolean; count: string }) {
+export function LikeComponent (props: { userLiked?: boolean, count: string }): ReactNode {
   const icon = (
     <ThumbUpIcon
-      color={props.userLiked ? "action" : "disabled"}
+      color={props.userLiked ? 'action' : 'disabled'}
       fontSize="small"
     />
-  );
+  )
   return (
     <>
       <Stack
         direction="row"
         alignItems="center"
         justifyContent="space-between"
-        flexWrap={"nowrap"}
+        flexWrap={'nowrap'}
         component="span"
       >
         <IconButton color="primary" disabled>
           {icon}
         </IconButton>
-        <Typography variant={"subtitle2"} sx={{ mb: "-2px" }} component="span">
+        <Typography variant={'subtitle2'} sx={{ mb: '-2px' }} component="span">
           {props.count}
         </Typography>
       </Stack>
     </>
-  );
+  )
 }
 
-export function NameComponent(props: {
-  authorName: string;
-  creationDate: string;
-}) {
+export function NameComponent (props: {
+  authorName: string
+  creationDate: string
+}): ReactNode {
   // creationDate maps to the creation date of the comment
   return (
     <>
       <Stack
-        justifyContent={"space-between"}
-        flexDirection={"row"}
-        flexWrap={"nowrap"}
+        justifyContent={'space-between'}
+        flexDirection={'row'}
+        flexWrap={'nowrap'}
       >
         <Typography variant="subtitle2">{props.authorName}</Typography>
         <Tooltip title={formatDateTime(props.creationDate)}>
-          <Typography variant="caption" sx={{ fontStyle: "italic" }}>
+          <Typography variant="caption" sx={{ fontStyle: 'italic' }}>
             {dayjs(props.creationDate).fromNow()}
           </Typography>
         </Tooltip>
       </Stack>
     </>
-  );
+  )
 }
 
-export function CommentAvatarComponent(props: {
-  pfp: string;
-  className: string;
-}) {
-  const [isImage, setIsImage] = useState(true);
-  function fallback() {
-    setIsImage(false);
+export function CommentAvatarComponent (props: {
+  pfp: string
+  className: string
+}): ReactNode {
+  const [isImage, setIsImage] = useState(true)
+  function fallback (): void {
+    setIsImage(false)
   }
 
   return (
     <ListItemAvatar>
       <Avatar className={props.className}>
-        {isImage ? (
+        {isImage
+          ? (
           <Image
             src={props.pfp}
             fill
             alt="Profile Picture"
-            quality={"100"}
+            quality={'100'}
             onError={fallback}
             sizes="40px"
           />
-        ) : (
+            )
+          : (
           <PersonIcon />
-        )}
+            )}
       </Avatar>
     </ListItemAvatar>
-  );
+  )
 }
 
-export function CountOfComments(props: {
-  formatter: Intl.NumberFormat;
-  count: number;
-}) {
-  const format = Intl.NumberFormat();
-  const commentCount = props.count ?? 0;
+export function CountOfComments (props: {
+  formatter: Intl.NumberFormat
+  count: number
+}): ReactNode {
+  const format = Intl.NumberFormat()
+  const commentCount = props.count ?? 0
 
   return (
     <Tooltip title={`Comment Count: ${format.format(commentCount)}`}>
@@ -110,14 +112,14 @@ export function CountOfComments(props: {
         label={props.formatter.format(commentCount)}
         icon={<CommentIcon />}
         size="small"
-        sx={{ p: "2px" }}
+        sx={{ p: '2px' }}
       />
     </Tooltip>
-  );
+  )
 }
 
-export function CountOfTopLevelComments(props: CommentProps) {
-  const { data, error } = AskVideo(props.videoID);
+export function CountOfTopLevelComments (props: CommentProps): ReactNode {
+  const { data, error } = AskVideo(props.videoID)
 
   if (data?.details) {
     return (
@@ -125,11 +127,11 @@ export function CountOfTopLevelComments(props: CommentProps) {
         count={Number(data.details.items[0].statistics.commentCount)}
         formatter={props.formatter}
       />
-    );
+    )
   }
   return (
-    <Tooltip title={data?.failed || error}>
+    <Tooltip title={data?.failed ?? error}>
       <span>--</span>
     </Tooltip>
-  );
+  )
 }

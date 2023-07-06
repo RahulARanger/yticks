@@ -1,7 +1,7 @@
-import { ReactNode } from "react";
+import { type ReactNode } from 'react'
 // import Script from "next/script";
 
-export default function PyodideLayer({ children }: { children: ReactNode }) {
+export default function PyodideLayer ({ children }: { children: ReactNode }): ReactNode {
   return (
     <>
       {/* <Script
@@ -11,5 +11,5 @@ export default function PyodideLayer({ children }: { children: ReactNode }) {
             ></Script> */}
       {children}
     </>
-  );
+  )
 }

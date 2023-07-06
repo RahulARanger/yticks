@@ -1,36 +1,37 @@
-"use client";
+'use client'
 
-import "../styles/globals.css";
-import { Inter } from "next/font/google";
-import ThemeProvider from "@mui/material/styles/ThemeProvider";
-import createTheme from "@mui/material/styles/createTheme";
-import CssBaseline from "@mui/material/CssBaseline";
+import '../styles/globals.css'
+import { Inter } from 'next/font/google'
+import ThemeProvider from '@mui/material/styles/ThemeProvider'
+import createTheme from '@mui/material/styles/createTheme'
+import CssBaseline from '@mui/material/CssBaseline'
+import { type ReactNode } from 'react'
 
 const darkTheme = createTheme({
   palette: {
-    mode: "dark",
+    mode: 'dark',
     primary: {
-      main: "#e85403",
+      main: '#e85403'
     },
     secondary: {
-      main: "#ff6d00",
+      main: '#ff6d00'
     },
     error: {
-      main: "#f71505",
+      main: '#f71505'
     },
     warning: {
-      main: "#ffb300",
-    },
-  },
-});
+      main: '#ffb300'
+    }
+  }
+})
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ['latin'] })
 
-export default function RootLayout({
-  children,
+export default function RootLayout ({
+  children
 }: {
-  children: React.ReactNode;
-}) {
+  children: React.ReactNode
+}): ReactNode {
   return (
     <html lang="en">
       <head>
@@ -43,5 +44,5 @@ export default function RootLayout({
         </ThemeProvider>
       </body>
     </html>
-  );
+  )
 }

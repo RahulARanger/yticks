@@ -1,32 +1,29 @@
-import { Component } from "react";
-import Stack from "@mui/material/Stack";
-import CommentArea from "@/components/Video/commentListArea";
+import { Component, type ReactNode } from 'react'
+import Stack from '@mui/material/Stack'
+import CommentArea from '@/components/Video/commentListArea'
 import {
-  PlayListDetailedViewProps,
-  PlayListDetailedViewState,
-} from "../types/playlist";
-import VideoEmbedded, {
-  EmbeddedPlayList,
-  VideoPlayerSharedProps,
-} from "@/components/Video/youtubeVideoPlayer";
-import VideoStyle from "@/styles/video.module.css";
-import PlayListItems from "./playListItems";
+  type PlayListDetailedViewProps,
+  type PlayListDetailedViewState
+} from '../types/playlist'
+import VideoEmbedded from '@/components/Video/youtubeVideoPlayer'
+import VideoStyle from '@/styles/video.module.css'
+import PlayListItems from './playListItems'
 
 export default class DetailedPageView extends Component<
-  PlayListDetailedViewProps,
-  PlayListDetailedViewState
+PlayListDetailedViewProps,
+PlayListDetailedViewState
 > {
-  formatter: Intl.NumberFormat = Intl.NumberFormat("en", {
-    notation: "compact",
-  });
+  formatter: Intl.NumberFormat = Intl.NumberFormat('en', {
+    notation: 'compact'
+  })
 
   state: PlayListDetailedViewState = {
     videoIDs: [],
-    index: 0,
-  };
+    index: 0
+  }
 
-  render() {
-    alert(this.props.videoID);
+  render (): ReactNode {
+    alert(this.props.videoID)
     return (
       <>
         <Stack
@@ -36,10 +33,10 @@ export default class DetailedPageView extends Component<
           pr="10px"
           columnGap={1}
           rowGap={1}
-          flexWrap={"wrap"}
+          flexWrap={'wrap'}
           className={VideoStyle.detailedView}
-          justifyContent={"stretch"}
-          alignItems={"stretch"}
+          justifyContent={'stretch'}
+          alignItems={'stretch'}
         >
           <VideoEmbedded
             videoID={this.props.videoID}
@@ -56,6 +53,6 @@ export default class DetailedPageView extends Component<
         </Stack>
         <PlayListItems listID={this.props.listID} />
       </>
-    );
+    )
   }
 }

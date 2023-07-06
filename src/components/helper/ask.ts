@@ -1,23 +1,22 @@
-import { urlWithArgs } from "./generalRequest";
-import useSWRImmutable from "swr/immutable";
-import useSWRInfinite from "swr/infinite";
-import { askButRead } from "./generalRequest";
-import type { ExpectedVideoDetails } from "../types/Video";
+import { urlWithArgs, askButRead } from './generalRequest'
+import useSWRImmutable from 'swr/immutable'
+import useSWRInfinite from 'swr/infinite'
+import type { ExpectedVideoDetails } from '../types/Video'
 import {
-  ExpectedPlaylist,
-  ExpectedPlaylistItems,
-} from "@/components/types/playlist";
-import { ExpectedCommentThread } from "../types/Comments";
+  type ExpectedPlaylist,
+  type ExpectedPlaylistItems
+} from '@/components/types/playlist'
+import { type ExpectedCommentThread } from '../types/Comments'
 
-const isMock = process.env.NEXT_PUBLIC_IS_DEV ? "mock" : "data";
+const isMock = process.env.NEXT_PUBLIC_IS_DEV ? 'mock' : 'data'
 
 interface SWRResponse<Details> {
-  data?: Details;
-  error?: string;
-  isLoading: boolean;
+  data?: Details
+  error?: string
+  isLoading: boolean
 }
 
-export function AskVideo(
+export function AskVideo (
   videoID: string | null,
   width?: string,
   height?: string
@@ -25,84 +24,84 @@ export function AskVideo(
   return useSWRImmutable(
     videoID
       ? urlWithArgs(`/api/${isMock}/videoById`, {
-          maxWidth: width ?? "730",
-          maxHeight: height ?? "400",
-          videoID: videoID,
-        })
-      : "",
-    (url: string) => askButRead<ExpectedVideoDetails>(url)
-  );
+        maxWidth: width ?? '730',
+        maxHeight: height ?? '400',
+        videoID
+      })
+      : '',
+    async (url: string) => await askButRead<ExpectedVideoDetails>(url)
+  )
 }
 
-function loadComments(
+function loadComments (
   videoID: string,
   _: number,
   prevCommentThread?: ExpectedCommentThread
-) {
-  const details = prevCommentThread?.details;
-  const token = details && details?.nextPageToken;
+): string {
+  const details = prevCommentThread?.details
+  const token = details?.nextPageToken
   return urlWithArgs(`/api/${isMock}/commentThreads`, {
-    videoID: videoID,
-    pageToken: token || "",
-  });
+    videoID,
+    pageToken: token ?? ''
+  })
 }
 
 interface SWRInfResponse<Details> {
-  data: Array<Details> | undefined;
-  error?: string;
-  isLoading: boolean;
-  size: number;
-  setSize: (page: number) => void;
+  data: Details[] | undefined
+  error?: string
+  isLoading: boolean
+  size: number
+  setSize: (page: number) => void
 }
 
-export function AskCommentThreads(
+export function AskCommentThreads (
   videoID: string
 ): SWRInfResponse<ExpectedCommentThread> {
   return useSWRInfinite(
     (...args) => loadComments(videoID, ...args),
-    (url: string) => askButRead<ExpectedCommentThread>(url),
+    async (url: string) => await askButRead<ExpectedCommentThread>(url),
     {
       revalidateIfStale: false,
       revalidateOnFocus: false,
       revalidateOnReconnect: false,
       revalidateFirstPage: false,
-      revalidateAll: false,
+      revalidateAll: false
     }
-  );
+  )
 }
 
-export function AskPlayList(
+export function AskPlayList (
   listID: string | null
 ): SWRResponse<ExpectedPlaylist> {
   return useSWRImmutable(
     listID
       ? urlWithArgs(`/api/${isMock}/playList`, {
-          listID,
-        })
+        listID
+      })
       : null,
-    (url: string) => askButRead<ExpectedPlaylist>(url)
-  );
+    async (url: string) => await askButRead<ExpectedPlaylist>(url)
+  )
 }
 
-export function AskPlayListItems(
+export function AskPlayListItems (
   listID: string | null
 ): SWRResponse<ExpectedPlaylistItems> {
   return useSWRImmutable(
     listID
       ? urlWithArgs(`/api/${isMock}/playlistItems`, {
-          listID,
-        })
+        listID
+      })
       : null,
-    (url: string) => askButRead<ExpectedPlaylistItems>(url)
-  );
+    async (url: string) => await askButRead<ExpectedPlaylistItems>(url)
+  )
 }
 
-export function encodeID(videoID: string, listID: string) {
-  return `${videoID} ${listID}`;
+export function encodeID (videoID: string, listID: string): string {
+  return `${videoID} ${listID}`
 }
 
-export function decodeID(encoded: string): [string, string] {
-  console.log(encoded);
-  const [videoID, listID] = encoded.split(" ");
-  return [videoID, listID];
+export function decodeID (encoded: string): [string, string] {
+  console.log(encoded)
+  const [videoID, listID] = encoded.split(' ')
+  return [videoID, listID]
 }

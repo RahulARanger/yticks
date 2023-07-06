@@ -1,13 +1,13 @@
-import { Component, ReactNode, RefObject, createRef } from "react";
+import { Component, type ReactNode, type RefObject, createRef } from 'react'
 import VideoEmbedded, {
-  VideoPlayerSharedProps,
-} from "@/components/Video/youtubeVideoPlayer";
-import CommentArea from "@/components/Video/commentListArea";
-import VideoStyle from "@/styles/video.module.css";
-import Stack from "@mui/material/Stack";
-import { CommentSharedProps } from "../types/CommentsUI";
+  type VideoPlayerSharedProps
+} from '@/components/Video/youtubeVideoPlayer'
+import CommentArea from '@/components/Video/commentListArea'
+import VideoStyle from '@/styles/video.module.css'
+import Stack from '@mui/material/Stack'
+import { type CommentSharedProps } from '../types/CommentsUI'
 export interface FromMainPageWhichAreState {
-  videoID: string;
+  videoID: string
 }
 
 export interface DetailedPageViewRelatedProps
@@ -15,21 +15,22 @@ export interface DetailedPageViewRelatedProps
 
 interface VideoSummaryState
   extends VideoPlayerSharedProps,
-    CommentSharedProps {}
+  CommentSharedProps {}
 
 export default class DetailedPageView extends Component<
-  DetailedPageViewRelatedProps,
-  VideoSummaryState
+DetailedPageViewRelatedProps,
+VideoSummaryState
 > {
-  embeddedVideoFrame: RefObject<HTMLDivElement> = createRef();
-  formatter: Intl.NumberFormat = Intl.NumberFormat("en", {
-    notation: "compact",
-  });
-  state: VideoSummaryState = {
-    videoID: "",
-  };
+  embeddedVideoFrame: RefObject<HTMLDivElement> = createRef()
+  formatter: Intl.NumberFormat = Intl.NumberFormat('en', {
+    notation: 'compact'
+  })
 
-  render(): ReactNode {
+  state: VideoSummaryState = {
+    videoID: ''
+  }
+
+  render (): ReactNode {
     return (
       <>
         <Stack
@@ -39,10 +40,10 @@ export default class DetailedPageView extends Component<
           pr="10px"
           columnGap={1}
           rowGap={1}
-          flexWrap={"wrap"}
+          flexWrap={'wrap'}
           className={VideoStyle.detailedView}
-          justifyContent={"stretch"}
-          alignItems={"stretch"}
+          justifyContent={'stretch'}
+          alignItems={'stretch'}
         >
           <VideoEmbedded
             videoID={this.props.videoID}
@@ -56,6 +57,6 @@ export default class DetailedPageView extends Component<
           />
         </Stack>
       </>
-    );
+    )
   }
 }

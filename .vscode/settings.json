@@ -1,8 +1,16 @@
 {
-  "editor.formatOnSave": true,
   "[python]": {
     "editor.defaultFormatter": "ms-python.black-formatter"
   },
   "python.formatting.provider": "none",
-  "marquee.widgets.npm-stats.packageNames": ["yticks"]
+  "marquee.widgets.npm-stats.packageNames": ["yticks"],
+  "reactSnippets.settings.prettierEnabled": true,
+  "eslint.format.enable": true,
+  "prettier.configPath": "./.prettierrc",
+  "eslint.run": "onType",
+  "eslint.lintTask.enable": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll": true
+  },
+  "eslint.validate": ["typescript"]
 }

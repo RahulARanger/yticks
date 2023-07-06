@@ -1,107 +1,107 @@
-import { Component, type ReactNode, Fragment } from "react";
-import Box from "@mui/material/Box";
-import Skeleton from "@mui/material/Skeleton";
-import Typography from "@mui/material/Typography";
-import Link from "@mui/material/Link";
-import Script from "next/script";
-import Accordion from "@mui/material/Accordion";
-import Stack from "@mui/material/Stack";
-import AccordionSummary from "@mui/material/AccordionSummary";
-import AccordionDetails from "@mui/material/AccordionDetails";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import Tooltip from "@mui/material/Tooltip";
-import Chip from "@mui/material/Chip";
-import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import videoPlayerStyles from "@/styles/videoPlayer.module.css";
-import { AskPlayList, AskVideo } from "../helper/ask";
-import Alert from "@mui/material/Alert";
-import { Snackbar } from "@mui/material";
-import { type VideoDetails } from "../types/Video";
-import ParseDesc, { YoutubeHashTag } from "../parseDesc";
-import { getChannelURL } from "../helper/urls";
-import Timeline from "@mui/lab/Timeline";
-import TimelineItem from "@mui/lab/TimelineItem";
-import TimelineSeparator from "@mui/lab/TimelineSeparator";
-import TimelineConnector from "@mui/lab/TimelineConnector";
+import { Component, type ReactNode, Fragment } from 'react'
+import Box from '@mui/material/Box'
+import Skeleton from '@mui/material/Skeleton'
+import Typography from '@mui/material/Typography'
+import Link from '@mui/material/Link'
+import Script from 'next/script'
+import Accordion from '@mui/material/Accordion'
+import Stack from '@mui/material/Stack'
+import AccordionSummary from '@mui/material/AccordionSummary'
+import AccordionDetails from '@mui/material/AccordionDetails'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+import Tooltip from '@mui/material/Tooltip'
+import Chip from '@mui/material/Chip'
+import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt'
+import VisibilityIcon from '@mui/icons-material/Visibility'
+import videoPlayerStyles from '@/styles/videoPlayer.module.css'
+import { AskPlayList, AskVideo } from '../helper/ask'
+import Alert from '@mui/material/Alert'
+import { Snackbar } from '@mui/material'
+import { type VideoDetails } from '../types/Video'
+import ParseDesc, { YoutubeHashTag } from '../parseDesc'
+import { getChannelURL } from '../helper/urls'
+import Timeline from '@mui/lab/Timeline'
+import TimelineItem from '@mui/lab/TimelineItem'
+import TimelineSeparator from '@mui/lab/TimelineSeparator'
+import TimelineConnector from '@mui/lab/TimelineConnector'
 import TimelineContent, {
-  type TimelineContentProps,
-} from "@mui/lab/TimelineContent";
+  type TimelineContentProps
+} from '@mui/lab/TimelineContent'
 import TimelineOppositeContent, {
-  type TimelineOppositeContentProps,
-} from "@mui/lab/TimelineOppositeContent";
-import TimelineDot from "@mui/lab/TimelineDot";
-import PublishIcon from "@mui/icons-material/Publish";
-import ScheduleIcon from "@mui/icons-material/Schedule";
-import CallEndIcon from "@mui/icons-material/CallEnd";
-import PlayArrowIcon from "@mui/icons-material/PlayArrow";
-import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
+  type TimelineOppositeContentProps
+} from '@mui/lab/TimelineOppositeContent'
+import TimelineDot from '@mui/lab/TimelineDot'
+import PublishIcon from '@mui/icons-material/Publish'
+import ScheduleIcon from '@mui/icons-material/Schedule'
+import CallEndIcon from '@mui/icons-material/CallEnd'
+import PlayArrowIcon from '@mui/icons-material/PlayArrow'
+import dayjs from 'dayjs'
+import relativeTime from 'dayjs/plugin/relativeTime'
 
-dayjs.extend(relativeTime);
+dayjs.extend(relativeTime)
 
 export interface VideoPlayerSharedProps {
-  videoID: string;
+  videoID: string
 }
 
 interface VideoPlayerProps extends VideoPlayerSharedProps {
-  formatter: Intl.NumberFormat;
-  className?: string;
+  formatter: Intl.NumberFormat
+  className?: string
 }
 
 interface PlayListProps extends VideoPlayerProps {
-  listID: string;
+  listID: string
 }
 
 interface miniProps {
-  details: VideoDetails;
-  formatter: Intl.NumberFormat;
+  details: VideoDetails
+  formatter: Intl.NumberFormat
 }
 
 interface embeddedProps {
-  id: string;
-  className: string;
-  listOfIds?: string[];
-  index?: number;
+  id: string
+  className: string
+  listOfIds?: string[]
+  index?: number
 }
 
 class RawEmbeddedVideoPlayer extends Component<embeddedProps> {
-  frame: string = "frame-id";
-  player: undefined | YT.Player = undefined;
+  frame: string = 'frame-id'
+  player: undefined | YT.Player = undefined
 
-  render(): ReactNode {
-    return <div id={this.frame} className={this.props.className}></div>;
+  render (): ReactNode {
+    return <div id={this.frame} className={this.props.className}></div>
   }
 
   //   onReady (event: YT.PlayerEvent) {}
 
-  componentDidMount(): void {
+  componentDidMount (): void {
     this.player = new YT.Player(this.frame, {
       videoId: this.props.id,
       playerVars: {
         autoplay: 0,
-        enablejsapi: 1,
+        enablejsapi: 1
       },
       events: {
         // onReady: this.onReady.bind(this)
-      },
-    });
+      }
+    })
   }
 
-  componentWillUnmount(): void {
-    if (this.player != null) this.player.destroy();
+  componentWillUnmount (): void {
+    if (this.player != null) this.player.destroy()
   }
 }
 
 class RawEmbeddedPlaylist extends RawEmbeddedVideoPlayer {}
 
-export function EmbeddedVideo(props: {
-  isVideo: boolean;
-  id: string;
+export function EmbeddedVideo (props: {
+  isVideo: boolean
+  id: string
 }): ReactNode {
-  const fromVideo = AskVideo(props.isVideo ? props.id : null);
-  const fromPlaylist = AskPlayList(props.isVideo ? null : props.id);
-  const { data, isLoading, error } = props.isVideo ? fromVideo : fromPlaylist;
+  const fromVideo = AskVideo(props.isVideo ? props.id : null)
+  const fromPlaylist = AskPlayList(props.isVideo ? null : props.id)
+  const { data, isLoading, error } = props.isVideo ? fromVideo : fromPlaylist
 
   if (isLoading) {
     return (
@@ -112,49 +112,51 @@ export function EmbeddedVideo(props: {
         variant="rounded"
         className={videoPlayerStyles.frame}
       />
-    );
+    )
   }
   if (data?.details != null) {
-    return props.isVideo ? (
+    return props.isVideo
+      ? (
       <RawEmbeddedVideoPlayer
         id={props.id}
         className={videoPlayerStyles.frame}
       />
-    ) : (
+        )
+      : (
       <RawEmbeddedPlaylist
         id={props.id}
         className={videoPlayerStyles.frame}
         index={0}
         listOfIds={data.details.items.map((video) => video.id)}
       />
-    );
+        )
   }
   return (
     <Stack
       className={videoPlayerStyles.frame}
-      justifyContent={"center"}
-      alignItems={"center"}
+      justifyContent={'center'}
+      alignItems={'center'}
     >
       <Alert color="error" severity="error" title="error">
         {data?.failed ?? String(error)}
       </Alert>
     </Stack>
-  );
+  )
 }
 
-function StatsBadge(props: miniProps): ReactNode {
-  const stats = props.details.statistics;
-  const likeCount = Number(stats.likeCount) ?? 0;
-  const viewCount = Number(stats.viewCount) ?? 0;
+function StatsBadge (props: miniProps): ReactNode {
+  const stats = props.details.statistics
+  const likeCount = Number(stats.likeCount) ?? 0
+  const viewCount = Number(stats.viewCount) ?? 0
 
-  const format = new Intl.NumberFormat();
+  const format = new Intl.NumberFormat()
   return (
     <Stack
       flexGrow={1}
-      justifyContent={"flex-end"}
-      alignItems={"center"}
-      direction={"row"}
-      columnGap={"12px"}
+      justifyContent={'flex-end'}
+      alignItems={'center'}
+      direction={'row'}
+      columnGap={'12px'}
     >
       <Tooltip title={`Like Count: ${format.format(likeCount)}`}>
         <Chip
@@ -172,18 +174,18 @@ function StatsBadge(props: miniProps): ReactNode {
         />
       </Tooltip>
     </Stack>
-  );
+  )
 }
 
-export function TimelineItemWithTime(
+export function TimelineItemWithTime (
   props: TimelineOppositeContentProps & {
-    date: string | undefined;
-    icon: ReactNode;
-    text: string;
+    date: string | undefined
+    icon: ReactNode
+    text: string
   }
 ): ReactNode {
-  if (!props.date) return <></>;
-  const parsedDate = new Date(props.date);
+  if (!props.date) return <></>
+  const parsedDate = new Date(props.date)
   return (
     <TimelineItem>
       <TimelineOppositeContent {...props}>
@@ -199,24 +201,24 @@ export function TimelineItemWithTime(
       </TimelineSeparator>
       <TimelineContentOnRight text={props.text} />
     </TimelineItem>
-  );
+  )
 }
 
-export function TimelineContentOnRight(
+export function TimelineContentOnRight (
   props: TimelineContentProps & { text: string }
 ): ReactNode {
   return (
-    <TimelineContent sx={{ my: "auto" }} {...props}>
+    <TimelineContent sx={{ my: 'auto' }} {...props}>
       <Typography variant="subtitle1">{props.text}</Typography>
     </TimelineContent>
-  );
+  )
 }
 
-function VideoTimeline(props: { details: VideoDetails }): ReactNode {
-  const publishedDate = props.details.snippet.publishedAt;
-  const scheduled = props.details?.liveStreamingDetails?.scheduledStartTime;
-  const actualStartTime = props.details?.liveStreamingDetails?.actualStartTime;
-  const actualEndTime = props.details?.liveStreamingDetails?.actualEndTime;
+function VideoTimeline (props: { details: VideoDetails }): ReactNode {
+  const publishedDate = props.details.snippet.publishedAt
+  const scheduled = props.details?.liveStreamingDetails?.scheduledStartTime
+  const actualStartTime = props.details?.liveStreamingDetails?.actualStartTime
+  const actualEndTime = props.details?.liveStreamingDetails?.actualEndTime
 
   return (
     <>
@@ -224,35 +226,35 @@ function VideoTimeline(props: { details: VideoDetails }): ReactNode {
         <TimelineItemWithTime
           date={scheduled}
           icon={<ScheduleIcon />}
-          text={"Scheduled Live Stream"}
+          text={'Scheduled Live Stream'}
         />
         <TimelineItemWithTime
           date={actualStartTime}
           icon={<PlayArrowIcon />}
-          text={"Live Steam Started"}
+          text={'Live Steam Started'}
         />
         <TimelineItemWithTime
           date={publishedDate}
           icon={<PublishIcon />}
-          text={"Published Date"}
+          text={'Published Date'}
         />
         <TimelineItemWithTime
           date={actualEndTime}
           icon={<CallEndIcon />}
-          text={"Live Steam Ended"}
+          text={'Live Steam Ended'}
         />
       </Timeline>
     </>
-  );
+  )
 }
 
-export function PureVideoSummary(props: miniProps): ReactNode {
-  const snippet = props.details.snippet;
-  document.title = snippet.title;
+export function PureVideoSummary (props: miniProps): ReactNode {
+  const snippet = props.details.snippet
+  document.title = snippet.title
 
   return (
     <>
-      <Box flexDirection={"column"} flexWrap={"nowrap"}>
+      <Box flexDirection={'column'} flexWrap={'nowrap'}>
         <Typography gutterBottom variant="h5" mt="10px">
           {snippet.title}
         </Typography>
@@ -260,7 +262,7 @@ export function PureVideoSummary(props: miniProps): ReactNode {
           {snippet.channelTitle}
         </Link>
         <Accordion
-          sx={{ my: "12px" }}
+          sx={{ my: '12px' }}
           className={videoPlayerStyles.description}
         >
           <AccordionSummary
@@ -272,7 +274,8 @@ export function PureVideoSummary(props: miniProps): ReactNode {
             <StatsBadge details={props.details} formatter={props.formatter} />
           </AccordionSummary>
           <AccordionDetails>
-            {snippet?.tags?.length ? (
+            {snippet?.tags?.length
+              ? (
               <>
                 <Typography variant="body1">Tags:</Typography>
                 <Typography variant="body2">
@@ -285,28 +288,29 @@ export function PureVideoSummary(props: miniProps): ReactNode {
                 <hr />
                 <br />
               </>
-            ) : (
+                )
+              : (
               <></>
-            )}
-            {snippet.description.split("\n").map((line, index) => {
+                )}
+            {snippet.description.split('\n').map((line, index) => {
               return (
                 <Typography variant="body2" key={index}>
-                  <ParseDesc text={line} variant={"body2"} />
+                  <ParseDesc text={line} variant={'body2'} />
                 </Typography>
-              );
+              )
             })}
           </AccordionDetails>
         </Accordion>
         <VideoTimeline details={props.details}></VideoTimeline>
       </Box>
     </>
-  );
+  )
 }
 
-export function VideoSummary(props: VideoPlayerProps): ReactNode {
-  const { data, isLoading, error } = AskVideo(props.videoID);
+export function VideoSummary (props: VideoPlayerProps): ReactNode {
+  const { data, isLoading, error } = AskVideo(props.videoID)
   if (isLoading) {
-    return <Skeleton height="69px" animation="wave" variant="rectangular" />;
+    return <Skeleton height="69px" animation="wave" variant="rectangular" />
   }
   if (data?.details != null) {
     return (
@@ -314,23 +318,23 @@ export function VideoSummary(props: VideoPlayerProps): ReactNode {
         details={data.details.items[0]}
         formatter={props.formatter}
       />
-    );
+    )
   }
   return (
     <Snackbar
       open={true}
       autoHideDuration={null}
-      anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+      anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
     >
       <Alert severity="error" color="error" title="Error">
         {data?.failed ?? String(error)}
       </Alert>
     </Snackbar>
-  );
+  )
 }
 
 export default class VideoEmbedded extends Component<VideoPlayerProps> {
-  render(): ReactNode {
+  render (): ReactNode {
     return (
       <>
         <Script src="https://www.youtube.com/iframe_api"></Script>
@@ -342,12 +346,12 @@ export default class VideoEmbedded extends Component<VideoPlayerProps> {
           />
         </Box>
       </>
-    );
+    )
   }
 }
 
 export class EmbeddedPlayList extends Component<PlayListProps> {
-  render(): ReactNode {
+  render (): ReactNode {
     return (
       <>
         <Script src="https://www.youtube.com/iframe_api"></Script>
@@ -359,6 +363,6 @@ export class EmbeddedPlayList extends Component<PlayListProps> {
           />
         </Box>
       </>
-    );
+    )
   }
 }
