@@ -2,17 +2,21 @@ import { Comment } from "./Comments";
 import { AskForLanguage } from "./askForNLP";
 
 export interface CommentSharedProps {
-    videoID: string;
+  videoID: string;
 }
 
 export interface CommentProps extends CommentSharedProps {
-    formatter: Intl.NumberFormat;
-    className?: string;
+  formatter: Intl.NumberFormat;
+  className?: string;
 }
 
 export interface RequestForMoreDetails {
-    details: Comment;
-    results: AskForLanguage | undefined;
+  details: Comment;
+  results: AskForLanguage | undefined;
 }
 
-export type sendComment = (comment: Comment, replyCount: number, replies?: Array<Comment>) => void;
+export type sendComment = (
+  comment: Comment,
+  replyCount: number,
+  replies?: Array<Comment>
+) => void;

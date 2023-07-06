@@ -1,24 +1,24 @@
 .commentItem {
-    display: flex;
-    flex-flow: row nowrap !important;
-    align-items: flex-start !important;
-    justify-content: space-between !important;
-    padding: 10px;
-    transition: all 0.3s ease-in-out;
-    border: 1px solid #282828;
+  display: flex;
+  flex-flow: row nowrap !important;
+  align-items: flex-start !important;
+  justify-content: space-between !important;
+  padding: 10px;
+  transition: all 0.3s ease-in-out;
+  border: 1px solid #282828;
 }
 
 .commentItem:hover {
-    background-color: #333;
-    color: #fff;
-    cursor: pointer;
-    border: 1px solid #181818;
+  background-color: #333;
+  color: #fff;
+  cursor: pointer;
+  border: 1px solid #181818;
 }
 
 .commentAvatar {
-    margin-top: 2%;
+  margin-top: 2%;
 }
 
 .commentBox {
-    min-width: 300px !important;
+  min-width: 300px !important;
 }

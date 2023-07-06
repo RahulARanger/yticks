@@ -3,8 +3,8 @@ import { Component, ReactNode } from "react";
 import Toolbar from "@mui/material/Toolbar";
 import Drawer from "@mui/material/Drawer";
 import {
-    SearchBarForPlaylistOfVideos,
-    SearchBarForYoutubeVideo,
+  SearchBarForPlaylistOfVideos,
+  SearchBarForYoutubeVideo,
 } from "@/components/searchBox";
 import Typography from "@mui/material/Typography";
 import headerStyles from "@/styles/header.module.css";
@@ -22,171 +22,163 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ListItemText from "@mui/material/ListItemText";
 
 interface HeaderProps extends SharedProps {
-    textSearched: string;
-    resetSearch: () => void;
-    title: string;
-    onSettingsRequest: () => void;
+  textSearched: string;
+  resetSearch: () => void;
+  title: string;
+  onSettingsRequest: () => void;
 }
 
 interface HeaderStates {
-    openDrawer: boolean;
+  openDrawer: boolean;
 }
 
 export abstract class CommonHeader extends Component<
-    HeaderProps,
-    HeaderStates
+  HeaderProps,
+  HeaderStates
 > {
-    state: HeaderStates = { openDrawer: false };
-    githubURL = "https://github.com/RahulARanger/yticks";
+  state: HeaderStates = { openDrawer: false };
+  githubURL = "https://github.com/RahulARanger/yticks";
 
-    toggleDrawer() {
-        this.setState({ openDrawer: !this.state.openDrawer });
-    }
+  toggleDrawer() {
+    this.setState({ openDrawer: !this.state.openDrawer });
+  }
 
-    menuItems() {
-        const hide = { display: { xs: "block", sm: "none" } };
-        return (
-            <>
-                <Box sx={hide}>
-                    <IconButton
-                        color="inherit"
-                        aria-label="open drawer"
-                        edge="start"
-                        onClick={this.toggleDrawer.bind(this)}
-                        sx={{ ml: "3px" }}
-                    >
-                        <MenuIcon />
-                    </IconButton>
-                    <Drawer
-                        anchor="left"
-                        open={this.state.openDrawer}
-                        onClose={this.toggleDrawer.bind(this)}
-                        sx={{
-                            "& .MuiDrawer-paper": {
-                                boxSizing: "border-box",
-                                width: "200px",
-                            },
-                            ...hide,
-                        }}
-                    >
-                        <Typography variant="subtitle1" ml="2px">
-                            Menu
-                        </Typography>
-                        <List>
-                            <ListItemButton
-                                href={this.githubURL}
-                                target="_blank"
-                            >
-                                <ListItemIcon>
-                                    <GitHubIcon />
-                                </ListItemIcon>
-                                <ListItemText>Github</ListItemText>
-                            </ListItemButton>
-                            <ListItem>
-                                <ListItemIcon>
-                                    <SettingsIcon />
-                                </ListItemIcon>
-                                <ListItemText>Settings</ListItemText>
-                            </ListItem>
-                        </List>
-                    </Drawer>
-                </Box>
-            </>
-        );
-    }
+  menuItems() {
+    const hide = { display: { xs: "block", sm: "none" } };
+    return (
+      <>
+        <Box sx={hide}>
+          <IconButton
+            color="inherit"
+            aria-label="open drawer"
+            edge="start"
+            onClick={this.toggleDrawer.bind(this)}
+            sx={{ ml: "3px" }}
+          >
+            <MenuIcon />
+          </IconButton>
+          <Drawer
+            anchor="left"
+            open={this.state.openDrawer}
+            onClose={this.toggleDrawer.bind(this)}
+            sx={{
+              "& .MuiDrawer-paper": {
+                boxSizing: "border-box",
+                width: "200px",
+              },
+              ...hide,
+            }}
+          >
+            <Typography variant="subtitle1" ml="2px">
+              Menu
+            </Typography>
+            <List>
+              <ListItemButton href={this.githubURL} target="_blank">
+                <ListItemIcon>
+                  <GitHubIcon />
+                </ListItemIcon>
+                <ListItemText>Github</ListItemText>
+              </ListItemButton>
+              <ListItem>
+                <ListItemIcon>
+                  <SettingsIcon />
+                </ListItemIcon>
+                <ListItemText>Settings</ListItemText>
+              </ListItem>
+            </List>
+          </Drawer>
+        </Box>
+      </>
+    );
+  }
 
-    iconButtons() {
-        return (
-            <Box sx={{ display: { xs: "none", sm: "block" } }}>
-                <IconButton
-                    target="_blank"
-                    href="https://github.com/RahulARanger/yticks"
-                >
-                    <GitHubIcon />
-                </IconButton>
-                <IconButton
-                    color="primary"
-                    onClick={this.props.onSettingsRequest}
-                >
-                    <SettingsIcon />
-                </IconButton>
-            </Box>
-        );
-    }
+  iconButtons() {
+    return (
+      <Box sx={{ display: { xs: "none", sm: "block" } }}>
+        <IconButton
+          target="_blank"
+          href="https://github.com/RahulARanger/yticks"
+        >
+          <GitHubIcon />
+        </IconButton>
+        <IconButton color="primary" onClick={this.props.onSettingsRequest}>
+          <SettingsIcon />
+        </IconButton>
+      </Box>
+    );
+  }
 
-    onLeft(): ReactNode {
-        return (
-            <>
-                <IconButton sx={{ mr: "2px" }} onClick={this.props.resetSearch}>
-                    <ArrowBackIcon />
-                </IconButton>
-                <Typography sx={{ flexGrow: 1 }} variant="h6" component={"div"}>
-                    {this.props.title}
-                </Typography>
-            </>
-        );
-    }
+  onLeft(): ReactNode {
+    return (
+      <>
+        <IconButton sx={{ mr: "2px" }} onClick={this.props.resetSearch}>
+          <ArrowBackIcon />
+        </IconButton>
+        <Typography sx={{ flexGrow: 1 }} variant="h6" component={"div"}>
+          {this.props.title}
+        </Typography>
+      </>
+    );
+  }
 
-    abstract searchBar(showAtTop: boolean): ReactNode;
+  abstract searchBar(showAtTop: boolean): ReactNode;
 
-    render(): ReactNode {
-        const showAtTop = Boolean(this.props.textSearched);
-        return (
-            <>
-                <AppBar
-                    className={
-                        showAtTop
-                            ? headerStyles.topAppBar
-                            : headerStyles.centerAppBar
-                    }
-                    elevation={showAtTop ? 3 : 0}
-                    component="nav"
-                >
-                    <Toolbar
-                        variant="dense"
-                        className={
-                            showAtTop
-                                ? `${headerStyles.toolbar}`
-                                : `${headerStyles.toolbar} ${headerStyles.hideThings}`
-                        }
-                    >
-                        {this.onLeft()}
-                        {this.searchBar(showAtTop)}
-                        {this.iconButtons()}
-                        {this.menuItems()}
-                    </Toolbar>
-                </AppBar>
-            </>
-        );
-    }
+  render(): ReactNode {
+    const showAtTop = Boolean(this.props.textSearched);
+    return (
+      <>
+        <AppBar
+          className={
+            showAtTop ? headerStyles.topAppBar : headerStyles.centerAppBar
+          }
+          elevation={showAtTop ? 3 : 0}
+          component="nav"
+        >
+          <Toolbar
+            variant="dense"
+            className={
+              showAtTop
+                ? `${headerStyles.toolbar}`
+                : `${headerStyles.toolbar} ${headerStyles.hideThings}`
+            }
+          >
+            {this.onLeft()}
+            {this.searchBar(showAtTop)}
+            {this.iconButtons()}
+            {this.menuItems()}
+          </Toolbar>
+        </AppBar>
+      </>
+    );
+  }
 }
 
 export default class VideoPlayerHeader extends CommonHeader {
-    searchBar(showAtTop: boolean) {
-        return (
-            <SearchBarForYoutubeVideo
-                showLabel={!showAtTop}
-                size={showAtTop ? "small" : "medium"}
-                onSearch={this.props.onSearch}
-                className={headerStyles.textField}
-                atTop={showAtTop}
-                requested={this.props.requested}
-            />
-        );
-    }
+  searchBar(showAtTop: boolean) {
+    return (
+      <SearchBarForYoutubeVideo
+        showLabel={!showAtTop}
+        size={showAtTop ? "small" : "medium"}
+        onSearch={this.props.onSearch}
+        className={headerStyles.textField}
+        atTop={showAtTop}
+        requested={this.props.requested}
+      />
+    );
+  }
 }
 
 export class VideoPlayListHeader extends CommonHeader {
-    searchBar(showAtTop: boolean) {
-        return (
-            <SearchBarForPlaylistOfVideos
-                showLabel={!showAtTop}
-                size={showAtTop ? "small" : "medium"}
-                onSearch={this.props.onSearch}
-                className={headerStyles.textField}
-                atTop={showAtTop}
-                requested={this.props.requested}
-            />
-        );
-    }
+  searchBar(showAtTop: boolean) {
+    return (
+      <SearchBarForPlaylistOfVideos
+        showLabel={!showAtTop}
+        size={showAtTop ? "small" : "medium"}
+        onSearch={this.props.onSearch}
+        className={headerStyles.textField}
+        atTop={showAtTop}
+        requested={this.props.requested}
+      />
+    );
+  }
 }

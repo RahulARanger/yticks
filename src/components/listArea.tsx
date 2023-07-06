@@ -5,51 +5,51 @@ import { Component, ReactNode } from "react";
 import ListSubheader from "@mui/material/ListSubheader";
 
 export default abstract class ListArea<PROPs, STATEs> extends Component<
-    PROPs,
-    STATEs
+  PROPs,
+  STATEs
 > {
-    title: string = "...";
+  title: string = "...";
 
-    abstract header(): ReactNode;
-    abstract render(): ReactNode;
+  abstract header(): ReactNode;
+  abstract render(): ReactNode;
 
-    footer(): ReactNode {
-        return <></>;
-    }
+  footer(): ReactNode {
+    return <></>;
+  }
 
-    renderList(listItems: ReactNode): ReactNode {
-        return (
-            <Paper
-                elevation={3}
-                sx={{ flexGrow: 1, height: "90vh", minHeight: "300px" }} // let this be constant for now when its reused we should parameterize it
-            >
-                <List
-                    sx={{
-                        border: "1px solid black",
-                        height: "100%",
-                        overflowY: "scroll",
-                    }}
-                    subheader={
-                        this.title ? (
-                            <ListSubheader>
-                                <Stack
-                                    flexDirection={"row"}
-                                    justifyContent={"space-between"}
-                                    alignItems={"center"}
-                                >
-                                    {this.title}
-                                    {this.header()}
-                                </Stack>
-                            </ListSubheader>
-                        ) : (
-                            <></>
-                        )
-                    }
+  renderList(listItems: ReactNode): ReactNode {
+    return (
+      <Paper
+        elevation={3}
+        sx={{ flexGrow: 1, height: "90vh", minHeight: "300px" }} // let this be constant for now when its reused we should parameterize it
+      >
+        <List
+          sx={{
+            border: "1px solid black",
+            height: "100%",
+            overflowY: "scroll",
+          }}
+          subheader={
+            this.title ? (
+              <ListSubheader>
+                <Stack
+                  flexDirection={"row"}
+                  justifyContent={"space-between"}
+                  alignItems={"center"}
                 >
-                    {listItems}
-                    {this.footer()}
-                </List>
-            </Paper>
-        );
-    }
+                  {this.title}
+                  {this.header()}
+                </Stack>
+              </ListSubheader>
+            ) : (
+              <></>
+            )
+          }
+        >
+          {listItems}
+          {this.footer()}
+        </List>
+      </Paper>
+    );
+  }
 }
