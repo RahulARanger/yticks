@@ -4,7 +4,7 @@ import ListItem from '@mui/material/ListItem'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemText from '@mui/material/ListItemText'
 import CommentIcon from '@mui/icons-material/Comment'
-import { type ReactNode, Fragment, type SyntheticEvent } from 'react'
+import { type ReactNode, Fragment, type SyntheticEvent, type MouseEvent } from 'react'
 import Typography from '@mui/material/Typography'
 import { AskCommentThreads } from '../helper/ask'
 import { type CommentThread } from '../types/Comments'
@@ -26,6 +26,9 @@ import { CountOfTopLevelComments } from './miniComponents'
 import CommentListItems from './commentListItems'
 import { type CommentProps } from '../types/CommentsUI'
 import IconButton from '@mui/material/IconButton'
+import Menu from '@mui/material/Menu'
+import MenuItem from '@mui/material/MenuItem'
+import SortIcon from '@mui/icons-material/Sort'
 
 echarts.use([
   TitleComponent,
@@ -37,6 +40,10 @@ echarts.use([
 
 interface CommentState {
   tabSelected?: string
+  openMenuForSorting: boolean
+  sortOptionSelected?: string
+  anchorForMenu?: HTMLElement
+  selectedOptionForSorting: number
 }
 
 function CommentFooter (props: { videoID: string }): ReactNode {
@@ -74,21 +81,38 @@ function CommentFooter (props: { videoID: string }): ReactNode {
 
 export default class CommentArea extends ListArea<CommentProps, CommentState> {
   title: string = 'Comments'
-  state: CommentState = {}
+  state: CommentState = { openMenuForSorting: false, selectedOptionForSorting: 0 }
 
   header (): ReactNode {
+    const toggleMenu = (e: MouseEvent<HTMLElement>): void => {
+      this.setState({ openMenuForSorting: !this.state.openMenuForSorting })
+      if (!this.state.anchorForMenu) this.state.anchorForMenu = e.currentTarget
+    }
+
     return (
+      <>
       <Stack
         flexDirection={'row'}
-        justifyContent={'center'}
-        alignContent="center"
+        columnGap={2}
+        justifyContent="stretch"
+        alignItems="center"
       >
-        <IconButton></IconButton>
+        <IconButton onClick={toggleMenu}><SortIcon/> </IconButton>
         <CountOfTopLevelComments
           formatter={this.props.formatter}
           videoID={this.props.videoID}
         />
       </Stack>
+      <Menu open={this.state.openMenuForSorting} onClick={toggleMenu} anchorEl={this.state.anchorForMenu} disableScrollLock={true}>
+      <>
+      {
+        ['Sort by Date', 'Sort by Relevance'].map((option, index) => {
+          return <MenuItem key={option} selected={index === this.state.selectedOptionForSorting} onClick={() => { this.setState({ selectedOptionForSorting: index }) }} >
+            <Typography>{option}</Typography>
+          </MenuItem>
+        })
+      }</>
+    </Menu></>
     )
   }
 

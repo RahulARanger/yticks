@@ -39,6 +39,7 @@ function ShowMoreReplies (props: {
       PaperProps={{
         elevation: 1
       }}
+      disableScrollLock={true}
     >
       <DialogTitle sx={{ p: 1.5 }}>
         <Stack

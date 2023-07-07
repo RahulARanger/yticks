@@ -20,6 +20,7 @@ import MenuIcon from '@mui/icons-material/Menu'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import ListItemText from '@mui/material/ListItemText'
+import Divider from '@mui/material/Divider'
 
 interface HeaderProps extends SharedProps {
   textSearched: string
@@ -61,6 +62,7 @@ HeaderStates
             anchor="left"
             open={this.state.openDrawer}
             onClose={this.toggleDrawer.bind(this)}
+            disableScrollLock={true}
             sx={{
               '& .MuiDrawer-paper': {
                 boxSizing: 'border-box',
@@ -69,9 +71,10 @@ HeaderStates
               ...hide
             }}
           >
-            <Typography variant="subtitle1" ml="2px">
+            <Typography variant="subtitle1" ml="6px">
               Menu
             </Typography>
+            <Divider color="orangered"/>
             <List>
               <ListItemButton href={this.githubURL} target="_blank">
                 <ListItemIcon>
