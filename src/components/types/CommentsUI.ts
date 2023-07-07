@@ -8,6 +8,7 @@ export interface CommentSharedProps {
 export interface CommentProps extends CommentSharedProps {
   formatter: Intl.NumberFormat
   className?: string
+  sortingOption?: string
 }
 
 export interface RequestForMoreDetails {
@@ -20,3 +21,5 @@ export type sendComment = (
   replyCount: number,
   replies?: Comment[]
 ) => void
+
+export const commentSortingOptions = ['Sort by Relevance', 'Sort by Date', 'Most Likes', 'More Replies', 'Recently Updated']

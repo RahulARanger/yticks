@@ -24,7 +24,7 @@ import {
 import { CanvasRenderer } from 'echarts/renderers'
 import { CountOfTopLevelComments } from './miniComponents'
 import CommentListItems from './commentListItems'
-import { type CommentProps } from '../types/CommentsUI'
+import { commentSortingOptions, type CommentProps } from '../types/CommentsUI'
 import IconButton from '@mui/material/IconButton'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
@@ -41,9 +41,8 @@ echarts.use([
 interface CommentState {
   tabSelected?: string
   openMenuForSorting: boolean
-  sortOptionSelected?: string
   anchorForMenu?: HTMLElement
-  selectedOptionForSorting: number
+  selectedOptionForSorting: string
 }
 
 function CommentFooter (props: { videoID: string }): ReactNode {
@@ -81,7 +80,7 @@ function CommentFooter (props: { videoID: string }): ReactNode {
 
 export default class CommentArea extends ListArea<CommentProps, CommentState> {
   title: string = 'Comments'
-  state: CommentState = { openMenuForSorting: false, selectedOptionForSorting: 0 }
+  state: CommentState = { openMenuForSorting: false, selectedOptionForSorting: commentSortingOptions[0] }
 
   header (): ReactNode {
     const toggleMenu = (e: MouseEvent<HTMLElement>): void => {
@@ -106,8 +105,8 @@ export default class CommentArea extends ListArea<CommentProps, CommentState> {
       <Menu open={this.state.openMenuForSorting} onClick={toggleMenu} anchorEl={this.state.anchorForMenu} disableScrollLock={true}>
       <>
       {
-        ['Sort by Date', 'Sort by Relevance'].map((option, index) => {
-          return <MenuItem key={option} selected={index === this.state.selectedOptionForSorting} onClick={() => { this.setState({ selectedOptionForSorting: index }) }} >
+        commentSortingOptions.map((option, index) => {
+          return <MenuItem key={option} selected={option === this.state.selectedOptionForSorting} onClick={() => { this.setState({ selectedOptionForSorting: option }) }} >
             <Typography>{option}</Typography>
           </MenuItem>
         })
@@ -185,9 +184,10 @@ export default class CommentArea extends ListArea<CommentProps, CommentState> {
             sx={{ padding: '0px', paddingTop: '10px' }}
           >
             {this.renderList(
-              <CommentListItems
+               <CommentListItems
                 formatter={this.props.formatter}
                 videoID={this.props.videoID}
+                sortingOption={this.state.selectedOptionForSorting}
               />
             )}
           </TabPanel>

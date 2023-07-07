@@ -115,6 +115,7 @@ abstract class SearchBar extends Component<SearchBarProps, SearchBarState> {
             onClose={this.toggleModal.bind(this)}
             fullWidth
             maxWidth={'xs'}
+            disableScrollLock={true}
           >
             <DialogTitle>Search Video</DialogTitle>
             <DialogContent>

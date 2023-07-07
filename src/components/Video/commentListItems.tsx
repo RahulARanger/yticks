@@ -1,4 +1,4 @@
-import { type CommentProps } from '../types/CommentsUI'
+import { commentSortingOptions, type CommentProps } from '../types/CommentsUI'
 import { AskCommentThreads } from '../helper/ask'
 import { type Comment, type CommentThread } from '../types/Comments'
 import { type ReactNode, useRef, useState } from 'react'
@@ -15,6 +15,7 @@ import IconButton from '@mui/material/IconButton'
 import { Typography } from '@mui/material'
 import ListSubHeader from '@mui/material/ListSubheader'
 import { CountOfComments } from './miniComponents'
+// import Collapse from '@mui/material/Collapse'
 
 interface selectedCommentDetails {
   main: Comment
@@ -119,7 +120,17 @@ export default function CommentListItems (props: CommentProps): ReactNode {
   if (data?.length && data.at(-1)?.details) {
     const expectedThreads = data.flatMap((commentThread) =>
       commentThread.details ? commentThread.details.items : []
-    )
+    ).sort((firstComment, secondComment) => {
+      switch (props.sortingOption) {
+        case commentSortingOptions[0]: return 0
+        case commentSortingOptions[1]: return firstComment.snippet.topLevelComment.snippet.publishedAt > secondComment.snippet.topLevelComment.snippet.publishedAt ? -1 : 1
+        case commentSortingOptions[2]: return firstComment.snippet.topLevelComment.snippet.likeCount > secondComment.snippet.topLevelComment.snippet.likeCount ? -1 : 1
+        case commentSortingOptions[3]: return firstComment.snippet.totalReplyCount > secondComment.snippet.totalReplyCount ? -1 : 1
+        case commentSortingOptions[4]: return firstComment.snippet.topLevelComment.snippet.publishedAt > secondComment.snippet.topLevelComment.snippet.publishedAt ? -1 : 1
+        default: return 0
+      }
+    })
+
     if (expectedThreads.length) {
       return (
         <>
