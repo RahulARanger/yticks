@@ -104,7 +104,7 @@ function PlayListSummary (props: CommonPropsForPlayListItems): ReactNode {
   )
 }
 
-class VideoItems extends ListArea<CommonPropsForPlayListItems, any> {
+class VideoItems extends ListArea<CommonPropsForPlayListItems, unknown> {
   title = ''
   header (): ReactNode {
     return <></>

@@ -30,15 +30,16 @@ export async function requestFromUser (
 async function ensure (url: string, response: Response): Promise<void> {
   if (response.ok) return
 
-  let resp
+  let resp: {failed: false | string}
   try {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     resp = await response.json()
   } catch (error) {
     throw new Error(
       `Failed to request url: ${url} because, ${response.statusText}`
     )
   }
-  if (resp?.failed) throw new Error(resp?.failed)
+  if (resp.failed) throw new Error(resp.failed)
   throw new Error(
     `Unknown Error, please note the steps and let me know || ${response.statusText} - ${url}`
   )
@@ -47,8 +48,10 @@ async function ensure (url: string, response: Response): Promise<void> {
 export async function askButRead<ExpectedResponse> (
   url: string
 ): Promise<ExpectedResponse> {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   return await fetch(url).then(async function (response) {
     await ensure(url, response)
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return await response.json()
   })
 }
@@ -63,11 +66,11 @@ export function letThemKnow (
 }
 
 export function sendError (actualError: unknown, fallbackError: string): string {
-  const safeError = String(actualError).replace(
+  if(!actualError) return fallbackError;
+  return String(actualError).replace(
     process.env.API_KEY ?? '_KEY_',
     '_KEY_'
   )
-  return safeError ?? fallbackError
 }
 
 export async function askRapidAPI<ExpectedResponse> (url: string): Promise<ExpectedResponse> {
@@ -76,8 +79,10 @@ export async function askRapidAPI<ExpectedResponse> (url: string): Promise<Expec
     'X-RapidAPI-Host': 'get-population.p.rapidapi.com'
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   return await fetch(url, { headers }).then(async function (response) {
     await ensure(url, response)
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return await response.json()
   })
 }

@@ -16,9 +16,9 @@ export function truncateText (text: string, limit: number): string {
 }
 
 export function extractThumbnail (thumbnail: thumbNail): { url: string, width: number, height: number } {
-  if (thumbnail.maxres) return thumbnail.maxres
-  if (thumbnail.high) return thumbnail.high
-  if (thumbnail.standard) return thumbnail.standard
-  if (thumbnail.medium) return thumbnail.medium
+  if (thumbnail.maxres.url) return thumbnail.maxres
+  if (thumbnail.high.url) return thumbnail.high
+  if (thumbnail.standard.url) return thumbnail.standard
+  if (thumbnail.medium.url) return thumbnail.medium
   return thumbnail.default
 }
