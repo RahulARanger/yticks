@@ -14,10 +14,11 @@ export async function GET (request: NextRequest): Promise<NextResponse> {
       part: 'id,snippet,status'
     })
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const playList: PlayListResponse = await resp.json()
 
-    if (!playList?.items?.length) {
-      return letThemKnow(playList?.error?.message ?? 'No Results found')
+    if (!playList.items.length) {
+      return letThemKnow(playList.error?.message ?? 'No Results found')
     }
 
     return NextResponse.json({ failed: false, details: playList })

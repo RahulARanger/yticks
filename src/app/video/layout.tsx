@@ -1,14 +1,11 @@
-import { type ReactNode } from 'react'
-// import Script from "next/script";
+import React, { type ReactNode } from 'react'
+import Script from 'next/script'
 
 export default function PyodideLayer ({ children }: { children: ReactNode }): ReactNode {
   return (
     <>
-      {/* <Script
-                src={`https://cdn.jsdelivr.net/pyodide/v0.23.3/${
-                    process.env.NEXT_PUBLIC_IS_DEV ? "debug" : "full"
-                }/pyodide.js`}
-            ></Script> */}
+      {<Script src="https://www.youtube.com/iframe_api"></Script>}
+        {<Script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.2/theme/vintage.min.js"></Script>}
       {children}
     </>
   )

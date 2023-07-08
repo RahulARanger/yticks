@@ -69,3 +69,15 @@ export function sendError (actualError: unknown, fallbackError: string): string 
   )
   return safeError ?? fallbackError
 }
+
+export async function askRapidAPI<ExpectedResponse> (url: string): Promise<ExpectedResponse> {
+  const headers = {
+    'X-RapidAPI-Key': process.env.RAPID_API_KEY ?? '',
+    'X-RapidAPI-Host': 'get-population.p.rapidapi.com'
+  }
+
+  return await fetch(url, { headers }).then(async function (response) {
+    await ensure(url, response)
+    return await response.json()
+  })
+}

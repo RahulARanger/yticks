@@ -1,7 +1,7 @@
 import { commentSortingOptions, type CommentProps } from '../types/CommentsUI'
 import { AskCommentThreads } from '../helper/ask'
 import { type Comment, type CommentThread } from '../types/Comments'
-import { type ReactNode, useRef, useState } from 'react'
+import React, { type ReactNode, useRef, useState } from 'react'
 import CommentItem from './commentItem'
 import Alert from '@mui/material/Alert'
 import Stack from '@mui/material/Stack'
@@ -15,7 +15,6 @@ import IconButton from '@mui/material/IconButton'
 import { Typography } from '@mui/material'
 import ListSubHeader from '@mui/material/ListSubheader'
 import { CountOfComments } from './miniComponents'
-// import Collapse from '@mui/material/Collapse'
 
 interface selectedCommentDetails {
   main: Comment
@@ -29,7 +28,7 @@ function ShowMoreReplies (props: {
   closeModal: () => void
   formatter: Intl.NumberFormat
 }): ReactNode {
-  const comments = props?.details?.replies ?? []
+  const comments = props.details?.replies ?? []
 
   return (
     <Dialog
@@ -141,7 +140,7 @@ export default function CommentListItems (props: CommentProps): ReactNode {
                 key={commentThread.id}
                 formatter={props.formatter}
                 getReplies={getReplies}
-                replies={commentThread?.replies?.comments}
+                replies={commentThread.replies?.comments}
                 replyCount={commentThread.snippet.totalReplyCount}
               />
             )

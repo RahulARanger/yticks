@@ -1,7 +1,7 @@
 'use client'
 
 import TextField from '@mui/material/TextField'
-import { type ChangeEvent, Component, type ReactNode, type KeyboardEvent } from 'react'
+import React, { type ChangeEvent, Component, type ReactNode, type KeyboardEvent } from 'react'
 import InputAdornment from '@mui/material/InputAdornment'
 import IconButton from '@mui/material/IconButton'
 import YoutubeSearchedForIcon from '@mui/icons-material/YoutubeSearchedFor'
@@ -24,6 +24,7 @@ interface SearchBarState {
 }
 
 export interface SharedProps {
+  // eslint-disable-next-line no-unused-vars
   onSearch: (videoId: string) => void
   requested: string
 }
@@ -73,6 +74,7 @@ abstract class SearchBar extends Component<SearchBarProps, SearchBarState> {
     return true
   }
 
+  // eslint-disable-next-line no-unused-vars
   abstract _handleRedirect (url: string): string | false // return the id (result of the url)
 
   handleRedirect (): void {
@@ -185,7 +187,7 @@ abstract class SearchBar extends Component<SearchBarProps, SearchBarState> {
     )
   }
 
-  async componentDidMount (): Promise<void> {
+  componentDidMount (): void {
     if (this.props.atTop) return
 
     if (!this.state.url && this.props.requested) {
@@ -212,7 +214,7 @@ export class SearchBarForYoutubeVideo extends SearchBar {
   regMatcher = /^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube(-nocookie)?\.com|youtu.be))(\/(?:[\w-]+\?v=|embed\/|v\/)?)([\w-]+)(\S+)?$/
 
   name = 'yt-url'
-  dummyURL: string = 'https://www.youtube.com/watch?v=tXKG7p4Fn5E'
+  dummyURL = 'https://www.youtube.com/watch?v=tXKG7p4Fn5E'
 
   _handleRedirect (url: string): string | false {
     const matches = url.match(this.regMatcher)
@@ -226,7 +228,7 @@ export class SearchBarForPlaylistOfVideos extends SearchBar {
   regMatcher =
     /^(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/|youtu\.be\/).*?[?&]v=([^&]+).*[?&]list=([^&]+)/
 
-  dummyURL: string =
+  dummyURL =
     'https://www.youtube.com/watch?v=7FDRQifEMUQ&list=RDxtfXl7TZTac&index=12'
 
   name = 'yt-playlist'

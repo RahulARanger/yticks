@@ -1,4 +1,4 @@
-import { Component, type ReactNode, type RefObject, createRef } from 'react'
+import React, { Component, type ReactNode, type RefObject, createRef } from 'react'
 import VideoEmbedded, {
   type VideoPlayerSharedProps
 } from '@/components/Video/youtubeVideoPlayer'
@@ -10,8 +10,7 @@ export interface FromMainPageWhichAreState {
   videoID: string
 }
 
-export interface DetailedPageViewRelatedProps
-  extends FromMainPageWhichAreState {}
+export type DetailedPageViewRelatedProps = FromMainPageWhichAreState
 
 interface VideoSummaryState
   extends VideoPlayerSharedProps,

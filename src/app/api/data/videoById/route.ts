@@ -16,8 +16,9 @@ export async function GET (request: NextRequest): Promise<NextResponse> {
       maxHeight: String(maxHeight)
     })
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const videoDetails: VideoListDetails = await resp.json()
-    if (!videoDetails?.pageInfo?.totalResults) {
+    if (!videoDetails.pageInfo.totalResults) {
       return letThemKnow('No Results found')
     }
 

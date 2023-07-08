@@ -1,14 +1,14 @@
 import List from '@mui/material/List'
 import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
-import { Component, type ReactNode } from 'react'
+import React, { Component, type ReactNode } from 'react'
 import ListSubheader from '@mui/material/ListSubheader'
 
 export default abstract class ListArea<PROPs, STATEs> extends Component<
 PROPs,
 STATEs
 > {
-  title: string = '...'
+  title = '...'
 
   abstract header (): ReactNode
   abstract render (): ReactNode

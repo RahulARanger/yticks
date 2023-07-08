@@ -1,5 +1,5 @@
 import AppBar from '@mui/material/AppBar'
-import { Component, type ReactNode } from 'react'
+import React, { Component, type ReactNode } from 'react'
 import Toolbar from '@mui/material/Toolbar'
 import Drawer from '@mui/material/Drawer'
 import {
@@ -124,6 +124,7 @@ HeaderStates
     )
   }
 
+  // eslint-disable-next-line no-unused-vars
   abstract searchBar (showAtTop: boolean): ReactNode
 
   render (): ReactNode {

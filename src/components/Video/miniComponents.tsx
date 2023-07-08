@@ -8,7 +8,7 @@ import ListItemAvatar from '@mui/material/ListItemAvatar'
 import Image from 'next/image'
 import PersonIcon from '@mui/icons-material/Person'
 import relativeTime from 'dayjs/plugin/relativeTime'
-import { type ReactNode, useState } from 'react'
+import React, { type ReactNode, useState } from 'react'
 import { AskVideo } from '../helper/ask'
 import { type CommentProps } from '../types/CommentsUI'
 import Chip from '@mui/material/Chip'
@@ -104,7 +104,7 @@ export function CountOfComments (props: {
   count: number
 }): ReactNode {
   const format = Intl.NumberFormat()
-  const commentCount = props.count ?? 0
+  const commentCount = props.count
 
   return (
     <Tooltip title={`Comment Count: ${format.format(commentCount)}`}>

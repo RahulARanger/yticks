@@ -108,8 +108,8 @@ export interface CommonPropsForPlayList extends CommonPropsForPlayListItems {
   videoID: string
 }
 
-export interface PlayListDetailedViewProps extends CommonPropsForPlayList {}
-export interface PlayListViewState extends CommonPropsForPlayList {}
+export type PlayListDetailedViewProps = CommonPropsForPlayList
+export type PlayListViewState = CommonPropsForPlayList
 export interface PlayListDetailedViewState {
   videoIDs: string[]
   index: number

@@ -1,4 +1,4 @@
-import { type ReactNode } from 'react'
+import React, { type ReactNode } from 'react'
 // import { VideoPlayListHeader } from "@/components/header";
 // import Head from "next/head";
 // import { withRouter } from "next/router";

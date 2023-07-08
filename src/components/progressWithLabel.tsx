@@ -3,7 +3,7 @@ import Typography from '@mui/material/Typography'
 import LinearProgress, {
   type LinearProgressProps
 } from '@mui/material/LinearProgress'
-import { type ReactNode } from 'react'
+import React, { type ReactNode } from 'react'
 
 export default function LinearProgressWithLabel (
   props: LinearProgressProps & { value: number, label: string }

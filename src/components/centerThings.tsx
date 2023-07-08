@@ -1,5 +1,5 @@
 import Box from '@mui/material/Box'
-import { Component, type ReactNode } from 'react'
+import React, { Component, type ReactNode } from 'react'
 import Stack from '@mui/material/Stack'
 
 interface PropsForCenterThings {

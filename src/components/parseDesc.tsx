@@ -1,7 +1,7 @@
 import Typography from '@mui/material/Typography'
 import Link from '@mui/material/Link'
 import { hashTag } from './helper/urls'
-import { type ReactNode } from 'react'
+import React, { type ReactNode } from 'react'
 import { type Variant } from '@mui/material/styles/createTypography'
 
 interface DescProps {

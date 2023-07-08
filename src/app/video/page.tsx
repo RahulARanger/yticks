@@ -1,7 +1,7 @@
 'use client'
 
 import Head from 'next/head'
-import { Component, type ReactNode } from 'react'
+import React, { Component, type ReactNode } from 'react'
 import VideoPlayerHeader from '@/components/header'
 import DetailedPageView, {
   type FromMainPageWhichAreState
@@ -31,9 +31,9 @@ DetailedVideoViewState
   }
 
   toggleSettings (force: boolean): void {
-    // this.setState({
-    //     openSettings: force ? force : !this.state.openSettings,
-    // });
+    this.setState({
+        openSettings: force ? force : !this.state.openSettings,
+    });
   }
 
   setSettings (settings: VideoSettings): void {

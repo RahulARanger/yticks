@@ -4,24 +4,18 @@ import ListItem from '@mui/material/ListItem'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemText from '@mui/material/ListItemText'
 import CommentIcon from '@mui/icons-material/Comment'
-import { type ReactNode, Fragment, type SyntheticEvent, type MouseEvent } from 'react'
+import React, { type ReactNode, Fragment, type SyntheticEvent, type MouseEvent } from 'react'
 import Typography from '@mui/material/Typography'
+import AutoGraphIcon from '@mui/icons-material/AutoGraph'
 import { AskCommentThreads } from '../helper/ask'
 import { type CommentThread } from '../types/Comments'
 import Tab from '@mui/material/Tab'
 import TabContext from '@mui/lab/TabContext'
 import TabList from '@mui/lab/TabList'
 import TabPanel from '@mui/lab/TabPanel'
+import Slide from '@mui/material/Slide'
 import Box from '@mui/material/Box'
 import CloudIcon from '@mui/icons-material/Cloud'
-import * as echarts from 'echarts/core'
-import { BarChart } from 'echarts/charts'
-import {
-  TooltipComponent,
-  GridComponent,
-  TitleComponent
-} from 'echarts/components'
-import { CanvasRenderer } from 'echarts/renderers'
 import { CountOfTopLevelComments } from './miniComponents'
 import CommentListItems from './commentListItems'
 import { commentSortingOptions, type CommentProps } from '../types/CommentsUI'
@@ -29,14 +23,7 @@ import IconButton from '@mui/material/IconButton'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import SortIcon from '@mui/icons-material/Sort'
-
-echarts.use([
-  TitleComponent,
-  TooltipComponent,
-  GridComponent,
-  BarChart,
-  CanvasRenderer
-])
+import VideoDetailedGraphsComponent from './graphs'
 
 interface CommentState {
   tabSelected?: string
@@ -79,7 +66,7 @@ function CommentFooter (props: { videoID: string }): ReactNode {
 }
 
 export default class CommentArea extends ListArea<CommentProps, CommentState> {
-  title: string = 'Comments'
+  title = 'Comments'
   state: CommentState = { openMenuForSorting: false, selectedOptionForSorting: commentSortingOptions[0] }
 
   header (): ReactNode {
@@ -103,14 +90,17 @@ export default class CommentArea extends ListArea<CommentProps, CommentState> {
         />
       </Stack>
       <Menu open={this.state.openMenuForSorting} onClick={toggleMenu} anchorEl={this.state.anchorForMenu} disableScrollLock={true}>
-      <>
-      {
-        commentSortingOptions.map((option, index) => {
-          return <MenuItem key={option} selected={option === this.state.selectedOptionForSorting} onClick={() => { this.setState({ selectedOptionForSorting: option }) }} >
-            <Typography>{option}</Typography>
-          </MenuItem>
-        })
-      }</>
+      <div>
+        <>
+          {
+          commentSortingOptions.map((option) => {
+            return <MenuItem key={option} selected={option === this.state.selectedOptionForSorting} onClick={() => { this.setState({ selectedOptionForSorting: option }) }} >
+              <Typography>{option}</Typography>
+            </MenuItem>
+          })
+          }
+      </>
+      </div>
     </Menu></>
     )
   }
@@ -155,8 +145,15 @@ export default class CommentArea extends ListArea<CommentProps, CommentState> {
     return <CommentFooter videoID={this.props.videoID} />
   }
 
+  renderGraphs (): ReactNode {
+    return <Stack display={'flex'} justifyContent={'stretch'}>
+      <VideoDetailedGraphsComponent videoID={this.props.videoID}/>
+    </Stack>
+  }
+
   render (): ReactNode {
     const valueForComments = 'comment-box'
+    const valueForGraphs = 'detailed-graphs'
     const valueForWordCloud = 'word-cloud'
     const selected = this.state.tabSelected ?? valueForComments
 
@@ -167,10 +164,14 @@ export default class CommentArea extends ListArea<CommentProps, CommentState> {
             <TabList
               aria-label="Tabs for the comments seen for the Youtube video"
               onChange={(_: SyntheticEvent, newValue: string) => {
-                // this.setState({ tabSelected: newValue })
+                this.setState({ tabSelected: newValue })
               }}
             >
               <Tab icon={<CommentIcon />} value={valueForComments} />
+              <Tab
+                icon={<AutoGraphIcon />}
+                value={valueForGraphs}
+              />
               <Tab
                 icon={<CloudIcon />}
                 value={valueForWordCloud}
@@ -179,6 +180,7 @@ export default class CommentArea extends ListArea<CommentProps, CommentState> {
               />
             </TabList>
           </Box>
+          <Slide in={selected === valueForComments} direction="up" appear={false}>
           <TabPanel
             value={valueForComments}
             sx={{ padding: '0px', paddingTop: '10px' }}
@@ -191,6 +193,8 @@ export default class CommentArea extends ListArea<CommentProps, CommentState> {
               />
             )}
           </TabPanel>
+          </Slide>
+          <Slide in={selected === valueForGraphs} direction="up"><TabPanel value={valueForGraphs}>{this.renderGraphs()}</TabPanel></Slide>
           <TabPanel value={valueForWordCloud}>In Progress</TabPanel>
         </TabContext>
       </Box>

@@ -1,4 +1,4 @@
-import { Component, type ReactNode } from 'react'
+import React, { Component, type ReactNode } from 'react'
 import Stack from '@mui/material/Stack'
 import CommentArea from '@/components/Video/commentListArea'
 import {

@@ -16,9 +16,13 @@ export interface RequestForMoreDetails {
   results: AskForLanguage | undefined
 }
 
+
 export type sendComment = (
+  // eslint-disable-next-line no-unused-vars
   comment: Comment,
+  // eslint-disable-next-line no-unused-vars
   replyCount: number,
+  // eslint-disable-next-line no-unused-vars
   replies?: Comment[]
 ) => void
 

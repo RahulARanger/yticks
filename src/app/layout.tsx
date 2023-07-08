@@ -5,7 +5,7 @@ import { Inter } from 'next/font/google'
 import ThemeProvider from '@mui/material/styles/ThemeProvider'
 import createTheme from '@mui/material/styles/createTheme'
 import CssBaseline from '@mui/material/CssBaseline'
-import { type ReactNode } from 'react'
+import React, { type ReactNode } from 'react'
 
 const darkTheme = createTheme({
   palette: {

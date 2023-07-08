@@ -7,6 +7,7 @@ import {
   type ExpectedPlaylistItems
 } from '@/components/types/playlist'
 import { type ExpectedCommentThread } from '../types/Comments'
+import { type ExpectedPopulation } from '../types/populationResponse'
 
 const isMock = process.env.NEXT_PUBLIC_IS_DEV ? 'mock' : 'data'
 
@@ -51,6 +52,7 @@ interface SWRInfResponse<Details> {
   error?: string
   isLoading: boolean
   size: number
+  // eslint-disable-next-line no-unused-vars
   setSize: (page: number) => void
 }
 
@@ -58,7 +60,7 @@ export function AskCommentThreads (
   videoID: string
 ): SWRInfResponse<ExpectedCommentThread> {
   return useSWRInfinite(
-    (...args) => loadComments(videoID, ...args),
+    (...args: [index: number, previousPageData?: ExpectedCommentThread ]) => loadComments(videoID, ...args),
     async (url: string) => await askButRead<ExpectedCommentThread>(url),
     {
       revalidateIfStale: false,
@@ -104,4 +106,19 @@ export function decodeID (encoded: string): [string, string] {
   console.log(encoded)
   const [videoID, listID] = encoded.split(' ')
   return [videoID, listID]
+}
+
+interface countryAsFeature {type: 'Feature', geometry: { type: 'MultiLineString', coordinates: string[], encodeOffsets: number[][] }, properties: { name: string, childNum: number }}
+interface mapRespType { type: 'FeatureCollection', features: countryAsFeature[], crs: { type: string, properties: { name: string } } }
+
+export function AskWorldMap (file: string): SWRResponse<mapRespType> {
+  return useSWRImmutable(`https://cdn.jsdelivr.net/gh/apache/echarts-www@master/asset/map/json/${file}.json`,
+    async (url: string) => await askButRead<mapRespType>(url)
+  )
+}
+
+export function AskWorldPopulation (): SWRResponse<ExpectedPopulation> {
+  return useSWRImmutable(`/api/${isMock}/population`,
+    async (url: string) => await askButRead<ExpectedPopulation>(url)
+  )
 }

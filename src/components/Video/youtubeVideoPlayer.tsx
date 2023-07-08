@@ -1,9 +1,8 @@
-import { Component, type ReactNode, Fragment } from 'react'
+import React, { Component, type ReactNode, Fragment } from 'react'
 import Box from '@mui/material/Box'
 import Skeleton from '@mui/material/Skeleton'
 import Typography from '@mui/material/Typography'
 import Link from '@mui/material/Link'
-import Script from 'next/script'
 import Accordion from '@mui/material/Accordion'
 import Stack from '@mui/material/Stack'
 import AccordionSummary from '@mui/material/AccordionSummary'
@@ -66,7 +65,8 @@ interface embeddedProps {
 }
 
 class RawEmbeddedVideoPlayer extends Component<embeddedProps> {
-  frame: string = 'frame-id'
+  frame = 'frame-id'
+  // eslint-disable-next-line no-undef
   player: undefined | YT.Player = undefined
 
   render (): ReactNode {
@@ -76,6 +76,7 @@ class RawEmbeddedVideoPlayer extends Component<embeddedProps> {
   //   onReady (event: YT.PlayerEvent) {}
 
   componentDidMount (): void {
+    // eslint-disable-next-line no-undef
     this.player = new YT.Player(this.frame, {
       videoId: this.props.id,
       playerVars: {
@@ -146,8 +147,8 @@ export function EmbeddedVideo (props: {
 
 function StatsBadge (props: miniProps): ReactNode {
   const stats = props.details.statistics
-  const likeCount = Number(stats.likeCount) ?? 0
-  const viewCount = Number(stats.viewCount) ?? 0
+  const likeCount = Number(stats.likeCount) 
+  const viewCount = Number(stats.viewCount)
 
   const format = new Intl.NumberFormat()
   return (
@@ -216,9 +217,9 @@ export function TimelineContentOnRight (
 
 function VideoTimeline (props: { details: VideoDetails }): ReactNode {
   const publishedDate = props.details.snippet.publishedAt
-  const scheduled = props.details?.liveStreamingDetails?.scheduledStartTime
-  const actualStartTime = props.details?.liveStreamingDetails?.actualStartTime
-  const actualEndTime = props.details?.liveStreamingDetails?.actualEndTime
+  const scheduled = props.details.liveStreamingDetails?.scheduledStartTime
+  const actualStartTime = props.details.liveStreamingDetails?.actualStartTime
+  const actualEndTime = props.details.liveStreamingDetails?.actualEndTime
 
   return (
     <>
@@ -274,7 +275,7 @@ export function PureVideoSummary (props: miniProps): ReactNode {
             <StatsBadge details={props.details} formatter={props.formatter} />
           </AccordionSummary>
           <AccordionDetails>
-            {snippet?.tags?.length
+            {snippet.tags.length
               ? (
               <>
                 <Typography variant="body1">Tags:</Typography>
@@ -337,7 +338,6 @@ export default class VideoEmbedded extends Component<VideoPlayerProps> {
   render (): ReactNode {
     return (
       <>
-        <Script src="https://www.youtube.com/iframe_api"></Script>
         <Box className={this.props.className}>
           <EmbeddedVideo isVideo={true} id={this.props.videoID} />
           <VideoSummary
@@ -354,7 +354,6 @@ export class EmbeddedPlayList extends Component<PlayListProps> {
   render (): ReactNode {
     return (
       <>
-        <Script src="https://www.youtube.com/iframe_api"></Script>
         <Box className={this.props.className}>
           <EmbeddedVideo isVideo={true} id={this.props.videoID} />
           <VideoSummary

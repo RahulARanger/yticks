@@ -3,7 +3,7 @@ import RadioGroup from '@mui/material/RadioGroup'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import FormControl from '@mui/material/FormControl'
 import FormLabel from '@mui/material/FormLabel'
-import { Component, type ReactNode } from 'react'
+import React, { Component, type ReactNode } from 'react'
 import Radio from '@mui/material/Radio'
 
 export interface VideoSettings {
