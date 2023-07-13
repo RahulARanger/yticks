@@ -111,14 +111,16 @@ export function decodeID (encoded: string): [string, string] {
 interface countryAsFeature {type: 'Feature', geometry: { type: 'MultiLineString', coordinates: string[], encodeOffsets: number[][] }, properties: { name: string, childNum: number }}
 interface mapRespType { type: 'FeatureCollection', features: countryAsFeature[], crs: { type: string, properties: { name: string } } }
 
-export function AskWorldMap (file: string): SWRResponse<mapRespType> {
+export function AskWorldMap (file: string): SWRResponse<null | mapRespType> {
   return useSWRImmutable(`https://cdn.jsdelivr.net/gh/apache/echarts-www@master/asset/map/json/${file}.json`,
-    async (url: string) => await askButRead<mapRespType>(url)
+    async (url: string) => await askButRead<null | mapRespType>(url)
   )
 }
 
-export function AskWorldPopulation (): SWRResponse<ExpectedPopulation> {
-  return useSWRImmutable(`/api/${isMock}/population`,
+export function AskWorldPopulation (countryRequested?: string): SWRResponse<ExpectedPopulation> {
+  const p_url = `/api/${isMock}/population` // plain_url
+  
+  return useSWRImmutable(countryRequested ? urlWithArgs(p_url, {countryRequested}) : p_url,
     async (url: string) => await askButRead<ExpectedPopulation>(url)
   )
 }

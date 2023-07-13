@@ -4,7 +4,7 @@ import Accordion, { AccordionDetails, AccordionSummary } from '../Accordion'
 import ReactECharts from 'echarts-for-react'
 import { AskVideo, AskWorldMap, AskWorldPopulation } from '../helper/ask'
 import CenterThings from '../centerThings'
-import { registerMap } from 'echarts'
+import { ECElementEvent, registerMap} from 'echarts'
 
 import type {
   TitleComponentOption,
@@ -13,12 +13,14 @@ import type {
 } from 'echarts/components'
 import type {
   // The series option types are defined with the SeriesOption suffix
-  FunnelSeriesOption,
+  // PieSeriesOption,
   MapSeriesOption
 } from 'echarts/charts'
 import type {
   ComposeOption
 } from 'echarts/core'
+import { Button } from '@mui/material'
+// import { CommentThread } from '../types/Comments'
 
 const loadingOption = {
   text: 'Please wait, Loading',
@@ -28,146 +30,152 @@ const loadingOption = {
   zlevel: 0
 }
 
-function ComparedToWorld (props: { isLoading: boolean, viewCount: number }): ReactNode {
-  const { data, error, isLoading: isMapLoading } = AskWorldMap('world')
-  const { data: population, error: errorForPopulation, isLoading: fetchingPopulation } = AskWorldPopulation()
-  const [country] = useState<undefined | string>()
-
-  if (data && population?.details) {
-    registerMap('world', data)
-  } else {
-    if (isMapLoading || props.isLoading || fetchingPopulation) { return <ReactECharts loadingOption={loadingOption} showLoading={true} option={{}}></ReactECharts> }
-    return <CenterThings>{error ?? errorForPopulation}</CenterThings>
-  }
-
-  const options: ComposeOption<
+type composed = ComposeOption<
   MapSeriesOption |
   TitleComponentOption |
   TooltipComponentOption |
   ToolboxComponentOption
-  > = {
+  >
+
+function ComparedToWorld (props: { isLoading: boolean, viewCount: number }): ReactNode {
+  const { data, error, isLoading: isMapLoading } = AskWorldMap('world')
+  const [chartOptions, setChartOption] =  useState<undefined | {selected?: string, center?: number[], zoom?: number}>();
+  const { data: population, error: errorForPopulation, isLoading: fetchingPopulation } = AskWorldPopulation(chartOptions?.selected)
+  
+  
+  if (data && population?.details?.count) {
+    registerMap('world', data)
+  } else {
+    if (isMapLoading || props.isLoading || fetchingPopulation) { return <ReactECharts loadingOption={loadingOption} showLoading={true} option={{}}></ReactECharts> }
+    const errorFound = error ?? errorForPopulation ?? (
+      <>
+      <Typography variant="subtitle2">
+        {`Sorry couldn't fetch the population for the country: ${chartOptions?.selected ?? "Unknown Country"}, Please report this issue or request it in`}
+        &nbsp;<a href="https://rapidapi.com/evikza/api/get-population" target="_blank">here.</a>
+      </Typography>
+      <br/>
+      <Button variant="outlined" onClick={() => {setChartOption({...chartOptions, selected: undefined})}}>
+        Reset
+      </Button>
+      </>
+    )
+    return (
+      <>
+      <Typography>
+        {errorFound}
+    </Typography>
+    </>
+    )
+  }
+
+  const selectedMap: Record<string, boolean>  = {};
+  if(chartOptions?.selected){
+    selectedMap[chartOptions.selected] = true
+  }
+
+  const country = chartOptions?.selected;
+  const getTitle = () => `${(props.viewCount / Number(population.details?.count) * 1e2).toPrecision(2)}% of ${country ? `${country}'s` : 'world\'s'} population`
+
+  // palette: https://colorhunt.co/palette/404258474e6850577a6b728e
+  // https://colorhunt.co/palette/0b244719376d576cbca5d7e8
+  // https://colorhunt.co/palette/1a374d4068826998abb1d0e0
+  const backgroundColor = '#6998AB'
+  const landColor = "#406882"
+  const textColor = '#114E60'
+
+  const options: composed = {
     title: {
-      text: `${(props.viewCount / population.details.count * 1e2).toPrecision(2)}% of ${country ? `${country}'s` : 'world\'s'} population `,
-      //   subtext: country ? `selected: ${country}` : 'Select a country',
+      text: getTitle(),
+      subtext: country ? undefined : 'Select a country',
       left: 'center',
       top: 'top',
-      textStyle: { color: 'black    ' },
-      subtextStyle: { fontSize: 13, color: 'black' }
+      textStyle: { color: textColor },
+      subtextStyle: { fontSize: 13, color: '#4E3620', fontStyle: "italic" }
     },
-    backgroundColor: '#ADD8E6',
+    tooltip: {
+      backgroundColor: "#404258", textStyle: {color: "#fff"},
+    },
+    backgroundColor,
     series: [
       {
+        selectedMap,
+        zoom: chartOptions?.zoom ?? 1,
+        center: chartOptions?.center,
         name: 'World',
         type: 'map',
         map: 'world',
         roam: true,
         itemStyle: {
-          areaColor: 'turquoise'
+          areaColor: landColor
         },
         select: {
           itemStyle: {
-            areaColor: 'lightgreen'
+            areaColor: '#30475E',
+            shadowColor: 'rgba(0, 0, 0, 0.5)',
+            shadowBlur: 3
           },
           label: {
-            color: 'black'
+            color: "lightgreen",
+            fontWeight: 'bold',
+            fontSize: 12,
           }
         },
         emphasis: {
           itemStyle: {
-            areaColor: 'white',
+            areaColor: '#1A374D',
             shadowColor: 'rgba(0, 0, 0, 0.5)',
             shadowBlur: 6
           },
           label: {
-            color: 'orangered',
             fontWeight: 'bold',
-            fontSize: 12
+            fontSize: 12,
+            color: "#E16428"
           }
         }
       }
     ]
   }
 
-  //   function handleCountrySelection (event: ECElementEvent): void {
-  //     setCountry(data?.features[event.fromActionPayload.dataIndexInside].properties.name)
-  //   }
+    function handleCountrySelection (
+        event: ECElementEvent,
+        eChartInstance: {getOption: () => {series: [{center: number[], zoom: number}]}}
+    ): void {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      const selected = data?.features[event.fromActionPayload.dataIndexInside].properties.name;
+      if(!population?.details?.count || !selected) return;
+      const series = eChartInstance.getOption().series.at(0);
+      
+      setChartOption(
+        {
+          selected: selected === chartOptions?.selected ? undefined : selected,
+          center: series?.center,
+          zoom: series?.zoom
+        }
+      )
+    }
 
   return <ReactECharts
         theme={'vintage'}
         showLoading={props.isLoading || isMapLoading || fetchingPopulation}
         loadingOption={loadingOption}
         option={options}
-        // TODO: Complete the Selection of the Country
-        // onEvents={{
-        //   selectchanged: handleCountrySelection
-        // }}
+        onEvents={{
+          selectchanged: handleCountrySelection
+        }}
         />
 }
 
-function userContribution (isLoading: boolean, countOfComments: number, likeCount: number): ReactNode {
-  const options: ComposeOption<
-  FunnelSeriesOption |
-  TitleComponentOption |
-  TooltipComponentOption
-  > = {
-    title: {
-      text: 'User\'s Contribution',
-      subtext: 'Likes & no. of comments',
-      textStyle: {
-        color: 'white'
-      }
-    },
-    tooltip: {
-      trigger: 'item',
-      formatter: '{a} <br/>{b} : {c}%'
-    },
-    toolbox: {
-      feature: {
-        dataView: { readOnly: false },
-        restore: {},
-        saveAsImage: {}
-      }
-    },
-    legend: {
-      show: false
-    },
-    series: [
-      {
-        name: 'Funnel',
-        type: 'funnel',
-        left: '10%',
-        top: 60,
-        width: '80%',
-        minSize: '0%',
-        maxSize: '100%',
-        sort: 'descending',
-        gap: 2,
-        label: {
-          show: true,
-          position: 'inside'
-        },
-        emphasis: {
-          label: {
-            fontSize: 20
-          },
-          itemStyle: {
-            borderColor: '#fff',
-            borderWidth: 1
-          }
-        },
-        data: [
-          { value: 1e2 * countOfComments / likeCount, name: 'Comments' },
-          { value: 1e2, name: 'Likes' }
-        ]
-      }
-    ]
-  }
-
-  return <ReactECharts theme={'vintage'} option={options} showLoading={isLoading} loadingOption={loadingOption}></ReactECharts>
-}
+// function EmojisFound(props: {commentThreads: CommentThread[]}): ReactNode{
+//   props.commentThreads.flatMap(thread => {
+//     const text = thread.snippet.topLevelComment.snippet.textDisplay
+//     return text
+//   })
+//   return <></>;
+// }
 
 export default function VideoDetailedGraphsComponent (props: { videoID: string }): ReactNode {
   const { data, error, isLoading } = AskVideo(props.videoID)
+  // const {data: threads, error: errorsFromThreads, isLoading: fetchingComments} = AskCommentThreads(props.videoID)
   const [expand, setExpand] = useState<false | string>(false)
 
   if (!isLoading && (data?.details === undefined || error)) {
@@ -176,7 +184,7 @@ export default function VideoDetailedGraphsComponent (props: { videoID: string }
 
   const _ids = [
     'world-wide',
-    'engagement-types'
+    // 'emojis-found'
   ]
 
   const videoDetails = data?.details?.items[0]
@@ -185,13 +193,11 @@ export default function VideoDetailedGraphsComponent (props: { videoID: string }
     <Typography key={_ids[1]}>User&#39;s Contribution</Typography>
   ]
 
+  // const commentThreads = threads?.at(0);
+
   const details = [
     <ComparedToWorld key={_ids[0]} isLoading={isLoading} viewCount={Number(videoDetails?.statistics.viewCount)}/>,
-    userContribution(
-      isLoading,
-      Number(videoDetails?.statistics.commentCount),
-      Number(videoDetails?.statistics.likeCount)
-    )
+    // <EmojisFound key={_ids[1]} commentThreads={commentThreads?.details?.items ?? []}/>
   ]
 
   return (

@@ -275,7 +275,7 @@ export function PureVideoSummary (props: miniProps): ReactNode {
             <StatsBadge details={props.details} formatter={props.formatter} />
           </AccordionSummary>
           <AccordionDetails>
-            {snippet.tags.length
+            {snippet.tags?.length
               ? (
               <>
                 <Typography variant="body1">Tags:</Typography>

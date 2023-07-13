@@ -3,13 +3,13 @@ import type PopulationResponse from '@/components/types/populationResponse'
 import { type NextRequest, NextResponse } from 'next/server'
 
 export async function GET (request: NextRequest): Promise<NextResponse> {
-  const { specificCountry } = Object.fromEntries(
+  const { countryRequested } = Object.fromEntries(
     new URL(request.url).searchParams.entries()
   )
 
   try {
     const resp = await askRapidAPI<PopulationResponse>(
-      specificCountry ? '' : 'https://get-population.p.rapidapi.com/population'
+      countryRequested ? `https://get-population.p.rapidapi.com/population/country?country=${countryRequested}` : 'https://get-population.p.rapidapi.com/population'
     )
     return NextResponse.json({ failed: false, details: resp })
   } catch (error) {

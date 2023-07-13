@@ -24,7 +24,7 @@ export interface VideoDetails {
     description: string
     thumbnails: thumbNail
     channelTitle: string
-    tags: string[]
+    tags?: string[]
     categoryId: string
     liveBroadcastContent: string
     defaultLanguage?: string
