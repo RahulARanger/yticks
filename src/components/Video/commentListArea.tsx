@@ -156,6 +156,7 @@ export default class CommentArea extends ListArea<CommentProps, CommentState> {
     const valueForGraphs = 'detailed-graphs'
     const valueForWordCloud = 'word-cloud'
     const selected = this.state.tabSelected ?? valueForComments
+    const commonTabPanelStyles = { padding: '0px', paddingTop: '10px' }
 
     return (
       <Box className={this.props.className}>
@@ -181,21 +182,25 @@ export default class CommentArea extends ListArea<CommentProps, CommentState> {
             </TabList>
           </Box>
           <Slide in={selected === valueForComments} direction="up" appear={false}>
-          <TabPanel
-            value={valueForComments}
-            sx={{ padding: '0px', paddingTop: '10px' }}
-          >
-            {this.renderList(
-               <CommentListItems
-                formatter={this.props.formatter}
-                videoID={this.props.videoID}
-                sortingOption={this.state.selectedOptionForSorting}
-              />
-            )}
-          </TabPanel>
+            <TabPanel
+              value={valueForComments}
+              sx={commonTabPanelStyles}
+            >
+              {this.renderList(
+                <CommentListItems
+                  formatter={this.props.formatter}
+                  videoID={this.props.videoID}
+                  sortingOption={this.state.selectedOptionForSorting}
+                />
+              )}
+            </TabPanel>
           </Slide>
-          <Slide in={selected === valueForGraphs} direction="up"><TabPanel value={valueForGraphs}>{this.renderGraphs()}</TabPanel></Slide>
-          <TabPanel value={valueForWordCloud}>In Progress</TabPanel>
+          <Slide in={selected === valueForGraphs} direction="up">
+            <TabPanel  sx={commonTabPanelStyles} value={valueForGraphs}>
+              {this.renderGraphs()}
+            </TabPanel>
+          </Slide>
+          <TabPanel sx={commonTabPanelStyles}  value={valueForWordCloud}>In Progress</TabPanel>
         </TabContext>
       </Box>
     )
