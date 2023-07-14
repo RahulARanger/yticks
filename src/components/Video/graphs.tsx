@@ -74,7 +74,10 @@ function ComparedToWorld (props: { isLoading: boolean, viewCount: number }): Rea
   }
 
   const country = chartOptions?.selected;
-  const getTitle = () => `${(props.viewCount / Number(population.details?.count) * 1e2).toPrecision(2)}% of ${country ? `${country}'s` : 'world\'s'} population`
+  const getTitle = () => {
+    const percent = (props.viewCount / Number(population.details?.count) * 1e2)
+    return `${percent <= 1e2 ? percent.toPrecision(2) : (percent / 1e2).toPrecision(2) + "k"}% of ${country ? `${country}'s` : 'world\'s'} population`
+  }
 
   // palette: https://colorhunt.co/palette/404258474e6850577a6b728e
   // https://colorhunt.co/palette/0b244719376d576cbca5d7e8
