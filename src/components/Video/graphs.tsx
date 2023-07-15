@@ -76,7 +76,7 @@ function ComparedToWorld (props: { isLoading: boolean, viewCount: number }): Rea
   const country = chartOptions?.selected;
   const getTitle = () => {
     const percent = (props.viewCount / Number(population.details?.count) * 1e2)
-    return `${percent <= 1e2 ? percent.toPrecision(2) : (percent / 1e2).toPrecision(2) + "k"}% of ${country ? `${country}'s` : 'world\'s'} population`
+    return `${percent.toFixed(2)}% of ${country ? `${country}'s` : 'world\'s'} population`
   }
 
   // palette: https://colorhunt.co/palette/404258474e6850577a6b728e
@@ -94,9 +94,6 @@ function ComparedToWorld (props: { isLoading: boolean, viewCount: number }): Rea
       top: 'top',
       textStyle: { color: textColor },
       subtextStyle: { fontSize: 13, color: '#4E3620', fontStyle: "italic" }
-    },
-    tooltip: {
-      backgroundColor: "#404258", textStyle: {color: "#fff"},
     },
     backgroundColor,
     series: [
@@ -179,7 +176,6 @@ function ComparedToWorld (props: { isLoading: boolean, viewCount: number }): Rea
 export default function VideoDetailedGraphsComponent (props: { videoID: string }): ReactNode {
   const { data, error, isLoading } = AskVideo(props.videoID)
   // const {data: threads, error: errorsFromThreads, isLoading: fetchingComments} = AskCommentThreads(props.videoID)
-  const [expand, setExpand] = useState<false | string>(false)
 
   if (!isLoading && (data?.details === undefined || error)) {
     return <CenterThings>{`Failed to fetch the details: ${error ?? 'empty values :('}`}</CenterThings>
@@ -206,7 +202,7 @@ export default function VideoDetailedGraphsComponent (props: { videoID: string }
   return (
     <>
         {_ids.map((_id, index) => {
-          return <Accordion key={_id} expanded={expand === _ids[index]} onChange={() => { setExpand(expand !== _ids[index] ? _ids[index] : false) }}>
+          return <Accordion key={_id} defaultExpanded={true}> 
             <AccordionSummary>
                 {summary[index]}
             </AccordionSummary>
